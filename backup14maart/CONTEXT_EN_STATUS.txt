@@ -1,0 +1,33 @@
+Backup datum: 14-03-2026
+Project: SmartInvoice / factuurgenerator
+Doel van deze snapshot: stabiele versie zonder e-mailverzending; lokaal testbaar.
+
+Wat werkt in deze snapshot:
+- Lokale demo-auth zonder Supabase (register/login/session via localStorage)
+- Protected dashboard + routes
+- Factuur aanmaken en lokaal opslaan
+- Factuurbeheer: statusflow concept -> verzonden -> betaald (vervallen automatisch op due-date)
+- Verwijderen alleen toegestaan in concept
+- PDF-downloadknop aanwezig in factuuroverzicht
+- Factuurnummering NL-stijl: YYYY-0001 (per jaar, oplopend)
+- Prijsmodus: exclusief BTW of inclusief BTW
+- Optie: Geen BTW toepassen op hele factuur
+- Valuta: standaard EUR, plus USD/GBP ondersteuning
+
+Bewuste keuze nu:
+- E-mail backend is nog NIET geimplementeerd (wordt later toegevoegd)
+
+Belangrijkste bestanden voor huidige kernlogica:
+- src/stores/authStore.ts
+- src/stores/invoiceStore.ts
+- src/components/invoice/InvoiceGenerator.tsx
+- src/pages/InvoicesPage.tsx
+- src/pages/DashboardPage.tsx
+- src/lib/invoiceNumber.ts
+- src/lib/pdf.ts
+
+Opmerking voor later (email):
+- Voeg backend endpoint/edge function toe voor verzenden
+- Gebruik provider zoals Resend/SendGrid/Postmark
+- API keys alleen server-side
+- Log send-resultaten en errors
