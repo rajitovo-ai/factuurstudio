@@ -20,11 +20,16 @@ type ReferralState = {
   referrals: Referral[]
   /** userId → referral-code */
   userCodes: Record<string, string>
+  /** userId → lokaal gesimuleerde referral conversies (alleen dev UI) */
+  devSimulatedConversions: Record<string, number>
   isSyncing: boolean
   /** Geeft de bestaande code terug of genereert een nieuwe */
   getCode: (userId: string) => string
   /** Alle referrals van een specifieke referrer */
   getUserReferrals: (userId: string) => Referral[]
+  getDevSimulatedConversions: (userId: string) => number
+  addDevSimulatedConversions: (userId: string, amount?: number) => void
+  resetDevSimulatedConversions: (userId: string) => void
   /** Haalt code + referrals op uit Supabase */
   syncUserData: (userId: string | null) => Promise<void>
   /** Slaat referral-code tijdelijk op tot account/sessie beschikbaar is */
@@ -59,6 +64,7 @@ export const useReferralStore = create<ReferralState>()(
     (set, get) => ({
       referrals: [],
       userCodes: {},
+      devSimulatedConversions: {},
       isSyncing: false,
 
       getCode: (userId) => {
@@ -76,6 +82,29 @@ export const useReferralStore = create<ReferralState>()(
 
       getUserReferrals: (userId) => {
         return get().referrals.filter((r) => r.referrerId === userId)
+      },
+
+      getDevSimulatedConversions: (userId) => {
+        return get().devSimulatedConversions[userId] ?? 0
+      },
+
+      addDevSimulatedConversions: (userId, amount = 1) => {
+        const safeAmount = Number.isFinite(amount) ? Math.max(1, Math.floor(amount)) : 1
+        set((state) => ({
+          devSimulatedConversions: {
+            ...state.devSimulatedConversions,
+            [userId]: (state.devSimulatedConversions[userId] ?? 0) + safeAmount,
+          },
+        }))
+      },
+
+      resetDevSimulatedConversions: (userId) => {
+        set((state) => ({
+          devSimulatedConversions: {
+            ...state.devSimulatedConversions,
+            [userId]: 0,
+          },
+        }))
       },
 
       setPendingReferralCode: (code) => {

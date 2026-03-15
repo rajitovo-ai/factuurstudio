@@ -4,6 +4,8 @@ import { useAuthStore } from '../stores/authStore'
 import type { Referral } from '../stores/referralStore'
 import { useReferralStore } from '../stores/referralStore'
 
+const isDev = import.meta.env.DEV
+
 const statusLabel: Record<ReferralStatus, string> = {
   converted: 'Geregistreerd',
   rewarded: 'Beloond ✓',
@@ -31,7 +33,15 @@ const formatDate = (iso: string): string =>
 
 export default function ReferralPage() {
   const { userId } = useAuthStore()
-  const { getCode, getUserReferrals, syncUserData, isSyncing } = useReferralStore()
+  const {
+    getCode,
+    getUserReferrals,
+    getDevSimulatedConversions,
+    addDevSimulatedConversions,
+    resetDevSimulatedConversions,
+    syncUserData,
+    isSyncing,
+  } = useReferralStore()
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
@@ -44,10 +54,12 @@ export default function ReferralPage() {
 
   const code = getCode(userId)
   const referrals = getUserReferrals(userId)
+  const simulatedConverted = getDevSimulatedConversions(userId)
   const baseUrl = window.location.origin
   const shareLink = `${baseUrl}/register?ref=${code}`
 
-  const totalConverted = referrals.filter((r) => r.status === 'converted' || r.status === 'rewarded').length
+  const totalConvertedReal = referrals.filter((r) => r.status === 'converted' || r.status === 'rewarded').length
+  const totalConverted = totalConvertedReal + simulatedConverted
   const rewardsEarned = Math.floor(totalConverted / REFERRAL_REWARD_THRESHOLD)
   const progressToNext = totalConverted % REFERRAL_REWARD_THRESHOLD
   const progressPercent = Math.round((progressToNext / REFERRAL_REWARD_THRESHOLD) * 100)
@@ -75,6 +87,41 @@ export default function ReferralPage() {
           jij automatisch <strong>1 maand Pro gratis</strong> — zonder dat je iets hoeft te doen.
         </p>
       </section>
+
+      {isDev ? (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">Dev referral debug</p>
+          <p className="mt-1 text-xs text-amber-700">
+            Simuleer lokale conversies voor snelle UI-tests. Dit wordt niet naar Supabase geschreven.
+          </p>
+          <p className="mt-2 text-xs text-amber-800">
+            Gesimuleerd: <span className="font-semibold">{simulatedConverted}</span>
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => addDevSimulatedConversions(userId, 1)}
+              className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+            >
+              +1 conversie
+            </button>
+            <button
+              type="button"
+              onClick={() => addDevSimulatedConversions(userId, REFERRAL_REWARD_THRESHOLD)}
+              className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+            >
+              +{REFERRAL_REWARD_THRESHOLD} conversies
+            </button>
+            <button
+              type="button"
+              onClick={() => resetDevSimulatedConversions(userId)}
+              className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+            >
+              Reset simulatie
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       {/* Jouw uitnodigingslink */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -110,7 +157,9 @@ export default function ReferralPage() {
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Geregistreerd</p>
           <p className="mt-2 text-3xl font-extrabold text-slate-900">{totalConverted}</p>
-          <p className="mt-1 text-xs text-slate-400">via jouw link</p>
+          <p className="mt-1 text-xs text-slate-400">
+            via jouw link{simulatedConverted > 0 ? ` (${totalConvertedReal} echt + ${simulatedConverted} dev)` : ''}
+          </p>
         </article>
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Beloningen verdiend</p>
