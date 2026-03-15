@@ -1,4 +1,6 @@
+import { PLAN_CONFIGS, canCreateInvoiceThisMonth } from '../lib/billing'
 import { useAuthStore } from '../stores/authStore'
+import { useBillingStore } from '../stores/billingStore'
 import { getInvoiceDisplayStatus, useInvoiceStore } from '../stores/invoiceStore'
 
 const statCardClass =
@@ -13,6 +15,7 @@ const formatCurrency = (amount: number) =>
 export default function DashboardPage() {
   const { isDemoMode, userId } = useAuthStore()
   const invoices = useInvoiceStore((state) => state.invoices)
+  const planId = useBillingStore((state) => state.getUserPlan(userId))
 
   const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
   const openAmount = userInvoices
@@ -24,6 +27,7 @@ export default function DashboardPage() {
 
   const currentMonth = new Date().toISOString().slice(0, 7)
   const monthlyInvoiceCount = userInvoices.filter((invoice) => invoice.issueDate.startsWith(currentMonth)).length
+  const monthlyQuota = canCreateInvoiceThisMonth(planId, invoices, userId)
 
   return (
     <main className="space-y-4">
@@ -53,6 +57,24 @@ export default function DashboardPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Betaald</p>
           <p className="mt-2 text-2xl font-extrabold">{formatCurrency(paidAmount)}</p>
         </article>
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Abonnement</p>
+        <h2 className="mt-2 text-xl font-extrabold">{PLAN_CONFIGS[planId].name}</h2>
+        <p className="mt-2 text-sm text-slate-600">
+          {monthlyQuota.limit === null
+            ? 'Onbeperkt facturen per maand.'
+            : `${monthlyQuota.usedThisMonth}/${monthlyQuota.limit} facturen gebruikt deze maand.`}
+        </p>
+        {monthlyQuota.limit !== null ? (
+          <div className="mt-3 h-2 rounded-full bg-slate-100">
+            <div
+              className="h-full rounded-full bg-cyan-600"
+              style={{ width: `${Math.min(100, (monthlyQuota.usedThisMonth / monthlyQuota.limit) * 100)}%` }}
+            />
+          </div>
+        ) : null}
       </section>
     </main>
   )

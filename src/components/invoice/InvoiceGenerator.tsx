@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { canCreateInvoiceThisMonth, PLAN_CONFIGS } from '../../lib/billing'
 import { downloadInvoicePdf } from '../../lib/pdf'
 import { getNextInvoiceNumber } from '../../lib/invoiceNumber'
 import { useAuthStore } from '../../stores/authStore'
+import { useBillingStore } from '../../stores/billingStore'
 import type { StoredInvoice } from '../../stores/invoiceStore'
 import { useInvoiceStore } from '../../stores/invoiceStore'
 import { defaultCompanyProfile, useProfileStore } from '../../stores/profileStore'
@@ -50,6 +52,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const invoices = useInvoiceStore((state) => state.invoices)
   const createInvoice = useInvoiceStore((state) => state.createInvoice)
   const updateInvoice = useInvoiceStore((state) => state.updateInvoice)
+  const planId = useBillingStore((state) => state.getUserPlan(userId))
   const profiles = useProfileStore((state) => state.profiles)
   const profile = userId ? profiles[userId] ?? defaultCompanyProfile : defaultCompanyProfile
   const [invoiceNumber, setInvoiceNumber] = useState(() =>
@@ -217,6 +220,14 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         lines: savedLines,
       })
     } else {
+      const quota = canCreateInvoiceThisMonth(planId, invoices, userId)
+      if (!quota.allowed) {
+        setSaveError(
+          `Je ${PLAN_CONFIGS[planId].name}-plan heeft een limiet van ${quota.limit} facturen per maand. Upgrade naar Pro voor onbeperkt.`,
+        )
+        return
+      }
+
       createInvoice({
         userId,
         invoiceNumber,
