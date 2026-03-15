@@ -1,6 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { generateReferralCode, REFERRAL_REWARD_THRESHOLD } from '../lib/referral'
+import {
+  DEFAULT_REFERRAL_REWARD_CONFIG,
+  type ReferralRewardConfig,
+  generateReferralCode,
+} from '../lib/referral'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
 import { useBillingStore } from './billingStore'
 
@@ -22,12 +26,14 @@ type ReferralState = {
   userCodes: Record<string, string>
   /** userId → lokaal gesimuleerde referral conversies (alleen dev UI) */
   devSimulatedConversions: Record<string, number>
+  rewardConfig: ReferralRewardConfig
   isSyncing: boolean
   /** Geeft de bestaande code terug of genereert een nieuwe */
   getCode: (userId: string) => string
   /** Alle referrals van een specifieke referrer */
   getUserReferrals: (userId: string) => Referral[]
   getDevSimulatedConversions: (userId: string) => number
+  getRewardConfig: () => ReferralRewardConfig
   addDevSimulatedConversions: (userId: string, amount?: number) => void
   resetDevSimulatedConversions: (userId: string) => void
   /** Haalt code + referrals op uit Supabase */
@@ -65,6 +71,7 @@ export const useReferralStore = create<ReferralState>()(
       referrals: [],
       userCodes: {},
       devSimulatedConversions: {},
+      rewardConfig: DEFAULT_REFERRAL_REWARD_CONFIG,
       isSyncing: false,
 
       getCode: (userId) => {
@@ -86,6 +93,10 @@ export const useReferralStore = create<ReferralState>()(
 
       getDevSimulatedConversions: (userId) => {
         return get().devSimulatedConversions[userId] ?? 0
+      },
+
+      getRewardConfig: () => {
+        return get().rewardConfig
       },
 
       addDevSimulatedConversions: (userId, amount = 1) => {
@@ -161,6 +172,31 @@ export const useReferralStore = create<ReferralState>()(
             }))
           }
 
+          const rewardSettingsResponse = await supabase
+            .from('referral_reward_settings')
+            .select('threshold, reward_type, reward_value')
+            .eq('id', true)
+            .maybeSingle()
+
+          if (rewardSettingsResponse.error) {
+            console.error('Kon referral-reward instellingen niet ophalen:', rewardSettingsResponse.error.message)
+          }
+
+          if (rewardSettingsResponse.data) {
+            set({
+              rewardConfig: {
+                threshold: Math.max(1, rewardSettingsResponse.data.threshold ?? 3),
+                rewardType:
+                  rewardSettingsResponse.data.reward_type === 'discount_percent'
+                    ? 'discount_percent'
+                    : rewardSettingsResponse.data.reward_type === 'credit_eur'
+                      ? 'credit_eur'
+                      : 'pro_month',
+                rewardValue: Number(rewardSettingsResponse.data.reward_value ?? 1),
+              },
+            })
+          }
+
           const referralsResponse = await supabase
             .from('referrals')
             .select('id, referrer_id, referred_email, referred_user_id, code, created_at, status')
@@ -215,7 +251,6 @@ export const useReferralStore = create<ReferralState>()(
             p_referred_email: referredEmail,
             p_referred_user_id: referredUserId,
             p_code: normalizedCode,
-            p_threshold: REFERRAL_REWARD_THRESHOLD,
           })
 
           if (error) {
@@ -255,13 +290,15 @@ export const useReferralStore = create<ReferralState>()(
         // Controleer of de reward-drempel bereikt is
         const totalConverted = get().referrals.filter((r) => r.referrerId === referrerId).length
 
-        if (totalConverted > 0 && totalConverted % REFERRAL_REWARD_THRESHOLD === 0) {
+        const threshold = Math.max(1, get().rewardConfig.threshold)
+
+        if (totalConverted > 0 && totalConverted % threshold === 0) {
           // Markeer de oudste onbeloonde batch als 'rewarded'
           set((state) => {
             const unrewarded = state.referrals
               .filter((r) => r.referrerId === referrerId && r.status === 'converted')
               .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-              .slice(0, REFERRAL_REWARD_THRESHOLD)
+              .slice(0, threshold)
             const rewardIds = new Set(unrewarded.map((r) => r.id))
             return {
               referrals: state.referrals.map((r) =>

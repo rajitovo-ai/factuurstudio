@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { REFERRAL_REWARD_THRESHOLD } from '../lib/referral'
+import { getReferralRewardLabel } from '../lib/referral'
 import { useAuthStore } from '../stores/authStore'
 import type { Referral } from '../stores/referralStore'
 import { useReferralStore } from '../stores/referralStore'
@@ -37,6 +37,7 @@ export default function ReferralPage() {
     getCode,
     getUserReferrals,
     getDevSimulatedConversions,
+    getRewardConfig,
     addDevSimulatedConversions,
     resetDevSimulatedConversions,
     syncUserData,
@@ -55,15 +56,18 @@ export default function ReferralPage() {
   const code = getCode(userId)
   const referrals = getUserReferrals(userId)
   const simulatedConverted = getDevSimulatedConversions(userId)
+  const rewardConfig = getRewardConfig()
+  const rewardThreshold = Math.max(1, rewardConfig.threshold)
+  const rewardLabel = getReferralRewardLabel(rewardConfig)
   const baseUrl = window.location.origin
   const shareLink = `${baseUrl}/register?ref=${code}`
 
   const totalConvertedReal = referrals.filter((r) => r.status === 'converted' || r.status === 'rewarded').length
   const totalConverted = totalConvertedReal + simulatedConverted
-  const rewardsEarned = Math.floor(totalConverted / REFERRAL_REWARD_THRESHOLD)
-  const progressToNext = totalConverted % REFERRAL_REWARD_THRESHOLD
-  const progressPercent = Math.round((progressToNext / REFERRAL_REWARD_THRESHOLD) * 100)
-  const stillNeeded = REFERRAL_REWARD_THRESHOLD - progressToNext
+  const rewardsEarned = Math.floor(totalConverted / rewardThreshold)
+  const progressToNext = totalConverted % rewardThreshold
+  const progressPercent = Math.round((progressToNext / rewardThreshold) * 100)
+  const stillNeeded = rewardThreshold - progressToNext
 
   const copyLink = async () => {
     try {
@@ -83,8 +87,8 @@ export default function ReferralPage() {
         <h1 className="mt-2 text-2xl font-extrabold">Vrienden uitnodigen</h1>
         <p className="mt-2 text-sm text-slate-600">
           Deel je persoonlijke uitnodigingslink. Voor elke{' '}
-          <strong>{REFERRAL_REWARD_THRESHOLD} vrienden</strong> die zich via jouw link registreren, ontvang
-          jij automatisch <strong>1 maand Pro gratis</strong> — zonder dat je iets hoeft te doen.
+          <strong>{rewardThreshold} vrienden</strong> die zich via jouw link registreren, ontvang
+          jij automatisch <strong>{rewardLabel}</strong>.
         </p>
       </section>
 
@@ -107,10 +111,10 @@ export default function ReferralPage() {
             </button>
             <button
               type="button"
-              onClick={() => addDevSimulatedConversions(userId, REFERRAL_REWARD_THRESHOLD)}
+              onClick={() => addDevSimulatedConversions(userId, rewardThreshold)}
               className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
             >
-              +{REFERRAL_REWARD_THRESHOLD} conversies
+              +{rewardThreshold} conversies
             </button>
             <button
               type="button"
@@ -174,7 +178,7 @@ export default function ReferralPage() {
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Beloningen verdiend</p>
           <p className="mt-2 text-3xl font-extrabold text-cyan-700">{rewardsEarned}</p>
-          <p className="mt-1 text-xs text-slate-400">gratis Pro-maanden</p>
+          <p className="mt-1 text-xs text-slate-400">beloningen</p>
         </article>
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Volgende beloning</p>
@@ -191,7 +195,7 @@ export default function ReferralPage() {
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-slate-700">Voortgang naar volgende beloning</p>
           <p className="text-sm font-semibold text-cyan-700">
-            {progressToNext}/{REFERRAL_REWARD_THRESHOLD}
+            {progressToNext}/{rewardThreshold}
           </p>
         </div>
         <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-100">
@@ -200,12 +204,12 @@ export default function ReferralPage() {
             style={{ width: `${progressPercent}%` }}
             role="progressbar"
             aria-valuenow={progressToNext}
-            aria-valuemax={REFERRAL_REWARD_THRESHOLD}
+            aria-valuemax={rewardThreshold}
           />
         </div>
         {rewardsEarned > 0 ? (
           <p className="mt-2 text-xs text-cyan-700">
-            🎉 Je hebt al {rewardsEarned}× een gratis Pro-maand verdiend!
+            🎉 Je hebt al {rewardsEarned}× een beloning verdiend ({rewardLabel}).
           </p>
         ) : (
           <p className="mt-2 text-xs text-slate-500">
@@ -249,8 +253,7 @@ export default function ReferralPage() {
             <div>
               <p className="font-semibold text-slate-800">Jij ontvangt je beloning</p>
               <p className="mt-0.5 text-sm text-slate-600">
-                Per {REFERRAL_REWARD_THRESHOLD} succesvolle registraties ontvang je automatisch 1 maand Pro
-                gratis — je hoeft niks te doen.
+                Per {rewardThreshold} succesvolle registraties ontvang je automatisch {rewardLabel}.
               </p>
             </div>
           </li>
