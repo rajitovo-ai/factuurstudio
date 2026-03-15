@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import InvoiceGenerator from '../components/invoice/InvoiceGenerator'
 import { useAuthStore } from '../stores/authStore'
 
+const isDev = import.meta.env.DEV
+
 export default function LandingPage() {
   const userId = useAuthStore((state) => state.userId)
 
@@ -28,6 +30,29 @@ export default function LandingPage() {
           </Link>
         </div>
       </nav>
+
+      {isDev ? (
+        <section className="mx-auto mt-4 w-full max-w-6xl rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 sm:px-6">
+          <p className="font-semibold">Referral testen (dev)</p>
+          <p className="mt-1 text-xs text-amber-700">
+            1) Log in met account A 2) open referralpagina en kopieer/open je link 3) registreer account B via die link.
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Link
+              to="/referral"
+              className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+            >
+              Naar referralpagina
+            </Link>
+            <Link
+              to="/login"
+              className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+            >
+              Inloggen
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       {/* Full generator in guest mode */}
       <InvoiceGenerator guestMode />

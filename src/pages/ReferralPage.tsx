@@ -119,6 +119,16 @@ export default function ReferralPage() {
             >
               Reset simulatie
             </button>
+            <button
+              type="button"
+              disabled={!code}
+              onClick={() => {
+                window.open(shareLink, '_blank', 'noopener,noreferrer')
+              }}
+              className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Open test-register tab
+            </button>
           </div>
         </section>
       ) : null}
