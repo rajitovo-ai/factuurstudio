@@ -9,7 +9,7 @@ export default function RegisterPage() {
   const [searchParams] = useSearchParams()
   const refCode = searchParams.get('ref')
   const { signUp, isLoading, isAuthenticated, isDemoMode, error, clearError } = useAuthStore()
-  const convertReferral = useReferralStore((state) => state.convertReferral)
+  const setPendingReferralCode = useReferralStore((state) => state.setPendingReferralCode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -34,15 +34,18 @@ export default function RegisterPage() {
       return
     }
 
+    if (refCode) {
+      setPendingReferralCode(refCode)
+    }
+
     const ok = await signUp(email, password)
     if (ok) {
-      if (refCode) {
-        const { userId: newUserId } = useAuthStore.getState()
-        if (newUserId) {
-          convertReferral(newUserId, email, refCode)
-        }
-      }
       navigate('/dashboard')
+      return
+    }
+
+    if (refCode) {
+      setPendingReferralCode(null)
     }
   }
 

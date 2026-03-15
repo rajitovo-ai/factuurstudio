@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { REFERRAL_REWARD_THRESHOLD } from '../lib/referral'
 import { useAuthStore } from '../stores/authStore'
 import type { Referral } from '../stores/referralStore'
@@ -31,8 +31,14 @@ const formatDate = (iso: string): string =>
 
 export default function ReferralPage() {
   const { userId } = useAuthStore()
-  const { getCode, getUserReferrals } = useReferralStore()
+  const { getCode, getUserReferrals, syncUserData, isSyncing } = useReferralStore()
   const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (userId) {
+      void syncUserData(userId)
+    }
+  }, [syncUserData, userId])
 
   if (!userId) return null
 
@@ -73,6 +79,9 @@ export default function ReferralPage() {
       {/* Jouw uitnodigingslink */}
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Jouw uitnodigingslink</p>
+        {isSyncing ? (
+          <p className="mt-2 text-xs text-slate-500">Gegevens synchroniseren...</p>
+        ) : null}
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           <input
             readOnly
@@ -84,9 +93,10 @@ export default function ReferralPage() {
           <button
             type="button"
             onClick={copyLink}
-            className="flex-shrink-0 rounded-lg bg-cyan-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
+            disabled={!code}
+            className="flex-shrink-0 rounded-lg bg-cyan-700 px-5 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:bg-cyan-300"
           >
-            {copied ? '✓ Gekopieerd!' : 'Kopieer link'}
+            {copied ? '✓ Gekopieerd!' : code ? 'Kopieer link' : 'Code laden...'}
           </button>
         </div>
         <p className="mt-2 text-xs text-slate-500">

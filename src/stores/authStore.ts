@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
+import { useBillingStore } from './billingStore'
+import { useReferralStore } from './referralStore'
 
 type DemoUser = {
   id: string
@@ -68,6 +70,17 @@ type AuthState = {
 
 let authListenerInitialized = false
 
+const syncPostAuthData = async (userId: string | null, email: string | null) => {
+  if (!userId) return
+
+  await Promise.all([
+    useBillingStore.getState().syncUserPlan(userId),
+    useReferralStore.getState().syncUserData(userId),
+  ])
+
+  await useReferralStore.getState().processPendingReferral(userId, email)
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   userId: null,
   email: null,
@@ -99,6 +112,10 @@ export const useAuthStore = create<AuthState>((set) => ({
           isLoading: false,
           isDemoMode: false,
         })
+
+        if (user?.id) {
+          void syncPostAuthData(user.id, user.email ?? null)
+        }
       })
       authListenerInitialized = true
     }
@@ -113,6 +130,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       isLoading: false,
       isDemoMode: false,
     })
+
+    if (user?.id) {
+      await syncPostAuthData(user.id, user.email ?? null)
+    }
   },
 
   signIn: async (email, password) => {
@@ -180,7 +201,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       return true
     }
 
-    const { error } = await supabase.auth.signUp({ email, password })
+    const { data, error } = await supabase.auth.signUp({ email, password })
 
     if (error) {
       set({ isLoading: false, error: error.message })
@@ -188,6 +209,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
 
     set({ isLoading: false, error: null })
+
+    if (data.user?.id) {
+      await syncPostAuthData(data.user.id, data.user.email ?? email)
+    }
+
     return true
   },
 

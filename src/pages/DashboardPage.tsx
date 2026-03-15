@@ -96,7 +96,11 @@ export default function DashboardPage() {
           <div className="mt-3 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={() => userId && setUserPlan(userId, 'free')}
+              onClick={() => {
+                if (userId) {
+                  void setUserPlan(userId, 'free')
+                }
+              }}
               className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
                 planId === 'free'
                   ? 'border-amber-400 bg-amber-400 text-white'
@@ -107,7 +111,11 @@ export default function DashboardPage() {
             </button>
             <button
               type="button"
-              onClick={() => userId && setUserPlan(userId, 'pro')}
+              onClick={() => {
+                if (userId) {
+                  void setUserPlan(userId, 'pro')
+                }
+              }}
               className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
                 planId === 'pro'
                   ? 'border-cyan-600 bg-cyan-600 text-white'
