@@ -224,11 +224,31 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     if (data.session?.user?.id) {
       await syncPostAuthData(data.session.user.id, data.session.user.email ?? email)
+      return {
+        ok: true,
+        requiresEmailConfirmation: false,
+      }
+    }
+
+    // Some Supabase auth configurations still return no session immediately
+    // even when email confirmation is disabled. Try a direct login first.
+    const signInResult = await supabase.auth.signInWithPassword({ email, password })
+
+    if (!signInResult.error) {
+      const signedInUser = signInResult.data.user
+      if (signedInUser?.id) {
+        await syncPostAuthData(signedInUser.id, signedInUser.email ?? email)
+      }
+
+      return {
+        ok: true,
+        requiresEmailConfirmation: false,
+      }
     }
 
     return {
       ok: true,
-      requiresEmailConfirmation: !data.session,
+      requiresEmailConfirmation: true,
     }
   },
 
