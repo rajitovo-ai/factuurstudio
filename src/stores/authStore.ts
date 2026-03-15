@@ -9,6 +9,11 @@ type DemoUser = {
   password: string
 }
 
+type SignUpResult = {
+  ok: boolean
+  requiresEmailConfirmation: boolean
+}
+
 const DEMO_USERS_KEY = 'factuurstudio.demo.users'
 const DEMO_SESSION_KEY = 'factuurstudio.demo.session'
 
@@ -63,7 +68,7 @@ type AuthState = {
   error: string | null
   init: () => Promise<void>
   signIn: (email: string, password: string) => Promise<boolean>
-  signUp: (email: string, password: string) => Promise<boolean>
+  signUp: (email: string, password: string) => Promise<SignUpResult>
   signOut: () => Promise<void>
   clearError: () => void
 }
@@ -179,7 +184,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       if (existingUser) {
         set({ isLoading: false, error: 'Er bestaat al een lokaal demo-account met dit e-mailadres.' })
-        return false
+        return { ok: false, requiresEmailConfirmation: false }
       }
 
       const newUser = {
@@ -198,23 +203,33 @@ export const useAuthStore = create<AuthState>((set) => ({
         isDemoMode: true,
         error: null,
       })
-      return true
+      return { ok: true, requiresEmailConfirmation: false }
     }
 
-    const { data, error } = await supabase.auth.signUp({ email, password })
+    const emailRedirectTo = typeof window === 'undefined' ? undefined : `${window.location.origin}/dashboard`
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo,
+      },
+    })
 
     if (error) {
       set({ isLoading: false, error: error.message })
-      return false
+      return { ok: false, requiresEmailConfirmation: false }
     }
 
     set({ isLoading: false, error: null })
 
-    if (data.user?.id) {
-      await syncPostAuthData(data.user.id, data.user.email ?? email)
+    if (data.session?.user?.id) {
+      await syncPostAuthData(data.session.user.id, data.session.user.email ?? email)
     }
 
-    return true
+    return {
+      ok: true,
+      requiresEmailConfirmation: !data.session,
+    }
   },
 
   signOut: async () => {

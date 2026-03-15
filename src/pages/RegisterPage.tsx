@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [localError, setLocalError] = useState<string | null>(null)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />
@@ -38,8 +39,15 @@ export default function RegisterPage() {
       setPendingReferralCode(refCode)
     }
 
-    const ok = await signUp(email, password)
-    if (ok) {
+    const result = await signUp(email, password)
+    if (result.ok && result.requiresEmailConfirmation) {
+      setSuccessMessage('Je account is aangemaakt. Controleer je e-mail en bevestig je account om in te loggen.')
+      setPassword('')
+      setConfirmPassword('')
+      return
+    }
+
+    if (result.ok) {
       navigate('/dashboard')
       return
     }
@@ -101,6 +109,7 @@ export default function RegisterPage() {
         </div>
 
         {localError ? <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{localError}</p> : null}
+        {successMessage ? <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{successMessage}</p> : null}
         {error ? <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p> : null}
 
         <button
