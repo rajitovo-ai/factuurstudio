@@ -3,6 +3,8 @@ import { useAuthStore } from '../stores/authStore'
 import { useBillingStore } from '../stores/billingStore'
 import { getInvoiceDisplayStatus, useInvoiceStore } from '../stores/invoiceStore'
 
+const isDev = import.meta.env.DEV
+
 const statCardClass =
   'rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow'
 
@@ -16,6 +18,7 @@ export default function DashboardPage() {
   const { isDemoMode, userId } = useAuthStore()
   const invoices = useInvoiceStore((state) => state.invoices)
   const planId = useBillingStore((state) => state.getUserPlan(userId))
+  const setUserPlan = useBillingStore((state) => state.setUserPlan)
 
   const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
   const openAmount = userInvoices
@@ -75,7 +78,47 @@ export default function DashboardPage() {
             />
           </div>
         ) : null}
+        {planId === 'free' ? (
+          <p className="mt-3 text-xs text-slate-500">
+            Upgrade naar{' '}
+            <a href="/instellingen" className="font-semibold text-cyan-700 hover:underline">
+              Pro
+            </a>{' '}
+            voor onbeperkte facturen en extra functies.
+          </p>
+        ) : null}
       </section>
+
+      {isDev ? (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">🛠 Dev tools</p>
+          <p className="mt-1 text-xs text-amber-600">Alleen zichtbaar tijdens ontwikkeling (import.meta.env.DEV)</p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => userId && setUserPlan(userId, 'free')}
+              className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+                planId === 'free'
+                  ? 'border-amber-400 bg-amber-400 text-white'
+                  : 'border-amber-300 text-amber-700 hover:bg-amber-100'
+              }`}
+            >
+              Free
+            </button>
+            <button
+              type="button"
+              onClick={() => userId && setUserPlan(userId, 'pro')}
+              className={`rounded-lg border px-4 py-2 text-sm font-semibold transition ${
+                planId === 'pro'
+                  ? 'border-cyan-600 bg-cyan-600 text-white'
+                  : 'border-cyan-300 text-cyan-700 hover:bg-cyan-50'
+              }`}
+            >
+              Pro
+            </button>
+          </div>
+        </section>
+      ) : null}
     </main>
   )
 }

@@ -8,6 +8,7 @@ import InvoiceEditPage from './pages/InvoiceEditPage'
 import InvoicesPage from './pages/InvoicesPage'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
+import ReferralPage from './pages/ReferralPage'
 import RegisterPage from './pages/RegisterPage'
 import SettingsPage from './pages/SettingsPage'
 import { useAuthStore } from './stores/authStore'
@@ -31,6 +32,7 @@ function App() {
           <Route path="/facturen" element={<InvoicesPage />} />
           <Route path="/facturen/nieuw" element={<InvoiceCreatePage />} />
           <Route path="/facturen/:id/bewerken" element={<InvoiceEditPage />} />
+          <Route path="/referral" element={<ReferralPage />} />
           <Route path="/instellingen" element={<SettingsPage />} />
         </Route>
       </Route>

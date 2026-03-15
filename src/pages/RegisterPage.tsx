@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
+import { useReferralStore } from '../stores/referralStore'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const refCode = searchParams.get('ref')
   const { signUp, isLoading, isAuthenticated, isDemoMode, error, clearError } = useAuthStore()
+  const convertReferral = useReferralStore((state) => state.convertReferral)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -32,6 +36,12 @@ export default function RegisterPage() {
 
     const ok = await signUp(email, password)
     if (ok) {
+      if (refCode) {
+        const { userId: newUserId } = useAuthStore.getState()
+        if (newUserId) {
+          convertReferral(newUserId, email, refCode)
+        }
+      }
       navigate('/dashboard')
     }
   }
@@ -41,7 +51,12 @@ export default function RegisterPage() {
       <form onSubmit={onSubmit} className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">FactuurStudio</p>
         <h1 className="mt-2 text-3xl font-extrabold">Registreren</h1>
-        <p className="mt-2 text-sm text-slate-600">Maak een account voor je factuurdashboard.</p>
+        <p className="mt-2 text-sm text-slate-600">
+          Maak een account voor je factuurdashboard.
+          {refCode ? (
+            <span className="ml-1 font-semibold text-cyan-700">Je wordt uitgenodigd via een referral-link.</span>
+          ) : null}
+        </p>
 
         {isDemoMode ? (
           <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
