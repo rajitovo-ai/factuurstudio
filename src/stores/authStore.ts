@@ -69,6 +69,8 @@ type AuthState = {
   init: () => Promise<void>
   signIn: (email: string, password: string) => Promise<boolean>
   signUp: (email: string, password: string) => Promise<SignUpResult>
+  requestPasswordReset: (email: string) => Promise<boolean>
+  updatePassword: (newPassword: string) => Promise<boolean>
   signOut: () => Promise<void>
   clearError: () => void
 }
@@ -250,6 +252,47 @@ export const useAuthStore = create<AuthState>((set) => ({
       ok: true,
       requiresEmailConfirmation: true,
     }
+  },
+
+  requestPasswordReset: async (email) => {
+    set({ isLoading: true, error: null })
+
+    if (!hasSupabaseConfig) {
+      set({ isLoading: false, error: 'Wachtwoord reset is alleen beschikbaar met Supabase-auth.' })
+      return false
+    }
+
+    const redirectTo = typeof window === 'undefined' ? undefined : `${window.location.origin}/reset-wachtwoord`
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    })
+
+    if (error) {
+      set({ isLoading: false, error: error.message })
+      return false
+    }
+
+    set({ isLoading: false, error: null })
+    return true
+  },
+
+  updatePassword: async (newPassword) => {
+    set({ isLoading: true, error: null })
+
+    if (!hasSupabaseConfig) {
+      set({ isLoading: false, error: 'Wachtwoord wijzigen is alleen beschikbaar met Supabase-auth.' })
+      return false
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword })
+
+    if (error) {
+      set({ isLoading: false, error: error.message })
+      return false
+    }
+
+    set({ isLoading: false, error: null })
+    return true
   },
 
   signOut: async () => {

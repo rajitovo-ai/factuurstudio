@@ -1,12 +1,25 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
+import { PLAN_CONFIGS } from '../lib/billing'
 import { useAuthStore } from '../stores/authStore'
+import { useBillingStore } from '../stores/billingStore'
 import { defaultCompanyProfile, useProfileStore } from '../stores/profileStore'
+
+const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS ?? '')
+  .split(',')
+  .map((value: string) => value.trim().toLowerCase())
+  .filter(Boolean)
 
 export default function SettingsPage() {
   const userId = useAuthStore((state) => state.userId)
+  const email = useAuthStore((state) => state.email)
   const profiles = useProfileStore((state) => state.profiles)
+  const loadProfile = useProfileStore((state) => state.loadProfile)
   const upsertProfile = useProfileStore((state) => state.upsertProfile)
+  const profileError = useProfileStore((state) => state.error)
+  const planId = useBillingStore((state) => state.getUserPlan(userId))
+  const setUserPlan = useBillingStore((state) => state.setUserPlan)
+  const [planMessage, setPlanMessage] = useState<string | null>(null)
 
   const profile = useMemo(() => {
     if (!userId) return defaultCompanyProfile
@@ -21,9 +34,25 @@ export default function SettingsPage() {
   const [logoDataUrl, setLogoDataUrl] = useState<string | null>(profile.logoDataUrl)
   const [savedMessage, setSavedMessage] = useState<string | null>(null)
   const [logoWarning, setLogoWarning] = useState<string | null>(null)
+  useEffect(() => {
+    if (userId) {
+      void loadProfile(userId)
+    }
+  }, [loadProfile, userId])
+
+  useEffect(() => {
+    setCompanyName(profile.companyName)
+    setAddress(profile.address)
+    setKvkNumber(profile.kvkNumber)
+    setBtwNumber(profile.btwNumber)
+    setIban(profile.iban)
+    setLogoDataUrl(profile.logoDataUrl)
+  }, [profile])
+
 
   const MAX_LOGO_WIDTH = 400
   const MAX_LOGO_HEIGHT = 200
+  const isAdminUser = !!email && adminEmails.includes(email.toLowerCase())
 
   const onLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -67,12 +96,12 @@ export default function SettingsPage() {
     reader.readAsDataURL(file)
   }
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     if (!userId) return
 
-    upsertProfile(userId, {
+    const ok = await upsertProfile(userId, {
       companyName,
       address,
       kvkNumber,
@@ -81,8 +110,19 @@ export default function SettingsPage() {
       logoDataUrl,
     })
 
+    if (!ok) {
+      return
+    }
+
     setSavedMessage('Instellingen opgeslagen.')
     setTimeout(() => setSavedMessage(null), 3000)
+  }
+
+  const setPlan = async (nextPlan: 'free' | 'pro') => {
+    if (!userId) return
+    await setUserPlan(userId, nextPlan)
+    setPlanMessage(`Plan bijgewerkt naar ${PLAN_CONFIGS[nextPlan].name}.`)
+    setTimeout(() => setPlanMessage(null), 2500)
   }
 
   return (
@@ -90,9 +130,15 @@ export default function SettingsPage() {
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Instellingen</p>
       <h1 className="mt-2 text-2xl font-extrabold">Bedrijfsprofiel</h1>
       <p className="mt-2 text-sm text-slate-600">
-        Deze gegevens worden gebruikt in je factuur en PDF. Logo wordt lokaal opgeslagen in je browser.
+        Deze gegevens worden gebruikt in je factuur en PDF en worden veilig opgeslagen in je account.
         Toegestane formaten: PNG, JPEG, WebP — max 5 MB. Grote afbeeldingen worden automatisch verkleind naar max 400×200 px.
       </p>
+
+      {profileError ? (
+        <p className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {profileError}
+        </p>
+      ) : null}
 
       <form onSubmit={onSubmit} className="mt-6 grid gap-4 md:grid-cols-2">
         <label className="flex flex-col gap-1 md:col-span-2">
@@ -174,6 +220,43 @@ export default function SettingsPage() {
           {savedMessage ? <p className="text-sm text-emerald-700">{savedMessage}</p> : null}
         </div>
       </form>
+
+      <section className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Planbeheer</p>
+        <h2 className="mt-2 text-xl font-extrabold">Huidig plan: {PLAN_CONFIGS[planId].name}</h2>
+        <p className="mt-2 text-sm text-slate-600">
+          Beperkingen en functies worden direct op basis van dit plan toegepast.
+        </p>
+
+        {isAdminUser ? (
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                void setPlan('free')
+              }}
+              className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
+            >
+              Zet plan op Free
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                void setPlan('pro')
+              }}
+              className="rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-semibold text-cyan-700 hover:bg-cyan-50"
+            >
+              Zet plan op Pro
+            </button>
+          </div>
+        ) : (
+          <p className="mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
+            Alleen beheerders kunnen handmatig plannen wijzigen.
+          </p>
+        )}
+
+        {planMessage ? <p className="mt-3 text-sm text-emerald-700">{planMessage}</p> : null}
+      </section>
     </main>
   )
 }

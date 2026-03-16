@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { downloadInvoicePdf } from '../lib/pdf'
 import { useAuthStore } from '../stores/authStore'
@@ -19,9 +20,18 @@ const statusClassName: Record<string, string> = {
 export default function InvoicesPage() {
   const userId = useAuthStore((state) => state.userId)
   const invoices = useInvoiceStore((state) => state.invoices)
+  const isLoading = useInvoiceStore((state) => state.isLoading)
+  const storeError = useInvoiceStore((state) => state.error)
+  const loadInvoices = useInvoiceStore((state) => state.loadInvoices)
   const markInvoiceSent = useInvoiceStore((state) => state.markInvoiceSent)
   const markInvoicePaid = useInvoiceStore((state) => state.markInvoicePaid)
   const removeInvoice = useInvoiceStore((state) => state.removeInvoice)
+
+  useEffect(() => {
+    if (userId) {
+      void loadInvoices(userId)
+    }
+  }, [loadInvoices, userId])
 
   const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
 
@@ -33,7 +43,7 @@ export default function InvoicesPage() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Factuurbeheer</p>
             <h1 className="mt-2 text-2xl font-extrabold">Alle facturen</h1>
             <p className="mt-2 text-sm text-slate-600">
-              Lokale testflow: concept opstellen, verzenden, PDF downloaden en daarna als betaald markeren.
+              Concept opstellen, verzenden, PDF downloaden en daarna als betaald markeren.
             </p>
           </div>
           <Link
@@ -88,9 +98,9 @@ export default function InvoicesPage() {
                           <div className="flex justify-end gap-2 flex-wrap">
                             {canEdit ? <Link to={`/facturen/${invoice.id}/bewerken`} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Bewerken</Link> : null}
                             <button type="button" onClick={() => downloadInvoicePdf(invoice)} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF</button>
-                            <button type="button" onClick={() => markInvoiceSent(invoice.id)} disabled={!canSend} className="rounded-lg border border-cyan-200 px-3 py-2 text-xs font-semibold text-cyan-700 hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-50">Verzonden</button>
-                            <button type="button" onClick={() => markInvoicePaid(invoice.id)} disabled={!canMarkPaid} className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50">Betaald</button>
-                            <button type="button" onClick={() => removeInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50">Verwijder</button>
+                            <button type="button" onClick={() => void markInvoiceSent(invoice.id)} disabled={!canSend} className="rounded-lg border border-cyan-200 px-3 py-2 text-xs font-semibold text-cyan-700 hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-50">Verzonden</button>
+                            <button type="button" onClick={() => void markInvoicePaid(invoice.id)} disabled={!canMarkPaid} className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50">Betaald</button>
+                            <button type="button" onClick={() => void removeInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50">Verwijder</button>
                           </div>
                         </td>
                       </tr>
@@ -124,9 +134,9 @@ export default function InvoicesPage() {
                     <div className="mt-3 flex flex-wrap gap-2">
                       {canEdit ? <Link to={`/facturen/${invoice.id}/bewerken`} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700">Bewerken</Link> : null}
                       <button type="button" onClick={() => downloadInvoicePdf(invoice)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700">PDF</button>
-                      <button type="button" onClick={() => markInvoiceSent(invoice.id)} disabled={!canSend} className="rounded-lg border border-cyan-200 px-3 py-1.5 text-xs font-semibold text-cyan-700 disabled:opacity-40">Verzonden</button>
-                      <button type="button" onClick={() => markInvoicePaid(invoice.id)} disabled={!canMarkPaid} className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 disabled:opacity-40">Betaald</button>
-                      <button type="button" onClick={() => removeInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:opacity-40">Verwijder</button>
+                      <button type="button" onClick={() => void markInvoiceSent(invoice.id)} disabled={!canSend} className="rounded-lg border border-cyan-200 px-3 py-1.5 text-xs font-semibold text-cyan-700 disabled:opacity-40">Verzonden</button>
+                      <button type="button" onClick={() => void markInvoicePaid(invoice.id)} disabled={!canMarkPaid} className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 disabled:opacity-40">Betaald</button>
+                      <button type="button" onClick={() => void removeInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:opacity-40">Verwijder</button>
                     </div>
                   </div>
                 )
@@ -134,6 +144,9 @@ export default function InvoicesPage() {
             </div>
           </>
         )}
+
+        {isLoading ? <p className="mt-4 text-sm text-slate-500">Facturen laden...</p> : null}
+        {storeError ? <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{storeError}</p> : null}
       </section>
     </main>
   )

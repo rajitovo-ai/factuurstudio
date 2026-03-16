@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { canCreateInvoiceThisMonth, PLAN_CONFIGS } from '../../lib/billing'
 import { downloadInvoicePdf } from '../../lib/pdf'
@@ -52,8 +52,10 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const invoices = useInvoiceStore((state) => state.invoices)
   const createInvoice = useInvoiceStore((state) => state.createInvoice)
   const updateInvoice = useInvoiceStore((state) => state.updateInvoice)
+  const loadInvoices = useInvoiceStore((state) => state.loadInvoices)
   const planId = useBillingStore((state) => state.getUserPlan(userId))
   const profiles = useProfileStore((state) => state.profiles)
+  const loadProfile = useProfileStore((state) => state.loadProfile)
   const profile = userId ? profiles[userId] ?? defaultCompanyProfile : defaultCompanyProfile
   const [invoiceNumber, setInvoiceNumber] = useState(() =>
     editInvoice ? editInvoice.invoiceNumber : getNextInvoiceNumber(invoices, userId),
@@ -70,7 +72,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const [companyName, setCompanyName] = useState(
     editInvoice ? editInvoice.companyName : profile.companyName,
   )
-  const [companyLogoDataUrl] = useState<string | null>(
+  const [companyLogoDataUrl, setCompanyLogoDataUrl] = useState<string | null>(
     editInvoice ? (editInvoice.logoDataUrl ?? null) : profile.logoDataUrl,
   )
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -80,6 +82,24 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       ? editInvoice.lines
       : [{ id: 1, description: 'Webdesign en ontwikkeling', quantity: 1, unitPrice: 750, vatRate: 21 }],
   )
+
+  useEffect(() => {
+    if (!guestMode && userId) {
+      void loadProfile(userId)
+    }
+  }, [guestMode, loadProfile, userId])
+
+  useEffect(() => {
+    if (editInvoice || guestMode) return
+
+    if (!companyName && profile.companyName) {
+      setCompanyName(profile.companyName)
+    }
+
+    if (!companyLogoDataUrl && profile.logoDataUrl) {
+      setCompanyLogoDataUrl(profile.logoDataUrl)
+    }
+  }, [companyLogoDataUrl, companyName, editInvoice, guestMode, profile.companyName, profile.logoDataUrl])
 
   const totals = useMemo(() => {
     const subtotal = lines.reduce((sum, line) => {
@@ -143,7 +163,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     setLines((current) => (current.length > 1 ? current.filter((line) => line.id !== id) : current))
   }
 
-  const saveInvoice = () => {
+  const saveInvoice = async () => {
     setSaveError(null)
 
     if (guestMode) {
@@ -204,7 +224,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     const savedLines = lines.map((line) => ({ ...line, vatRate: noVat ? 0 : line.vatRate }))
 
     if (editInvoice) {
-      updateInvoice(editInvoice.id, {
+      const ok = await updateInvoice(editInvoice.id, {
         invoiceNumber,
         companyName,
         logoDataUrl: companyLogoDataUrl,
@@ -219,6 +239,11 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         total: totals.total,
         lines: savedLines,
       })
+
+      if (!ok) {
+        setSaveError('Opslaan van wijzigingen is mislukt. Probeer opnieuw.')
+        return
+      }
     } else {
       const quota = canCreateInvoiceThisMonth(planId, invoices, userId)
       if (!quota.allowed) {
@@ -228,7 +253,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         return
       }
 
-      createInvoice({
+      const ok = await createInvoice({
         userId,
         invoiceNumber,
         companyName,
@@ -245,7 +270,14 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         status: 'concept',
         lines: savedLines,
       })
-      setInvoiceNumber(getNextInvoiceNumber(invoices, userId))
+
+      if (!ok) {
+        setSaveError('Factuur opslaan is mislukt. Probeer opnieuw.')
+        return
+      }
+
+      await loadInvoices(userId, true)
+      setInvoiceNumber(getNextInvoiceNumber(useInvoiceStore.getState().invoices, userId))
     }
 
     navigate('/facturen')
@@ -294,7 +326,9 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
             <div className="mt-4 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={saveInvoice}
+                  onClick={() => {
+                    void saveInvoice()
+                  }}
                 className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
               >
                 {guestMode ? 'PDF downloaden (1× gratis)' : editInvoice ? 'Wijzigingen opslaan' : 'Factuur opslaan'}
