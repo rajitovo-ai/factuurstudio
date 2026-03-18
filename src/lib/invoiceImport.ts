@@ -45,6 +45,12 @@ type ExtractInvoiceOptions = {
   maxOcrPages?: number
 }
 
+const OCR_PRIMARY_TIMEOUT_MS = 90000
+const OCR_RETRY_TIMEOUT_MS = 45000
+const OCR_TOTAL_TIMEOUT_MS = 180000
+const OCR_PRIMARY_SCALE = 2
+const OCR_RETRY_SCALE = 2.6
+
 const withTimeout = async <T>(
   promise: Promise<T>,
   timeoutMs: number,
@@ -248,43 +254,165 @@ const extractTextFromPdf = async (file: File) => {
 
 type PdfDocument = Awaited<ReturnType<PdfJsModule['getDocument']>['promise']>
 
+type OcrWorker = {
+  recognize: (image: string) => Promise<{ data: { text?: string } }>
+  setParameters?: (params: Record<string, string>) => Promise<void>
+  terminate: () => Promise<void>
+}
+
+const renderPageToCanvas = async (pdf: PdfDocument, pageNumber: number, scale: number) => {
+  const page = await pdf.getPage(pageNumber)
+  const viewport = page.getViewport({ scale })
+
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.ceil(viewport.width)
+  canvas.height = Math.ceil(viewport.height)
+  const context = canvas.getContext('2d')
+  if (!context) {
+    throw new Error('canvas context niet beschikbaar')
+  }
+
+  await page.render({ canvas, canvasContext: context, viewport }).promise
+  return canvas
+}
+
+const preprocessCanvasForOcr = (sourceCanvas: HTMLCanvasElement) => {
+  const canvas = document.createElement('canvas')
+  canvas.width = sourceCanvas.width
+  canvas.height = sourceCanvas.height
+  const context = canvas.getContext('2d')
+  if (!context) {
+    throw new Error('canvas context niet beschikbaar voor OCR preprocessing')
+  }
+
+  context.drawImage(sourceCanvas, 0, 0)
+  const image = context.getImageData(0, 0, canvas.width, canvas.height)
+  const { data } = image
+
+  let luminanceSum = 0
+  const luminanceValues: number[] = []
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i]
+    const g = data[i + 1]
+    const b = data[i + 2]
+    const luminance = Math.round(0.299 * r + 0.587 * g + 0.114 * b)
+    luminanceValues.push(luminance)
+    luminanceSum += luminance
+  }
+
+  const avg = luminanceValues.length > 0 ? luminanceSum / luminanceValues.length : 128
+  const threshold = Math.max(95, Math.min(180, avg * 0.95))
+
+  let pixelIndex = 0
+  for (let i = 0; i < data.length; i += 4) {
+    const lum = luminanceValues[pixelIndex]
+    const normalized = lum < threshold ? 0 : 255
+    data[i] = normalized
+    data[i + 1] = normalized
+    data[i + 2] = normalized
+    data[i + 3] = 255
+    pixelIndex += 1
+  }
+
+  context.putImageData(image, 0, 0)
+  return canvas
+}
+
+const scoreOcrText = (text: string) => {
+  const compact = text.replace(/\s+/g, ' ').trim()
+  if (!compact) return 0
+
+  const tokenCount = compact.split(' ').length
+  const keywordHits =
+    (/(factuur|invoice)/i.test(compact) ? 1 : 0) +
+    (/(totaal|total)/i.test(compact) ? 1 : 0) +
+    (/(btw|vat)/i.test(compact) ? 1 : 0) +
+    (/(datum|date)/i.test(compact) ? 1 : 0)
+
+  return compact.length + tokenCount * 5 + keywordHits * 120
+}
+
+const runOcrPass = async (worker: OcrWorker, image: string, timeoutMs: number, timeoutMessage: string) => {
+  const result = await withTimeout(worker.recognize(image), timeoutMs, timeoutMessage)
+  return result.data.text?.trim() ?? ''
+}
+
+const runOcrWithRetry = async (
+  worker: OcrWorker,
+  pdf: PdfDocument,
+  pageNumber: number,
+) => {
+  const primaryCanvas = await renderPageToCanvas(pdf, pageNumber, OCR_PRIMARY_SCALE)
+  const primaryImage = primaryCanvas.toDataURL('image/png')
+
+  const primaryText = await runOcrPass(
+    worker,
+    primaryImage,
+    OCR_PRIMARY_TIMEOUT_MS,
+    `OCR timeout op pagina ${pageNumber}.`,
+  )
+
+  const retryCanvas = await renderPageToCanvas(pdf, pageNumber, OCR_RETRY_SCALE)
+  const processedRetryCanvas = preprocessCanvasForOcr(retryCanvas)
+  const retryImage = processedRetryCanvas.toDataURL('image/png')
+  const retryText = await runOcrPass(
+    worker,
+    retryImage,
+    OCR_RETRY_TIMEOUT_MS,
+    `OCR retry timeout op pagina ${pageNumber}.`,
+  )
+
+  const primaryScore = scoreOcrText(primaryText)
+  const retryScore = scoreOcrText(retryText)
+
+  if (retryScore > primaryScore) {
+    return {
+      text: retryText,
+      warning: `OCR preprocessing verbeterde resultaat op pagina ${pageNumber}.`,
+    }
+  }
+
+  return {
+    text: primaryText,
+    warning: '',
+  }
+}
+
 const runOcrFallback = async (pdf: PdfDocument, maxPages: number) => {
-  const { recognize } = await import('tesseract.js')
+  const tesseract = await import('tesseract.js')
+  const createWorker = (tesseract as unknown as { createWorker: (langs?: string) => Promise<OcrWorker> })
+    .createWorker
+
+  const worker = await createWorker('eng+ndl')
+  await worker.setParameters?.({
+    preserve_interword_spaces: '1',
+    user_defined_dpi: '300',
+  })
+
   const pageCount = Math.min(maxPages, pdf.numPages)
   const ocrParts: string[] = []
   const warnings: string[] = []
 
-  for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
-    try {
-      const page = await pdf.getPage(pageNumber)
-      const viewport = page.getViewport({ scale: 2 })
+  try {
+    for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
+      try {
+        const result = await runOcrWithRetry(worker, pdf, pageNumber)
+        if (result.warning) {
+          warnings.push(result.warning)
+        }
 
-      const canvas = document.createElement('canvas')
-      canvas.width = Math.ceil(viewport.width)
-      canvas.height = Math.ceil(viewport.height)
-      const context = canvas.getContext('2d')
-      if (!context) {
-        warnings.push(`OCR overgeslagen voor pagina ${pageNumber}: canvas context niet beschikbaar.`)
-        continue
+        const text = result.text
+        if (text) {
+          ocrParts.push(text)
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Onbekende OCR-fout.'
+        warnings.push(`OCR probleem op pagina ${pageNumber}: ${message}`)
       }
-
-      await page.render({ canvas, canvasContext: context, viewport }).promise
-      const dataUrl = canvas.toDataURL('image/png')
-
-      const result = await withTimeout(
-        recognize(dataUrl, 'eng+ndl'),
-        25000,
-        `OCR timeout op pagina ${pageNumber}.`,
-      )
-
-      const text = result.data.text?.trim()
-      if (text) {
-        ocrParts.push(text)
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Onbekende OCR-fout.'
-      warnings.push(`OCR probleem op pagina ${pageNumber}: ${message}`)
     }
+  } finally {
+    await worker.terminate()
   }
 
   return {
@@ -308,7 +436,7 @@ export const extractInvoiceDataFromPdf = async (
     try {
       const ocrResult = await withTimeout(
         runOcrFallback(pdf, maxOcrPages),
-        60000,
+        OCR_TOTAL_TIMEOUT_MS,
         'OCR duurde te lang en is gestopt.',
       )
 
