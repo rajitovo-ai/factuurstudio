@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
+import CustomersPage from './pages/CustomersPage'
 import DashboardPage from './pages/DashboardPage'
 import InvoiceCreatePage from './pages/InvoiceCreatePage'
 import InvoiceEditPage from './pages/InvoiceEditPage'
@@ -45,6 +46,7 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/klanten" element={<CustomersPage />} />
           <Route path="/facturen" element={<InvoicesPage />} />
           <Route path="/facturen/nieuw" element={<InvoiceCreatePage />} />
           <Route path="/facturen/:id/bewerken" element={<InvoiceEditPage />} />

@@ -20,6 +20,19 @@ export type StoredInvoice = {
   logoDataUrl?: string | null
   clientName: string
   clientEmail: string
+  clientContactName: string
+  clientPhone: string
+  clientAddress: string
+  clientPostalCode: string
+  clientCity: string
+  clientCountry: string
+  clientKvkNumber: string
+  clientBtwNumber: string
+  clientIban: string
+  clientPaymentTermDays: number
+  clientNotes: string
+  invoiceDescription: string
+  hasDueDate: boolean
   issueDate: string
   dueDate: string
   currencyCode: string
@@ -43,6 +56,19 @@ type DbInvoiceRow = {
   logo_data_url: string | null
   client_name: string
   client_email: string
+  client_contact_name: string | null
+  client_phone: string | null
+  client_address: string | null
+  client_postal_code: string | null
+  client_city: string | null
+  client_country: string | null
+  client_kvk_number: string | null
+  client_btw_number: string | null
+  client_iban: string | null
+  client_payment_term_days: number | null
+  client_notes: string | null
+  invoice_description: string | null
+  has_due_date: boolean | null
   issue_date: string
   due_date: string
   currency_code: string
@@ -63,6 +89,19 @@ const toStoredInvoice = (row: DbInvoiceRow): StoredInvoice => ({
   logoDataUrl: row.logo_data_url,
   clientName: row.client_name,
   clientEmail: row.client_email,
+  clientContactName: row.client_contact_name ?? '',
+  clientPhone: row.client_phone ?? '',
+  clientAddress: row.client_address ?? '',
+  clientPostalCode: row.client_postal_code ?? '',
+  clientCity: row.client_city ?? '',
+  clientCountry: row.client_country ?? 'NL',
+  clientKvkNumber: row.client_kvk_number ?? '',
+  clientBtwNumber: row.client_btw_number ?? '',
+  clientIban: row.client_iban ?? '',
+  clientPaymentTermDays: row.client_payment_term_days ?? 14,
+  clientNotes: row.client_notes ?? '',
+  invoiceDescription: row.invoice_description ?? '',
+  hasDueDate: row.has_due_date ?? true,
   issueDate: row.issue_date,
   dueDate: row.due_date,
   currencyCode: row.currency_code,
@@ -98,9 +137,11 @@ export const getInvoiceDisplayStatus = (invoice: StoredInvoice): InvoiceStatus =
     return 'betaald'
   }
 
-  const today = new Date().toISOString().slice(0, 10)
-  if (invoice.dueDate < today) {
-    return 'vervallen'
+  if (invoice.hasDueDate) {
+    const today = new Date().toISOString().slice(0, 10)
+    if (invoice.dueDate < today) {
+      return 'vervallen'
+    }
   }
 
   return 'verzonden'
@@ -156,6 +197,19 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       logo_data_url: invoice.logoDataUrl ?? null,
       client_name: invoice.clientName,
       client_email: invoice.clientEmail,
+      client_contact_name: invoice.clientContactName,
+      client_phone: invoice.clientPhone,
+      client_address: invoice.clientAddress,
+      client_postal_code: invoice.clientPostalCode,
+      client_city: invoice.clientCity,
+      client_country: invoice.clientCountry,
+      client_kvk_number: invoice.clientKvkNumber,
+      client_btw_number: invoice.clientBtwNumber,
+      client_iban: invoice.clientIban,
+      client_payment_term_days: invoice.clientPaymentTermDays,
+      client_notes: invoice.clientNotes,
+      invoice_description: invoice.invoiceDescription,
+      has_due_date: invoice.hasDueDate,
       issue_date: invoice.issueDate,
       due_date: invoice.dueDate,
       currency_code: invoice.currencyCode,
@@ -193,6 +247,19 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       logo_data_url: update.logoDataUrl ?? null,
       client_name: update.clientName,
       client_email: update.clientEmail,
+      client_contact_name: update.clientContactName,
+      client_phone: update.clientPhone,
+      client_address: update.clientAddress,
+      client_postal_code: update.clientPostalCode,
+      client_city: update.clientCity,
+      client_country: update.clientCountry,
+      client_kvk_number: update.clientKvkNumber,
+      client_btw_number: update.clientBtwNumber,
+      client_iban: update.clientIban,
+      client_payment_term_days: update.clientPaymentTermDays,
+      client_notes: update.clientNotes,
+      invoice_description: update.invoiceDescription,
+      has_due_date: update.hasDueDate,
       issue_date: update.issueDate,
       due_date: update.dueDate,
       currency_code: update.currencyCode,

@@ -5,6 +5,8 @@ import { downloadInvoicePdf } from '../../lib/pdf'
 import { getNextInvoiceNumber } from '../../lib/invoiceNumber'
 import { useAuthStore } from '../../stores/authStore'
 import { useBillingStore } from '../../stores/billingStore'
+import type { CustomerProfile } from '../../stores/customerStore'
+import { useCustomerStore } from '../../stores/customerStore'
 import type { StoredInvoice } from '../../stores/invoiceStore'
 import { useInvoiceStore } from '../../stores/invoiceStore'
 import { defaultCompanyProfile, useProfileStore } from '../../stores/profileStore'
@@ -12,6 +14,7 @@ import { defaultCompanyProfile, useProfileStore } from '../../stores/profileStor
 const GUEST_DL_KEY = 'factuurstudio.guest.hasDownloaded'
 const hasUsedGuestDownload = () => Boolean(localStorage.getItem(GUEST_DL_KEY))
 const markGuestDownloadUsed = () => localStorage.setItem(GUEST_DL_KEY, '1')
+const EMPTY_CUSTOMERS: CustomerProfile[] = []
 
 type InvoiceLine = {
   id: number
@@ -39,6 +42,13 @@ const createDefaultDueDate = () => {
   return date.toISOString().slice(0, 10)
 }
 
+const createDueDateFromIssueDate = (issueDate: string, termDays: number) => {
+  const base = issueDate ? new Date(`${issueDate}T00:00:00`) : new Date()
+  const safeDays = Math.max(0, Math.round(termDays))
+  base.setDate(base.getDate() + safeDays)
+  return base.toISOString().slice(0, 10)
+}
+
 const currencyOptions = ['EUR', 'USD', 'GBP']
 
 type Props = {
@@ -54,6 +64,14 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const updateInvoice = useInvoiceStore((state) => state.updateInvoice)
   const loadInvoices = useInvoiceStore((state) => state.loadInvoices)
   const planId = useBillingStore((state) => state.getUserPlan(userId))
+  const customersByUser = useCustomerStore((state) => state.customersByUser)
+  const loadCustomers = useCustomerStore((state) => state.loadCustomers)
+  const createCustomer = useCustomerStore((state) => state.createCustomer)
+  const updateCustomer = useCustomerStore((state) => state.updateCustomer)
+  const customers = useMemo(
+    () => (userId ? (customersByUser[userId] ?? EMPTY_CUSTOMERS) : EMPTY_CUSTOMERS),
+    [customersByUser, userId],
+  )
   const profiles = useProfileStore((state) => state.profiles)
   const loadProfile = useProfileStore((state) => state.loadProfile)
   const profile = userId ? profiles[userId] ?? defaultCompanyProfile : defaultCompanyProfile
@@ -64,18 +82,36 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     editInvoice ? editInvoice.issueDate : new Date().toISOString().slice(0, 10),
   )
   const [dueDate, setDueDate] = useState(editInvoice ? editInvoice.dueDate : createDefaultDueDate())
+  const [hasDueDate, setHasDueDate] = useState(editInvoice?.hasDueDate ?? true)
   const [pricingMode, setPricingMode] = useState<'excl' | 'incl'>(editInvoice?.pricingMode ?? 'excl')
   const [noVat, setNoVat] = useState(false)
   const [currencyCode, setCurrencyCode] = useState(editInvoice?.currencyCode ?? 'EUR')
+  const [invoiceDescription, setInvoiceDescription] = useState(editInvoice?.invoiceDescription ?? '')
+  const [selectedCustomerId, setSelectedCustomerId] = useState('')
   const [clientName, setClientName] = useState(editInvoice?.clientName ?? '')
   const [clientEmail, setClientEmail] = useState(editInvoice?.clientEmail ?? '')
+  const [clientContactName, setClientContactName] = useState(editInvoice?.clientContactName ?? '')
+  const [clientPhone, setClientPhone] = useState(editInvoice?.clientPhone ?? '')
+  const [clientAddress, setClientAddress] = useState(editInvoice?.clientAddress ?? '')
+  const [clientPostalCode, setClientPostalCode] = useState(editInvoice?.clientPostalCode ?? '')
+  const [clientCity, setClientCity] = useState(editInvoice?.clientCity ?? '')
+  const [clientCountry, setClientCountry] = useState(editInvoice?.clientCountry ?? 'NL')
+  const [clientKvkNumber, setClientKvkNumber] = useState(editInvoice?.clientKvkNumber ?? '')
+  const [clientBtwNumber, setClientBtwNumber] = useState(editInvoice?.clientBtwNumber ?? '')
+  const [clientIban, setClientIban] = useState(editInvoice?.clientIban ?? '')
+  const [clientPaymentTermDays, setClientPaymentTermDays] = useState(
+    editInvoice?.clientPaymentTermDays ?? 14,
+  )
+  const [clientNotes, setClientNotes] = useState(editInvoice?.clientNotes ?? '')
   const [companyName, setCompanyName] = useState(
     editInvoice ? editInvoice.companyName : profile.companyName,
   )
-  const [companyLogoDataUrl, setCompanyLogoDataUrl] = useState<string | null>(
+  const [companyLogoDataUrl] = useState<string | null>(
     editInvoice ? (editInvoice.logoDataUrl ?? null) : profile.logoDataUrl,
   )
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [customerProfileError, setCustomerProfileError] = useState<string | null>(null)
+  const [customerProfileMessage, setCustomerProfileMessage] = useState<string | null>(null)
   const [showUpsell, setShowUpsell] = useState(() => guestMode && hasUsedGuestDownload())
   const [lines, setLines] = useState<InvoiceLine[]>(
     editInvoice
@@ -86,20 +122,60 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   useEffect(() => {
     if (!guestMode && userId) {
       void loadProfile(userId)
+      void loadCustomers(userId)
     }
-  }, [guestMode, loadProfile, userId])
+  }, [guestMode, loadCustomers, loadProfile, userId])
 
-  useEffect(() => {
-    if (editInvoice || guestMode) return
+  const applyCustomerProfile = (customer: CustomerProfile) => {
+    setClientName(customer.companyName || customer.name)
+    setClientEmail(customer.email)
+    setClientContactName(customer.name)
+    setClientPhone(customer.phone)
+    setClientAddress(customer.address)
+    setClientPostalCode(customer.postalCode)
+    setClientCity(customer.city)
+    setClientCountry(customer.country || 'NL')
+    setClientKvkNumber(customer.kvkNumber)
+    setClientBtwNumber(customer.btwNumber)
+    setClientIban(customer.iban)
+    setClientPaymentTermDays(customer.paymentTermDays)
+    setClientNotes(customer.notes)
+    if (hasDueDate) {
+      setDueDate(createDueDateFromIssueDate(issueDate, customer.paymentTermDays))
+    }
+  }
 
-    if (!companyName && profile.companyName) {
-      setCompanyName(profile.companyName)
+  const selectedCustomer = useMemo(
+    () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
+    [customers, selectedCustomerId],
+  )
+
+  const onIssueDateChange = (value: string) => {
+    setIssueDate(value)
+    if (!hasDueDate) {
+      setDueDate(value)
+      return
     }
 
-    if (!companyLogoDataUrl && profile.logoDataUrl) {
-      setCompanyLogoDataUrl(profile.logoDataUrl)
+    if (!selectedCustomer) {
+      return
     }
-  }, [companyLogoDataUrl, companyName, editInvoice, guestMode, profile.companyName, profile.logoDataUrl])
+
+    setDueDate(createDueDateFromIssueDate(value, selectedCustomer.paymentTermDays))
+  }
+
+  const onHasDueDateChange = (checked: boolean) => {
+    setHasDueDate(checked)
+
+    if (!checked) {
+      setDueDate(issueDate)
+      return
+    }
+
+    if (selectedCustomer) {
+      setDueDate(createDueDateFromIssueDate(issueDate, selectedCustomer.paymentTermDays))
+    }
+  }
 
   const totals = useMemo(() => {
     const subtotal = lines.reduce((sum, line) => {
@@ -180,6 +256,13 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         setSaveError('Voeg minimaal een geldige factuurregel toe.')
         return
       }
+
+      const resolvedDueDate = hasDueDate ? dueDate : issueDate
+      if (!resolvedDueDate) {
+        setSaveError('Vul een geldige factuurdatum in.')
+        return
+      }
+
       const tempInvoice: StoredInvoice = {
         id: 'guest',
         userId: 'guest',
@@ -188,8 +271,21 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         logoDataUrl: companyLogoDataUrl,
         clientName,
         clientEmail,
+        clientContactName,
+        clientPhone,
+        clientAddress,
+        clientPostalCode,
+        clientCity,
+        clientCountry,
+        clientKvkNumber,
+        clientBtwNumber,
+        clientIban,
+        clientPaymentTermDays,
+        clientNotes,
+        invoiceDescription,
+        hasDueDate,
         issueDate,
-        dueDate,
+        dueDate: resolvedDueDate,
         currencyCode,
         pricingMode,
         subtotal: totals.subtotal,
@@ -221,6 +317,17 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       return
     }
 
+    if (!issueDate) {
+      setSaveError('Vul een factuurdatum in.')
+      return
+    }
+
+    const resolvedDueDate = hasDueDate ? dueDate : issueDate
+    if (!resolvedDueDate) {
+      setSaveError('Vul een geldige vervaldatum in of kies geen vervaldatum.')
+      return
+    }
+
     const savedLines = lines.map((line) => ({ ...line, vatRate: noVat ? 0 : line.vatRate }))
 
     if (editInvoice) {
@@ -230,8 +337,21 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         logoDataUrl: companyLogoDataUrl,
         clientName,
         clientEmail,
+        clientContactName,
+        clientPhone,
+        clientAddress,
+        clientPostalCode,
+        clientCity,
+        clientCountry,
+        clientKvkNumber,
+        clientBtwNumber,
+        clientIban,
+        clientPaymentTermDays,
+        clientNotes,
+        invoiceDescription,
+        hasDueDate,
         issueDate,
-        dueDate,
+        dueDate: resolvedDueDate,
         currencyCode,
         pricingMode,
         subtotal: totals.subtotal,
@@ -260,8 +380,21 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         logoDataUrl: companyLogoDataUrl,
         clientName,
         clientEmail,
+        clientContactName,
+        clientPhone,
+        clientAddress,
+        clientPostalCode,
+        clientCity,
+        clientCountry,
+        clientKvkNumber,
+        clientBtwNumber,
+        clientIban,
+        clientPaymentTermDays,
+        clientNotes,
+        invoiceDescription,
+        hasDueDate,
         issueDate,
-        dueDate,
+        dueDate: resolvedDueDate,
         currencyCode,
         pricingMode,
         subtotal: totals.subtotal,
@@ -281,6 +414,81 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     }
 
     navigate('/facturen')
+  }
+
+  const buildCustomerProfileInput = () => ({
+    name: clientContactName,
+    companyName: clientName,
+    email: clientEmail,
+    phone: clientPhone,
+    address: clientAddress,
+    postalCode: clientPostalCode,
+    city: clientCity,
+    country: clientCountry,
+    kvkNumber: clientKvkNumber,
+    btwNumber: clientBtwNumber,
+    iban: clientIban,
+    paymentTermDays: clientPaymentTermDays,
+    notes: clientNotes,
+  })
+
+  const saveAsNewCustomerProfile = async () => {
+    setCustomerProfileError(null)
+    setCustomerProfileMessage(null)
+
+    if (!userId) {
+      setCustomerProfileError('Geen actieve gebruiker gevonden. Log opnieuw in.')
+      return
+    }
+
+    if (!clientName.trim() && !clientContactName.trim()) {
+      setCustomerProfileError('Vul minimaal klantnaam of contactpersoon in.')
+      return
+    }
+
+    const created = await createCustomer(userId, buildCustomerProfileInput())
+    if (!created) {
+      setCustomerProfileError('Klantprofiel opslaan is mislukt. Probeer opnieuw.')
+      return
+    }
+
+    setSelectedCustomerId(created.id)
+    setCustomerProfileMessage('Nieuw klantprofiel opgeslagen.')
+  }
+
+  const updateSelectedCustomerProfile = async () => {
+    setCustomerProfileError(null)
+    setCustomerProfileMessage(null)
+
+    if (!userId || !selectedCustomerId) {
+      setCustomerProfileError('Selecteer eerst een bestaand klantprofiel.')
+      return
+    }
+
+    const updated = await updateCustomer(selectedCustomerId, userId, buildCustomerProfileInput())
+    if (!updated) {
+      setCustomerProfileError('Klantprofiel bijwerken is mislukt. Probeer opnieuw.')
+      return
+    }
+
+    setCustomerProfileMessage('Klantprofiel bijgewerkt.')
+  }
+
+  const onCustomerSelectionChange = (customerId: string) => {
+    setSelectedCustomerId(customerId)
+    setCustomerProfileError(null)
+    setCustomerProfileMessage(null)
+
+    if (!customerId) {
+      return
+    }
+
+    const customer = customers.find((value) => value.id === customerId)
+    if (!customer) {
+      return
+    }
+
+    applyCustomerProfile(customer)
   }
 
   return (
@@ -384,7 +592,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 <input
                   type="date"
                   value={issueDate}
-                  onChange={(event) => setIssueDate(event.target.value)}
+                  onChange={(event) => onIssueDateChange(event.target.value)}
                   className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                 />
               </label>
@@ -394,8 +602,20 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   type="date"
                   value={dueDate}
                   onChange={(event) => setDueDate(event.target.value)}
+                  disabled={!hasDueDate}
                   className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                 />
+              </label>
+              <label className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 sm:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={!hasDueDate}
+                  onChange={(event) => onHasDueDateChange(!event.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-600"
+                />
+                <span className="text-sm font-medium text-slate-700">
+                  Geen vervaldatum tonen of gebruiken
+                </span>
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm font-medium text-slate-700">Prijsmodus</span>
@@ -450,6 +670,168 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                 />
               </label>
+              <label className="flex flex-col gap-1 sm:col-span-2">
+                <span className="text-sm font-medium text-slate-700">Factuurbeschrijving (optioneel)</span>
+                <textarea
+                  value={invoiceDescription}
+                  onChange={(event) => setInvoiceDescription(event.target.value)}
+                  rows={3}
+                  placeholder="Bijv. Projectomschrijving of extra toelichting voor deze factuur"
+                  className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                />
+              </label>
+              {!guestMode ? (
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 sm:col-span-2">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="flex flex-col gap-1 sm:col-span-2">
+                      <span className="text-sm font-medium text-slate-700">Klantprofiel kiezen</span>
+                      <select
+                        value={selectedCustomerId}
+                        onChange={(event) => onCustomerSelectionChange(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                      >
+                        <option value="">Handmatige invoer</option>
+                        {customers.map((customer) => (
+                          <option key={customer.id} value={customer.id}>
+                            {customer.companyName || customer.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">Contactpersoon</span>
+                      <input
+                        value={clientContactName}
+                        onChange={(event) => setClientContactName(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="Bijv. Lisa Jansen"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">Telefoon</span>
+                      <input
+                        value={clientPhone}
+                        onChange={(event) => setClientPhone(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="Bijv. +31 6 12345678"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1 sm:col-span-2">
+                      <span className="text-sm font-medium text-slate-700">Adres</span>
+                      <input
+                        value={clientAddress}
+                        onChange={(event) => setClientAddress(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="Straatnaam 12"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">Postcode</span>
+                      <input
+                        value={clientPostalCode}
+                        onChange={(event) => setClientPostalCode(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="1234 AB"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">Plaats</span>
+                      <input
+                        value={clientCity}
+                        onChange={(event) => setClientCity(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="Amsterdam"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">Land</span>
+                      <input
+                        value={clientCountry}
+                        onChange={(event) => setClientCountry(event.target.value.toUpperCase())}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 uppercase outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="NL"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">IBAN klant</span>
+                      <input
+                        value={clientIban}
+                        onChange={(event) => setClientIban(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="NL00BANK0123456789"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">KvK klant</span>
+                      <input
+                        value={clientKvkNumber}
+                        onChange={(event) => setClientKvkNumber(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="12345678"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">BTW klant</span>
+                      <input
+                        value={clientBtwNumber}
+                        onChange={(event) => setClientBtwNumber(event.target.value)}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="NL123456789B01"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-slate-700">Betaaltermijn (dagen)</span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={clientPaymentTermDays}
+                        onChange={(event) => {
+                          const value = Number(event.target.value)
+                          setClientPaymentTermDays(Number.isNaN(value) ? 0 : value)
+                        }}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1 sm:col-span-2">
+                      <span className="text-sm font-medium text-slate-700">Notities klantprofiel</span>
+                      <textarea
+                        value={clientNotes}
+                        onChange={(event) => setClientNotes(event.target.value)}
+                        rows={2}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                        placeholder="Interne notitie, referentie of extra betaalafspraak"
+                      />
+                    </label>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void saveAsNewCustomerProfile()
+                      }}
+                      className="rounded-lg border border-cyan-300 bg-cyan-50 px-3 py-2 text-xs font-semibold text-cyan-800 transition hover:bg-cyan-100"
+                    >
+                      Opslaan als nieuw profiel
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!selectedCustomerId}
+                      onClick={() => {
+                        void updateSelectedCustomerProfile()
+                      }}
+                      className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      Geselecteerd profiel bijwerken
+                    </button>
+                  </div>
+                  {customerProfileError ? (
+                    <p className="mt-2 text-xs text-rose-700">{customerProfileError}</p>
+                  ) : null}
+                  {customerProfileMessage ? (
+                    <p className="mt-2 text-xs text-emerald-700">{customerProfileMessage}</p>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
 
             <div className="mt-6">
@@ -545,7 +927,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                     Factuurnr: <span className="font-semibold text-slate-900">{invoiceNumber}</span>
                   </p>
                   <p>Datum: {formatDate(issueDate)}</p>
-                  <p>Vervaldatum: {formatDate(dueDate)}</p>
+                  <p>Vervaldatum: {hasDueDate ? formatDate(dueDate) : 'n.v.t.'}</p>
                 </div>
               </div>
 
@@ -554,6 +936,13 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 <p className="mt-1 font-semibold text-slate-900">{clientName || 'Klantnaam ontbreekt'}</p>
                 <p className="text-sm text-slate-600">{clientEmail || 'E-mail ontbreekt'}</p>
               </div>
+
+              {invoiceDescription.trim() ? (
+                <div className="mt-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Beschrijving</p>
+                  <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{invoiceDescription}</p>
+                </div>
+              ) : null}
 
               <div className="mt-6 overflow-x-auto">
                 <table className="w-full min-w-[460px] text-left text-sm">

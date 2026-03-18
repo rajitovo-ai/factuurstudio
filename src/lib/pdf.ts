@@ -47,16 +47,63 @@ export const downloadInvoicePdf = (invoice: StoredInvoice) => {
   y += 5
   doc.text(`Factuurdatum: ${formatDate(invoice.issueDate)}`, left, y)
   y += 5
-  doc.text(`Vervaldatum: ${formatDate(invoice.dueDate)}`, left, y)
+  doc.text(`Vervaldatum: ${invoice.hasDueDate ? formatDate(invoice.dueDate) : 'n.v.t.'}`, left, y)
 
   y += 10
   doc.setFont('helvetica', 'bold')
   doc.text('Factuur voor', left, y)
   doc.setFont('helvetica', 'normal')
+  if (invoice.clientContactName) {
+    y += 5
+    doc.text(invoice.clientContactName, left, y)
+  }
   y += 5
   doc.text(invoice.clientName || '-', left, y)
   y += 5
   doc.text(invoice.clientEmail || '-', left, y)
+  if (invoice.clientPhone) {
+    y += 5
+    doc.text(`Tel: ${invoice.clientPhone}`, left, y)
+  }
+  if (invoice.clientAddress) {
+    y += 5
+    doc.text(invoice.clientAddress, left, y)
+  }
+  const clientCityLine = [invoice.clientPostalCode, invoice.clientCity].filter(Boolean).join(' ')
+  if (clientCityLine || invoice.clientCountry) {
+    y += 5
+    const location = [clientCityLine, invoice.clientCountry].filter(Boolean).join(' - ')
+    doc.text(location || '-', left, y)
+  }
+  if (invoice.clientIban) {
+    y += 5
+    doc.text(`IBAN klant: ${invoice.clientIban}`, left, y)
+  }
+  if (invoice.clientKvkNumber || invoice.clientBtwNumber) {
+    y += 5
+    const regInfo = [
+      invoice.clientKvkNumber ? `KvK: ${invoice.clientKvkNumber}` : '',
+      invoice.clientBtwNumber ? `BTW: ${invoice.clientBtwNumber}` : '',
+    ]
+      .filter(Boolean)
+      .join(' | ')
+    doc.text(regInfo, left, y)
+  }
+  if (invoice.clientNotes) {
+    y += 5
+    doc.text(`Notitie: ${invoice.clientNotes}`, left, y)
+  }
+
+  if (invoice.invoiceDescription) {
+    y += 8
+    doc.setFont('helvetica', 'bold')
+    doc.text('Beschrijving', left, y)
+    y += 5
+    doc.setFont('helvetica', 'normal')
+    const wrappedDescription = doc.splitTextToSize(invoice.invoiceDescription, 170)
+    doc.text(wrappedDescription, left, y)
+    y += wrappedDescription.length * 4
+  }
 
   y += 10
   doc.line(left, y, right, y)
@@ -114,6 +161,8 @@ export const downloadInvoicePdf = (invoice: StoredInvoice) => {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   doc.text('Betaalinstructie: maak het bedrag over onder vermelding van het factuurnummer.', left, y)
+  y += 5
+  doc.text(`Betaaltermijn klantprofiel: ${invoice.clientPaymentTermDays} dagen.`, left, y)
   y += 5
   doc.text('Deze factuur is zwart/wit en A4 printvriendelijk opgesteld.', left, y)
 

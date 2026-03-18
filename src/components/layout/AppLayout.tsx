@@ -11,7 +11,7 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export default function AppLayout() {
   const navigate = useNavigate()
-  const { email, isDemoMode, signOut } = useAuthStore()
+  const { email, signOut } = useAuthStore()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   const handleSignOut = async () => {
@@ -49,6 +49,7 @@ export default function AppLayout() {
         <div className="border-b border-slate-200 bg-white px-4 pb-4 lg:hidden">
           <nav className="flex flex-col gap-1">
             <NavLink to="/dashboard" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Dashboard</NavLink>
+            <NavLink to="/klanten" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Klanten</NavLink>
             <NavLink to="/facturen" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Facturen</NavLink>
             <NavLink to="/facturen/nieuw" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Nieuwe factuur</NavLink>
             <NavLink to="/referral" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Vrienden uitnodigen</NavLink>
@@ -75,6 +76,7 @@ export default function AppLayout() {
           </Link>
           <nav className="mt-6 flex flex-col gap-2">
             <NavLink to="/dashboard" className={navLinkClass}>Dashboard</NavLink>
+            <NavLink to="/klanten" className={navLinkClass}>Klanten</NavLink>
             <NavLink to="/facturen" className={navLinkClass}>Facturen</NavLink>
             <NavLink to="/facturen/nieuw" className={navLinkClass}>Nieuwe factuur</NavLink>
             <NavLink to="/referral" className={navLinkClass}>Vrienden uitnodigen</NavLink>
@@ -87,9 +89,6 @@ export default function AppLayout() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Ingelogd als</p>
               <p className="text-sm font-semibold text-slate-800">{email ?? 'Onbekende gebruiker'}</p>
-              <p className="mt-1 text-xs text-slate-500">
-                {isDemoMode ? 'Lokale testmodus zonder Supabase' : 'Verbonden met Supabase'}
-              </p>
             </div>
             <button
               type="button"
