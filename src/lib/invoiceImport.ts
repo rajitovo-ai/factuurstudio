@@ -45,6 +45,29 @@ type ExtractInvoiceOptions = {
   maxOcrPages?: number
 }
 
+const withTimeout = async <T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  timeoutMessage: string,
+): Promise<T> => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error(timeoutMessage))
+        }, timeoutMs)
+      }),
+    ])
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+  }
+}
+
 const toIsoDate = (value: string) => {
   const normalized = value.trim()
 
@@ -229,28 +252,45 @@ const runOcrFallback = async (pdf: PdfDocument, maxPages: number) => {
   const { recognize } = await import('tesseract.js')
   const pageCount = Math.min(maxPages, pdf.numPages)
   const ocrParts: string[] = []
+  const warnings: string[] = []
 
   for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
-    const page = await pdf.getPage(pageNumber)
-    const viewport = page.getViewport({ scale: 2 })
+    try {
+      const page = await pdf.getPage(pageNumber)
+      const viewport = page.getViewport({ scale: 2 })
 
-    const canvas = document.createElement('canvas')
-    canvas.width = Math.ceil(viewport.width)
-    canvas.height = Math.ceil(viewport.height)
-    const context = canvas.getContext('2d')
-    if (!context) continue
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.ceil(viewport.width)
+      canvas.height = Math.ceil(viewport.height)
+      const context = canvas.getContext('2d')
+      if (!context) {
+        warnings.push(`OCR overgeslagen voor pagina ${pageNumber}: canvas context niet beschikbaar.`)
+        continue
+      }
 
-    await page.render({ canvas, canvasContext: context, viewport }).promise
-    const dataUrl = canvas.toDataURL('image/png')
+      await page.render({ canvas, canvasContext: context, viewport }).promise
+      const dataUrl = canvas.toDataURL('image/png')
 
-    const result = await recognize(dataUrl, 'eng+ndl')
-    const text = result.data.text?.trim()
-    if (text) {
-      ocrParts.push(text)
+      const result = await withTimeout(
+        recognize(dataUrl, 'eng+ndl'),
+        25000,
+        `OCR timeout op pagina ${pageNumber}.`,
+      )
+
+      const text = result.data.text?.trim()
+      if (text) {
+        ocrParts.push(text)
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Onbekende OCR-fout.'
+      warnings.push(`OCR probleem op pagina ${pageNumber}: ${message}`)
     }
   }
 
-  return ocrParts.join('\n')
+  return {
+    text: ocrParts.join('\n'),
+    warnings,
+  }
 }
 
 export const extractInvoiceDataFromPdf = async (
@@ -262,17 +302,31 @@ export const extractInvoiceDataFromPdf = async (
 
   let rawText = extractedText
   let usedOcr = false
+  const warnings: string[] = []
 
   if (useOcrFallback && rawText.replace(/\s+/g, '').length < 80) {
-    const ocrText = await runOcrFallback(pdf, maxOcrPages)
-    if (ocrText.trim().length > rawText.trim().length) {
-      rawText = ocrText
-      usedOcr = true
+    try {
+      const ocrResult = await withTimeout(
+        runOcrFallback(pdf, maxOcrPages),
+        60000,
+        'OCR duurde te lang en is gestopt.',
+      )
+
+      if (ocrResult.warnings.length > 0) {
+        warnings.push(...ocrResult.warnings)
+      }
+
+      if (ocrResult.text.trim().length > rawText.trim().length) {
+        rawText = ocrResult.text
+        usedOcr = true
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Onbekende OCR-fout.'
+      warnings.push(`OCR fallback niet voltooid: ${message}`)
     }
   }
 
   const normalized = rawText.replace(/\s+/g, ' ').trim()
-  const warnings: string[] = []
 
   const issueDateRaw = extractIssueDate(normalized)
   const dueDateRaw = extractDueDate(normalized)
