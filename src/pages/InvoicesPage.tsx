@@ -35,6 +35,22 @@ export default function InvoicesPage() {
 
   const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
 
+  const handleRemoveInvoice = async (invoiceId: string) => {
+    const invoice = userInvoices.find((entry) => entry.id === invoiceId)
+    if (!invoice) return
+
+    const isPaid = getInvoiceDisplayStatus(invoice) === 'betaald'
+    const warningMessage = isPaid
+      ? `Let op: factuur ${invoice.invoiceNumber} staat op betaald. Als je deze verwijdert, wordt het betaalde bedrag direct uit je dashboard gehaald. Weet je het zeker?`
+      : `Weet je zeker dat je factuur ${invoice.invoiceNumber} wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.`
+
+    if (!window.confirm(warningMessage)) {
+      return
+    }
+
+    await removeInvoice(invoiceId)
+  }
+
   return (
     <main className="space-y-4">
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -88,7 +104,7 @@ export default function InvoicesPage() {
                     const displayStatus = getInvoiceDisplayStatus(invoice)
                     const canSend = displayStatus === 'concept'
                     const canMarkPaid = displayStatus === 'verzonden' || displayStatus === 'vervallen'
-                    const canDelete = displayStatus === 'concept'
+                    const canDelete = true
                     const canEdit = displayStatus === 'concept'
                     return (
                       <tr key={invoice.id} className="border-b border-slate-100 align-top">
@@ -120,7 +136,7 @@ export default function InvoicesPage() {
                             <button type="button" onClick={() => downloadInvoicePdf(invoice)} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF</button>
                             <button type="button" onClick={() => void markInvoiceSent(invoice.id)} disabled={!canSend} className="rounded-lg border border-cyan-200 px-3 py-2 text-xs font-semibold text-cyan-700 hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-50">Verzonden</button>
                             <button type="button" onClick={() => void markInvoicePaid(invoice.id)} disabled={!canMarkPaid} className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50">Betaald</button>
-                            <button type="button" onClick={() => void removeInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50">Verwijder</button>
+                            <button type="button" onClick={() => void handleRemoveInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50">Verwijder</button>
                           </div>
                         </td>
                       </tr>
@@ -136,7 +152,7 @@ export default function InvoicesPage() {
                 const displayStatus = getInvoiceDisplayStatus(invoice)
                 const canSend = displayStatus === 'concept'
                 const canMarkPaid = displayStatus === 'verzonden' || displayStatus === 'vervallen'
-                const canDelete = displayStatus === 'concept'
+                const canDelete = true
                 const canEdit = displayStatus === 'concept'
                 return (
                   <div key={invoice.id} className="rounded-xl border border-slate-200 bg-white p-4">
@@ -166,7 +182,7 @@ export default function InvoicesPage() {
                       <button type="button" onClick={() => downloadInvoicePdf(invoice)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700">PDF</button>
                       <button type="button" onClick={() => void markInvoiceSent(invoice.id)} disabled={!canSend} className="rounded-lg border border-cyan-200 px-3 py-1.5 text-xs font-semibold text-cyan-700 disabled:opacity-40">Verzonden</button>
                       <button type="button" onClick={() => void markInvoicePaid(invoice.id)} disabled={!canMarkPaid} className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 disabled:opacity-40">Betaald</button>
-                      <button type="button" onClick={() => void removeInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:opacity-40">Verwijder</button>
+                      <button type="button" onClick={() => void handleRemoveInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:opacity-40">Verwijder</button>
                     </div>
                   </div>
                 )

@@ -323,13 +323,9 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
 
   removeInvoice: async (invoiceId) => {
     const existing = get().invoices.find((invoice) => invoice.id === invoiceId)
-    if (!existing || existing.status !== 'concept') return false
+    if (!existing) return false
 
-    const { error } = await supabase
-      .from('app_invoices')
-      .delete()
-      .eq('id', invoiceId)
-      .eq('status', 'concept')
+    const { error } = await supabase.from('app_invoices').delete().eq('id', invoiceId)
 
     if (error) {
       set({ error: error.message })

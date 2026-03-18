@@ -297,11 +297,23 @@ const extractEmail = (text: string) => {
 const STOP_WORDS_PATTERN =
   /\b(?:kvk|btw|vat|iban|swift|bic|subtotaal|subtotal|totaal|total|omschrijving|description|factuur(?:nummer|datum)?|invoice(?:\s*number|\s*date)?|betaalgegevens|payment\s*details?)\b/i
 
-const sanitizeExtractedValue = (value: string) =>
+const VAT_LIKE_PATTERN = /\bNL[0-9O@]{9}(?:B[0-9O@]{2})?\b/gi
+const VAT_LIKE_SINGLE_PATTERN = /\bNL[0-9O@]{9}(?:B[0-9O@]{2})?\b/i
+
+const stripVatLikeTokens = (value: string) =>
   value
-    .replace(/^\s*(?:aan|klant|debiteur|bill\s*to|gegevens|adres)\s*[:#-]?\s*/i, '')
+    .replace(VAT_LIKE_PATTERN, ' ')
+    .replace(/\b(?:btw|vat)\b\s*[:#-]?\s*$/i, '')
     .replace(/\s{2,}/g, ' ')
     .trim()
+
+const sanitizeExtractedValue = (value: string) =>
+  stripVatLikeTokens(
+    value
+    .replace(/^\s*(?:aan|klant|debiteur|bill\s*to|gegevens|adres)\s*[:#-]?\s*/i, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim(),
+  )
 
 const truncateAtStopWords = (value: string) => {
   const match = value.match(STOP_WORDS_PATTERN)
@@ -354,6 +366,7 @@ const extractClientName = (rawText: string) => {
   for (const line of lines) {
     const cleaned = truncateAtStopWords(line)
     if (!cleaned || cleaned.length < 2 || cleaned.length > 80) continue
+    if (VAT_LIKE_SINGLE_PATTERN.test(cleaned)) continue
     if (extractEmail(cleaned)) continue
     if (/\d{4}\s?[A-Z]{2}/i.test(cleaned)) continue
     if (/\b\d{1,5}[A-Z]?\b/.test(cleaned) && streetLikePattern.test(cleaned)) continue
