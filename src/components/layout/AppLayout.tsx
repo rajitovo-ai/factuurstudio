@@ -52,6 +52,7 @@ export default function AppLayout() {
             <NavLink to="/klanten" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Klanten</NavLink>
             <NavLink to="/facturen" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Facturen</NavLink>
             <NavLink to="/facturen/nieuw" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Nieuwe factuur</NavLink>
+            <NavLink to="/facturen/importeren" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Importeer facturen</NavLink>
             <NavLink to="/referral" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Vrienden uitnodigen</NavLink>
             <NavLink to="/instellingen" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Instellingen</NavLink>
           </nav>
@@ -79,6 +80,7 @@ export default function AppLayout() {
             <NavLink to="/klanten" className={navLinkClass}>Klanten</NavLink>
             <NavLink to="/facturen" className={navLinkClass}>Facturen</NavLink>
             <NavLink to="/facturen/nieuw" className={navLinkClass}>Nieuwe factuur</NavLink>
+            <NavLink to="/facturen/importeren" className={navLinkClass}>Importeer facturen</NavLink>
             <NavLink to="/referral" className={navLinkClass}>Vrienden uitnodigen</NavLink>
             <NavLink to="/instellingen" className={navLinkClass}>Instellingen</NavLink>
           </nav>

@@ -46,12 +46,20 @@ export default function InvoicesPage() {
               Concept opstellen, verzenden, PDF downloaden en daarna als betaald markeren.
             </p>
           </div>
-          <Link
-            to="/facturen/nieuw"
-            className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
-          >
-            Nieuwe factuur
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to="/facturen/importeren"
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Importeer PDF
+            </Link>
+            <Link
+              to="/facturen/nieuw"
+              className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
+            >
+              Nieuwe factuur
+            </Link>
+          </div>
         </div>
       </section>
 

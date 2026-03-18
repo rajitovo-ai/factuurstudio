@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { canCreateInvoiceThisMonth, PLAN_CONFIGS } from '../../lib/billing'
 import { downloadInvoicePdf } from '../../lib/pdf'
 import { getNextInvoiceNumber } from '../../lib/invoiceNumber'
@@ -58,6 +58,7 @@ type Props = {
 
 export default function InvoiceGenerator({ editInvoice, guestMode = false }: Props = {}) {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const userId = useAuthStore((state) => state.userId)
   const invoices = useInvoiceStore((state) => state.invoices)
   const createInvoice = useInvoiceStore((state) => state.createInvoice)
@@ -113,6 +114,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const [customerProfileError, setCustomerProfileError] = useState<string | null>(null)
   const [customerProfileMessage, setCustomerProfileMessage] = useState<string | null>(null)
   const [showUpsell, setShowUpsell] = useState(() => guestMode && hasUsedGuestDownload())
+  const hasAppliedQueryCustomer = useRef(false)
   const [lines, setLines] = useState<InvoiceLine[]>(
     editInvoice
       ? editInvoice.lines
@@ -126,7 +128,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     }
   }, [guestMode, loadCustomers, loadProfile, userId])
 
-  const applyCustomerProfile = (customer: CustomerProfile) => {
+  const applyCustomerProfile = useCallback((customer: CustomerProfile) => {
     setClientName(customer.companyName || customer.name)
     setClientEmail(customer.email)
     setClientContactName(customer.name)
@@ -143,7 +145,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     if (hasDueDate) {
       setDueDate(createDueDateFromIssueDate(issueDate, customer.paymentTermDays))
     }
-  }
+  }, [hasDueDate, issueDate])
 
   const selectedCustomer = useMemo(
     () => customers.find((customer) => customer.id === selectedCustomerId) ?? null,
@@ -474,7 +476,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     setCustomerProfileMessage('Klantprofiel bijgewerkt.')
   }
 
-  const onCustomerSelectionChange = (customerId: string) => {
+  const onCustomerSelectionChange = useCallback((customerId: string) => {
     setSelectedCustomerId(customerId)
     setCustomerProfileError(null)
     setCustomerProfileMessage(null)
@@ -489,7 +491,31 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     }
 
     applyCustomerProfile(customer)
-  }
+  }, [applyCustomerProfile, customers])
+
+  useEffect(() => {
+    if (hasAppliedQueryCustomer.current || guestMode || editInvoice) {
+      return
+    }
+
+    const customerIdFromQuery = searchParams.get('customerId')
+    if (!customerIdFromQuery) {
+      hasAppliedQueryCustomer.current = true
+      return
+    }
+
+    const matchedCustomer = customers.find((customer) => customer.id === customerIdFromQuery)
+    if (!matchedCustomer) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      onCustomerSelectionChange(matchedCustomer.id)
+      hasAppliedQueryCustomer.current = true
+    }, 0)
+
+    return () => window.clearTimeout(timer)
+  }, [customers, editInvoice, guestMode, onCustomerSelectionChange, searchParams])
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-100 via-cyan-50 to-white px-4 py-8 text-slate-900 sm:px-6 lg:px-8">

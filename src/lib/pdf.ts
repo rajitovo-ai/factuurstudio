@@ -163,8 +163,6 @@ export const downloadInvoicePdf = (invoice: StoredInvoice) => {
   doc.text('Betaalinstructie: maak het bedrag over onder vermelding van het factuurnummer.', left, y)
   y += 5
   doc.text(`Betaaltermijn klantprofiel: ${invoice.clientPaymentTermDays} dagen.`, left, y)
-  y += 5
-  doc.text('Deze factuur is zwart/wit en A4 printvriendelijk opgesteld.', left, y)
 
   doc.save(`factuur-${invoice.invoiceNumber}.pdf`)
 }

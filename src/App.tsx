@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
@@ -17,6 +17,8 @@ import SettingsPage from './pages/SettingsPage'
 import { useAuthStore } from './stores/authStore'
 import { useInvoiceStore } from './stores/invoiceStore'
 import { useProfileStore } from './stores/profileStore'
+
+const InvoiceImportPage = lazy(() => import('./pages/InvoiceImportPage'))
 
 function App() {
   const init = useAuthStore((state) => state.init)
@@ -49,6 +51,14 @@ function App() {
           <Route path="/klanten" element={<CustomersPage />} />
           <Route path="/facturen" element={<InvoicesPage />} />
           <Route path="/facturen/nieuw" element={<InvoiceCreatePage />} />
+          <Route
+            path="/facturen/importeren"
+            element={
+              <Suspense fallback={null}>
+                <InvoiceImportPage />
+              </Suspense>
+            }
+          />
           <Route path="/facturen/:id/bewerken" element={<InvoiceEditPage />} />
           <Route path="/referral" element={<ReferralPage />} />
           <Route path="/instellingen" element={<SettingsPage />} />
