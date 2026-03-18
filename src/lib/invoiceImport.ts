@@ -343,25 +343,44 @@ const runOcrWithRetry = async (
   pdf: PdfDocument,
   pageNumber: number,
 ) => {
+  const localWarnings: string[] = []
+  let primaryText = ''
+
   const primaryCanvas = await renderPageToCanvas(pdf, pageNumber, OCR_PRIMARY_SCALE)
   const primaryImage = primaryCanvas.toDataURL('image/png')
 
-  const primaryText = await runOcrPass(
-    worker,
-    primaryImage,
-    OCR_PRIMARY_TIMEOUT_MS,
-    `OCR timeout op pagina ${pageNumber}.`,
-  )
+  try {
+    primaryText = await runOcrPass(
+      worker,
+      primaryImage,
+      OCR_PRIMARY_TIMEOUT_MS,
+      `OCR timeout op pagina ${pageNumber}.`,
+    )
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Onbekende OCR-fout.'
+    localWarnings.push(`OCR primair mislukt op pagina ${pageNumber}: ${message}`)
+  }
 
   const retryCanvas = await renderPageToCanvas(pdf, pageNumber, OCR_RETRY_SCALE)
   const processedRetryCanvas = preprocessCanvasForOcr(retryCanvas)
   const retryImage = processedRetryCanvas.toDataURL('image/png')
-  const retryText = await runOcrPass(
-    worker,
-    retryImage,
-    OCR_RETRY_TIMEOUT_MS,
-    `OCR retry timeout op pagina ${pageNumber}.`,
-  )
+  let retryText = ''
+
+  try {
+    retryText = await runOcrPass(
+      worker,
+      retryImage,
+      OCR_RETRY_TIMEOUT_MS,
+      `OCR retry timeout op pagina ${pageNumber}.`,
+    )
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Onbekende OCR-fout.'
+    localWarnings.push(`OCR retry mislukt op pagina ${pageNumber}: ${message}`)
+  }
+
+  if (!primaryText && !retryText) {
+    throw new Error(`OCR timeout/fout op pagina ${pageNumber} in zowel primaire als retry pass.`)
+  }
 
   const primaryScore = scoreOcrText(primaryText)
   const retryScore = scoreOcrText(retryText)
@@ -369,13 +388,16 @@ const runOcrWithRetry = async (
   if (retryScore > primaryScore) {
     return {
       text: retryText,
-      warning: `OCR preprocessing verbeterde resultaat op pagina ${pageNumber}.`,
+      warnings:
+        retryText && primaryText
+          ? [...localWarnings, `OCR preprocessing verbeterde resultaat op pagina ${pageNumber}.`]
+          : localWarnings,
     }
   }
 
   return {
     text: primaryText,
-    warning: '',
+    warnings: localWarnings,
   }
 }
 
@@ -398,8 +420,8 @@ const runOcrFallback = async (pdf: PdfDocument, maxPages: number) => {
     for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
       try {
         const result = await runOcrWithRetry(worker, pdf, pageNumber)
-        if (result.warning) {
-          warnings.push(result.warning)
+        if (result.warnings.length > 0) {
+          warnings.push(...result.warnings)
         }
 
         const text = result.text
