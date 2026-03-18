@@ -295,6 +295,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         total: totals.total,
         status: 'concept',
         lines: lines.map((line) => ({ ...line, vatRate: noVat ? 0 : line.vatRate })),
+        isImported: false,
         createdAt: new Date().toISOString(),
       }
       downloadInvoicePdf(tempInvoice)

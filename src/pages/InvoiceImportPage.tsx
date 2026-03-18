@@ -20,6 +20,10 @@ type ImportRow = {
   clientName: string
   clientEmail: string
   clientAddress: string
+  clientStreet: string
+  clientHouseNumber: string
+  clientPostalCode: string
+  clientCity: string
   clientKvkNumber: string
   clientBtwNumber: string
   clientIban: string
@@ -29,12 +33,21 @@ type ImportRow = {
   currencyCode: string
   subtotal: number
   vatTotal: number
+  vatRate: number
   total: number
   invoiceDescription: string
   usedOcr: boolean
 }
 
 const toTodayIso = () => new Date().toISOString().slice(0, 10)
+
+const toAllowedVatRate = (value: number): 0 | 9 | 21 => {
+  if (!Number.isFinite(value) || value <= 0) return 0
+  const candidates: Array<0 | 9 | 21> = [0, 9, 21]
+  return candidates.reduce((closest, current) =>
+    Math.abs(current - value) < Math.abs(closest - value) ? current : closest,
+  0)
+}
 
 const buildFallbackInvoiceNumber = (existingNumbers: Set<string>, preferred: string, index: number) => {
   const base = preferred.trim() || `IMP-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${index + 1}`
@@ -103,6 +116,10 @@ export default function InvoiceImportPage() {
           clientName: parsed.clientName,
           clientEmail: parsed.clientEmail,
           clientAddress: parsed.clientAddress,
+          clientStreet: parsed.clientStreet,
+          clientHouseNumber: parsed.clientHouseNumber,
+          clientPostalCode: parsed.clientPostalCode,
+          clientCity: parsed.clientCity,
           clientKvkNumber: parsed.clientKvkNumber,
           clientBtwNumber: parsed.clientBtwNumber,
           clientIban: parsed.clientIban,
@@ -112,6 +129,7 @@ export default function InvoiceImportPage() {
           currencyCode: parsed.currencyCode,
           subtotal: parsed.subtotal,
           vatTotal: parsed.vatTotal,
+          vatRate: parsed.vatRate,
           total: parsed.total,
           invoiceDescription: parsed.invoiceDescription,
           usedOcr: parsed.usedOcr,
@@ -130,6 +148,10 @@ export default function InvoiceImportPage() {
           clientName: '',
           clientEmail: '',
           clientAddress: '',
+          clientStreet: '',
+          clientHouseNumber: '',
+          clientPostalCode: '',
+          clientCity: '',
           clientKvkNumber: '',
           clientBtwNumber: '',
           clientIban: '',
@@ -139,6 +161,7 @@ export default function InvoiceImportPage() {
           currencyCode: 'EUR',
           subtotal: 0,
           vatTotal: 0,
+          vatRate: 0,
           total: 0,
           invoiceDescription: `Import mislukt voor ${file.name}`,
           usedOcr: false,
@@ -185,6 +208,13 @@ export default function InvoiceImportPage() {
 
     for (let index = 0; index < activeRows.length; index += 1) {
       const row = activeRows[index]
+      const composedAddress = [
+        `${row.clientStreet} ${row.clientHouseNumber}`.trim(),
+        [row.clientPostalCode, row.clientCity].filter(Boolean).join(' '),
+      ]
+        .filter(Boolean)
+        .join(', ')
+      const customerAddress = row.clientAddress || composedAddress
 
       if (row.importCustomer) {
         const createdCustomer = await createCustomer(userId, {
@@ -192,9 +222,9 @@ export default function InvoiceImportPage() {
           companyName: row.clientName,
           email: row.clientEmail,
           phone: '',
-          address: row.clientAddress,
-          postalCode: '',
-          city: '',
+          address: customerAddress,
+          postalCode: row.clientPostalCode,
+          city: row.clientCity,
           country: 'NL',
           kvkNumber: row.clientKvkNumber,
           btwNumber: row.clientBtwNumber,
@@ -222,15 +252,16 @@ export default function InvoiceImportPage() {
         const ok = await createInvoice({
           userId,
           invoiceNumber,
+          isImported: true,
           companyName: row.companyName || profile.companyName || 'Geimporteerde factuur',
           logoDataUrl: null,
           clientName: row.clientName || 'Onbekende klant',
           clientEmail: row.clientEmail,
           clientContactName: row.clientName,
           clientPhone: '',
-          clientAddress: row.clientAddress,
-          clientPostalCode: '',
-          clientCity: '',
+          clientAddress: customerAddress,
+          clientPostalCode: row.clientPostalCode,
+          clientCity: row.clientCity,
           clientCountry: 'NL',
           clientKvkNumber: row.clientKvkNumber,
           clientBtwNumber: row.clientBtwNumber,
@@ -252,8 +283,8 @@ export default function InvoiceImportPage() {
               id: 1,
               description: row.invoiceDescription || `Geimporteerde factuur (${row.fileName})`,
               quantity: 1,
-              unitPrice: total,
-              vatRate: 0,
+              unitPrice: subtotal,
+              vatRate: toAllowedVatRate(row.vatRate),
             },
           ],
         })
@@ -438,6 +469,38 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
+                <span className="text-xs font-medium text-slate-600">Straat</span>
+                <input
+                  value={row.clientStreet}
+                  onChange={(event) => updateRow(row.id, 'clientStreet', event.target.value)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-medium text-slate-600">Huisnummer</span>
+                <input
+                  value={row.clientHouseNumber}
+                  onChange={(event) => updateRow(row.id, 'clientHouseNumber', event.target.value)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-medium text-slate-600">Postcode</span>
+                <input
+                  value={row.clientPostalCode}
+                  onChange={(event) => updateRow(row.id, 'clientPostalCode', event.target.value.toUpperCase())}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-medium text-slate-600">Stad</span>
+                <input
+                  value={row.clientCity}
+                  onChange={(event) => updateRow(row.id, 'clientCity', event.target.value)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
                 <span className="text-xs font-medium text-slate-600">KvK</span>
                 <input
                   value={row.clientKvkNumber}
@@ -515,6 +578,18 @@ export default function InvoiceImportPage() {
                   step="0.01"
                   value={row.vatTotal}
                   onChange={(event) => updateRow(row.id, 'vatTotal', Number(event.target.value) || 0)}
+                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-medium text-slate-600">BTW %</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  step="0.01"
+                  value={row.vatRate}
+                  onChange={(event) => updateRow(row.id, 'vatRate', Number(event.target.value) || 0)}
                   className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
                 />
               </label>

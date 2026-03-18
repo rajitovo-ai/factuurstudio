@@ -42,11 +42,14 @@ export type StoredInvoice = {
   total: number
   status: InvoiceStatus
   lines: StoredInvoiceLine[]
+  isImported: boolean
   createdAt: string
 }
 
-type CreateInvoiceInput = Omit<StoredInvoice, 'id' | 'createdAt'>
-type UpdateInvoiceInput = Omit<StoredInvoice, 'id' | 'userId' | 'status' | 'createdAt'>
+type CreateInvoiceInput = Omit<StoredInvoice, 'id' | 'createdAt' | 'isImported'> & {
+  isImported?: boolean
+}
+type UpdateInvoiceInput = Omit<StoredInvoice, 'id' | 'userId' | 'status' | 'createdAt' | 'isImported'>
 
 type DbInvoiceRow = {
   id: string
@@ -78,6 +81,7 @@ type DbInvoiceRow = {
   total: number
   status: InvoiceStatus
   lines: unknown
+  is_imported: boolean | null
   created_at: string
 }
 
@@ -111,6 +115,7 @@ const toStoredInvoice = (row: DbInvoiceRow): StoredInvoice => ({
   total: Number(row.total),
   status: row.status,
   lines: Array.isArray(row.lines) ? (row.lines as StoredInvoiceLine[]) : [],
+  isImported: row.is_imported ?? false,
   createdAt: row.created_at,
 })
 
@@ -219,20 +224,43 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       total: invoice.total,
       status: invoice.status,
       lines: invoice.lines,
+      is_imported: invoice.isImported ?? false,
     }
 
-    const { data, error } = await supabase
+    let insertData: unknown = null
+    let insertError: { message: string } | null = null
+
+    const initialInsert = await supabase
       .from('app_invoices')
       .insert(payload)
       .select('*')
       .single()
 
-    if (error) {
-      set({ error: error.message })
+    insertData = initialInsert.data
+    insertError = initialInsert.error
+
+    if (insertError && /is_imported|column/i.test(insertError.message)) {
+      const legacyPayload = { ...payload }
+      delete (legacyPayload as { is_imported?: boolean }).is_imported
+      const legacyInsert = await supabase
+        .from('app_invoices')
+        .insert(legacyPayload)
+        .select('*')
+        .single()
+
+      insertData = legacyInsert.data
+      insertError = legacyInsert.error
+    }
+
+    if (insertError) {
+      set({ error: insertError.message })
       return false
     }
 
-    const created = toStoredInvoice(data as DbInvoiceRow)
+    const created = {
+      ...toStoredInvoice(insertData as DbInvoiceRow),
+      isImported: invoice.isImported ?? false,
+    }
     set((state) => ({ invoices: [created, ...state.invoices], error: null }))
     return true
   },

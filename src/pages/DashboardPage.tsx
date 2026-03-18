@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { PLAN_CONFIGS, canCreateInvoiceThisMonth } from '../lib/billing'
 import { useAuthStore } from '../stores/authStore'
 import { useBillingStore } from '../stores/billingStore'
@@ -17,8 +18,13 @@ const formatCurrency = (amount: number) =>
 export default function DashboardPage() {
   const { isDemoMode, userId } = useAuthStore()
   const invoices = useInvoiceStore((state) => state.invoices)
+  const loadInvoices = useInvoiceStore((state) => state.loadInvoices)
   const planId = useBillingStore((state) => state.getUserPlan(userId))
   const setUserPlan = useBillingStore((state) => state.setUserPlan)
+
+  useEffect(() => {
+    void loadInvoices(userId)
+  }, [loadInvoices, userId])
 
   const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
   const openAmount = userInvoices

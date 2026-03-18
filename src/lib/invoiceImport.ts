@@ -24,6 +24,10 @@ export type ExtractedInvoiceData = {
   clientName: string
   clientEmail: string
   clientAddress: string
+  clientStreet: string
+  clientHouseNumber: string
+  clientPostalCode: string
+  clientCity: string
   clientKvkNumber: string
   clientBtwNumber: string
   clientIban: string
@@ -33,6 +37,7 @@ export type ExtractedInvoiceData = {
   currencyCode: string
   subtotal: number
   vatTotal: number
+  vatRate: number
   total: number
   invoiceDescription: string
   usedOcr: boolean
@@ -184,8 +189,9 @@ const extractDueDate = (text: string) =>
 
 const extractTotal = (text: string) => {
   const value = findFirst(text, [
-    /totaal\s*(?:te\s*betalen)?\s*[:#-]?\s*(?:EUR|\u20ac|USD|\$)?\s*([0-9.,-]+)/i,
+    /(?<!sub)\btotaal\b\s*(?:te\s*betalen)?\s*[:#-]?\s*(?:EUR|\u20ac|USD|\$)?\s*([0-9.,-]+)/i,
     /total\s*(?:due|amount)?\s*[:#-]?\s*(?:EUR|\u20ac|USD|\$)?\s*([0-9.,-]+)/i,
+    /te\s*betalen\s*[:#-]?\s*(?:EUR|\u20ac|USD|\$)?\s*([0-9.,-]+)/i,
   ])
 
   return normalizeAmount(value)
@@ -203,9 +209,77 @@ const extractSubtotal = (text: string) => {
 const extractVatTotal = (text: string) => {
   const value = findFirst(text, [
     /\b(?:btw|vat)\b\s*(?:totaal|total)?\s*[:#-]?\s*(?:EUR|\u20ac|USD|\$)?\s*([0-9.,-]+)/i,
+    /\b(?:btw|vat|tax)\b\s*(?:\([^)]*\))?\s*[:#-]?\s*(?:EUR|\u20ac|USD|\$)?\s*([0-9.,-]+)/i,
   ])
 
   return normalizeAmount(value)
+}
+
+const extractVatRate = (text: string) => {
+  const value = findFirst(text, [
+    /\b(?:btw|vat|tax)\b\s*\(?\s*(\d{1,2}(?:[.,]\d{1,2})?)\s*%\s*\)?/i,
+    /\b(\d{1,2}(?:[.,]\d{1,2})?)\s*%\s*(?:btw|vat|tax)\b/i,
+  ])
+
+  const parsed = Number(value.replace(',', '.'))
+  if (!Number.isFinite(parsed) || parsed < 0 || parsed > 100) return 0
+  return parsed
+}
+
+type ParsedAddressParts = {
+  fullAddress: string
+  street: string
+  houseNumber: string
+  postalCode: string
+  city: string
+}
+
+const parseAddressParts = (address: string): ParsedAddressParts => {
+  const normalized = address.replace(/\s+/g, ' ').trim()
+  if (!normalized) {
+    return {
+      fullAddress: '',
+      street: '',
+      houseNumber: '',
+      postalCode: '',
+      city: '',
+    }
+  }
+
+  const postalMatch = normalized.match(/\b(\d{4}\s?[A-Z]{2})\b/i)
+  const postalCode = postalMatch?.[1]?.toUpperCase().replace(/\s+/, ' ') ?? ''
+
+  const streetHouseMatch = normalized.match(/^(.*?)(?:\s+)(\d{1,5}[A-Z]?)\b(?:,|$)/i)
+  const street = streetHouseMatch?.[1]?.trim() ?? ''
+  const houseNumber = streetHouseMatch?.[2]?.trim() ?? ''
+
+  let city = ''
+  if (postalCode) {
+    const afterPostal = normalized
+      .replace(new RegExp(postalCode.replace(' ', '\\s?'), 'i'), '')
+      .split(',')
+      .map((part) => part.trim())
+      .find((part) => part.length > 1 && !/\d/.test(part) && !/(nederland|netherlands)/i.test(part))
+    city = afterPostal ?? ''
+  }
+
+  if (!city) {
+    const parts = normalized.split(',').map((part) => part.trim()).filter(Boolean)
+    if (parts.length > 1) {
+      const candidate = parts[parts.length - 2]
+      if (!/\d/.test(candidate)) {
+        city = candidate
+      }
+    }
+  }
+
+  return {
+    fullAddress: normalized,
+    street,
+    houseNumber,
+    postalCode,
+    city,
+  }
 }
 
 const extractCurrency = (text: string) => {
@@ -382,14 +456,27 @@ const extractIban = (rawText: string, normalizedText: string) => {
     return remainder === 1
   }
 
-  const findValidIbanInText = (value: string) => {
-    const matches = value.match(/\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?[A-Z0-9]{1,2})?\b/gi) ?? []
-    for (const match of matches) {
-      const compact = match.replace(/\s+/g, '')
-      if (isValidIban(compact)) {
-        return compact
+  const findValidIbanInText = (value: string, ignoreFromPaymentSection: boolean) => {
+    const lines = toCandidateLines(value)
+    const paymentStart = lines.findIndex((line) =>
+      /\b(?:betaalgegevens|payment\s*details|bankgegevens|bank\s*details|bank account|swift|bic)\b/i.test(line),
+    )
+
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
+      if (ignoreFromPaymentSection && paymentStart >= 0 && lineIndex >= paymentStart) {
+        continue
+      }
+
+      const line = lines[lineIndex]
+      const matches = line.match(/\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?[A-Z0-9]{1,2})?\b/gi) ?? []
+      for (const match of matches) {
+        const compact = match.replace(/\s+/g, '')
+        if (isValidIban(compact)) {
+          return compact
+        }
       }
     }
+
     return ''
   }
 
@@ -433,10 +520,11 @@ const extractIban = (rawText: string, normalizedText: string) => {
 
   const fallbackFromLabeled = extractIbanFromLabeledSegment(rawText) || extractIbanFromLabeledSegment(normalizedText)
   if (fallbackFromLabeled) {
-    return fallbackFromLabeled
+    const hasPaymentSection = /\b(?:betaalgegevens|payment\s*details|bankgegevens|bank\s*details|swift|bic|bank account)\b/i.test(rawText)
+    return hasPaymentSection ? '' : fallbackFromLabeled
   }
 
-  return findValidIbanInText(rawText) || findValidIbanInText(normalizedText)
+  return findValidIbanInText(rawText, true) || findValidIbanInText(normalizedText, true)
 }
 
 const cleanDescription = (rawText: string, fileName: string) => {
@@ -736,6 +824,7 @@ export const extractInvoiceDataFromPdf = async (
   const total = extractTotal(normalized)
   const subtotal = extractSubtotal(normalized)
   const vatTotal = extractVatTotal(normalized)
+  const vatRate = extractVatRate(normalized)
   if (total <= 0) warnings.push('Totaalbedrag niet gevonden; controleer handmatig.')
 
   if (!subtotal && vatTotal && total) {
@@ -747,13 +836,20 @@ export const extractInvoiceDataFromPdf = async (
   }
 
   const email = extractEmail(rawText) || extractEmail(normalized)
-  const clientAddress = extractClientAddress(rawText, normalized)
+  const parsedAddress = parseAddressParts(extractClientAddress(rawText, normalized))
+  const clientAddress = parsedAddress.fullAddress
   const clientKvkNumber = extractKvkNumber(normalized)
   const clientBtwNumber = extractBtwNumber(normalized)
   const clientIban = extractIban(rawText, normalized)
 
-  const finalVatTotal = vatTotal
+  const finalVatTotal =
+    vatTotal > 0
+      ? vatTotal
+      : subtotal > 0 && vatRate > 0
+        ? Number(((subtotal * vatRate) / 100).toFixed(2))
+        : 0
   const finalSubtotal = subtotal || Math.max(0, total - finalVatTotal)
+  const finalTotal = total > 0 ? total : Number((finalSubtotal + finalVatTotal).toFixed(2))
 
   return {
     fileName: file.name,
@@ -762,6 +858,10 @@ export const extractInvoiceDataFromPdf = async (
     clientName,
     clientEmail: email,
     clientAddress,
+    clientStreet: parsedAddress.street,
+    clientHouseNumber: parsedAddress.houseNumber,
+    clientPostalCode: parsedAddress.postalCode,
+    clientCity: parsedAddress.city,
     clientKvkNumber,
     clientBtwNumber,
     clientIban,
@@ -771,7 +871,8 @@ export const extractInvoiceDataFromPdf = async (
     currencyCode: extractCurrency(normalized),
     subtotal: finalSubtotal,
     vatTotal: finalVatTotal,
-    total,
+    vatRate,
+    total: finalTotal,
     invoiceDescription: cleanDescription(rawText, file.name),
     usedOcr,
     warnings,

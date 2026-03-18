@@ -92,7 +92,19 @@ export default function InvoicesPage() {
                     const canEdit = displayStatus === 'concept'
                     return (
                       <tr key={invoice.id} className="border-b border-slate-100 align-top">
-                        <td className="py-4 font-semibold text-slate-900">{invoice.invoiceNumber}</td>
+                        <td className="py-4 font-semibold text-slate-900">
+                          <div className="inline-flex items-center gap-2">
+                            <span>{invoice.invoiceNumber}</span>
+                            {invoice.isImported ? (
+                              <span
+                                title="Geimporteerde factuur"
+                                className="rounded-full border border-slate-300 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] text-slate-500"
+                              >
+                                IMP
+                              </span>
+                            ) : null}
+                          </div>
+                        </td>
                         <td className="py-4">
                           <p className="font-medium text-slate-900">{invoice.clientName}</p>
                           <p className="text-slate-500">{invoice.clientEmail || 'Geen e-mail'}</p>
@@ -130,7 +142,17 @@ export default function InvoicesPage() {
                   <div key={invoice.id} className="rounded-xl border border-slate-200 bg-white p-4">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="font-bold text-slate-900">{invoice.invoiceNumber}</p>
+                        <div className="inline-flex items-center gap-2">
+                          <p className="font-bold text-slate-900">{invoice.invoiceNumber}</p>
+                          {invoice.isImported ? (
+                            <span
+                              title="Geimporteerde factuur"
+                              className="rounded-full border border-slate-300 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em] text-slate-500"
+                            >
+                              IMP
+                            </span>
+                          ) : null}
+                        </div>
                         <p className="text-sm font-medium text-slate-700">{invoice.clientName}</p>
                         <p className="text-xs text-slate-500">{invoice.issueDate}</p>
                       </div>
