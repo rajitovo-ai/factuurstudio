@@ -50,6 +50,8 @@ const OCR_RETRY_TIMEOUT_MS = 45000
 const OCR_TOTAL_TIMEOUT_MS = 180000
 const OCR_PRIMARY_SCALE = 2
 const OCR_RETRY_SCALE = 2.6
+const OCR_PRIMARY_LANG = 'eng+nld'
+const OCR_FALLBACK_LANG = 'eng'
 
 const withTimeout = async <T>(
   promise: Promise<T>,
@@ -150,11 +152,22 @@ const findLineAfterLabel = (rawText: string, labels: RegExp[]) => {
 }
 
 const extractInvoiceNumber = (text: string) =>
-  findFirst(text, [
-    /factuurnummer\s*[:#-]?\s*([A-Za-z0-9/._-]+)/i,
-    /factuur\s*nr\.?\s*[:#-]?\s*([A-Za-z0-9/._-]+)/i,
-    /invoice\s*(?:number|no\.?|nr\.?)\s*[:#-]?\s*([A-Za-z0-9/._-]+)/i,
-  ])
+  {
+    const candidate = findFirst(text, [
+      /factuurnummer\s*[:#-]?\s*([A-Za-z0-9/._-]+)/i,
+      /factuur\s*nr\.?\s*[:#-]?\s*([A-Za-z0-9/._-]+)/i,
+      /invoice\s*(?:number|no\.?|nr\.?)\s*[:#-]?\s*([A-Za-z0-9/._-]+)/i,
+    ])
+
+    const cleaned = candidate.trim()
+    if (!cleaned) return ''
+    if (/^(btw|vat|kvk|iban|swift|bic)$/i.test(cleaned)) return ''
+
+    const hasDigit = /\d/.test(cleaned)
+    if (!hasDigit && cleaned.length < 5) return ''
+
+    return cleaned
+  }
 
 const extractIssueDate = (text: string) =>
   findFirst(text, [
@@ -207,15 +220,223 @@ const extractEmail = (text: string) => {
   return match?.[0]?.trim() ?? ''
 }
 
-const extractClientName = (text: string, rawText: string) => {
-  const direct = findLineAfterLabel(rawText, [/^aan\b/i, /^bill\s*to\b/i, /^klant\b/i])
-  if (direct) return direct
+const STOP_WORDS_PATTERN =
+  /\b(?:kvk|btw|vat|iban|swift|bic|subtotaal|subtotal|totaal|total|omschrijving|description|factuur(?:nummer|datum)?|invoice(?:\s*number|\s*date)?|betaalgegevens|payment\s*details?)\b/i
 
-  return findFirst(text, [
-    /klant\s*[:#-]?\s*([^\n]+)/i,
-    /debiteur\s*[:#-]?\s*([^\n]+)/i,
-    /bill\s*to\s*[:#-]?\s*([^\n]+)/i,
+const sanitizeExtractedValue = (value: string) =>
+  value
+    .replace(/^\s*(?:aan|klant|debiteur|bill\s*to|gegevens|adres)\s*[:#-]?\s*/i, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+
+const truncateAtStopWords = (value: string) => {
+  const match = value.match(STOP_WORDS_PATTERN)
+  const truncated = match ? value.slice(0, match.index).trim() : value.trim()
+  return sanitizeExtractedValue(truncated.replace(/[,:;-]+$/, ''))
+}
+
+const toCandidateLines = (rawText: string) => {
+  const expanded = rawText
+    .replace(/\r/g, '\n')
+    .replace(
+      /\s+(?=(?:kvk|btw|vat|iban|swift|bic|subtotaal|subtotal|totaal|total|factuurdatum|invoice\s*date|vervaldatum|due\s*date|email|e-mail|adres|omschrijving|description)\s*:)/gi,
+      '\n',
+    )
+
+  return expanded
+    .split('\n')
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+}
+
+const isLikelyMetaOrTotalsLine = (line: string) => {
+  const hasAmount = /(?:\u20ac|eur|usd|gbp|\$)\s*\d|\b\d+[.,]\d{2}\b/i.test(line)
+  const hasMetaKeyword =
+    /\b(?:factuur|invoice|subtotaal|subtotal|totaal|total|btw|vat|iban|swift|bic|kvk|omschrijving|description|betaalgegevens|payment)\b/i.test(
+      line,
+    )
+  return hasAmount || hasMetaKeyword
+}
+
+const extractClientName = (rawText: string) => {
+  const streetLikePattern =
+    /(?:[A-Za-z]+(?:straat|laan|weg|plein|gracht|kade|singel|dreef|steeg|boulevard|hof|park)|\b(?:straat|laan|weg|plein|gracht|kade|singel|dreef|steeg|boulevard|hof|park)\b)/i
+
+  const direct = findLineAfterLabel(rawText, [/^aan\b/i, /^bill\s*to\b/i, /^klant\b/i, /^debiteur\b/i])
+  if (direct) {
+    const cleaned = truncateAtStopWords(direct)
+    if (cleaned.length >= 2) return cleaned
+  }
+
+  const embedded = rawText.match(
+    /(?:aan|klant|debiteur|bill\s*to|gegevens)\s*[:#-]?\s*([^\n]{2,160}?)(?=\s*(?:kvk|btw|vat|iban|swift|bic|subtotaal|subtotal|totaal|total|omschrijving|description|factuur|invoice)\b|$)/i,
+  )
+  if (embedded?.[1]) {
+    const cleaned = truncateAtStopWords(embedded[1])
+    if (cleaned.length >= 2) return cleaned
+  }
+
+  const lines = toCandidateLines(rawText)
+  for (const line of lines) {
+    const cleaned = truncateAtStopWords(line)
+    if (!cleaned || cleaned.length < 2 || cleaned.length > 80) continue
+    if (extractEmail(cleaned)) continue
+    if (/\d{4}\s?[A-Z]{2}/i.test(cleaned)) continue
+    if (/\b\d{1,5}[A-Z]?\b/.test(cleaned) && streetLikePattern.test(cleaned)) continue
+    if (isLikelyMetaOrTotalsLine(cleaned)) continue
+
+    const digitCount = (cleaned.match(/\d/g) ?? []).length
+    if (digitCount > 4) continue
+
+    return cleaned
+  }
+
+  return ''
+}
+
+const extractClientAddress = (rawText: string, normalizedText: string) => {
+  const streetToken = '(?:[A-Za-z]+(?:straat|laan|weg|plein|gracht|kade|singel|dreef|steeg|boulevard|hof|park)|straat|laan|weg|plein|gracht|kade|singel|dreef|steeg|boulevard|hof|park)'
+
+  const direct = findLineAfterLabel(rawText, [/^adres\b/i, /^address\b/i])
+  if (direct) {
+    const cleaned = truncateAtStopWords(direct)
+    if (cleaned) return cleaned
+  }
+
+  const inlineAddress = normalizedText.match(
+    new RegExp(
+      `([A-Za-z][A-Za-z0-9' .-]{1,80}${streetToken}[^\\n]{0,80}?\\b\\d{1,5}[A-Z]?\\b[^\\n]{0,100}?)(?=\\b(?:omschrijving|description|subtotaal|subtotal|totaal|total|kvk|btw|vat|iban|factuur|invoice|betaalgegevens)\\b|$)`,
+      'i',
+    ),
+  )
+  if (inlineAddress?.[1]) {
+    const cleaned = truncateAtStopWords(inlineAddress[1])
+    if (cleaned) return cleaned
+  }
+
+  const lines = toCandidateLines(rawText)
+  const streetPattern = new RegExp(streetToken, 'i')
+  const houseNumberPattern = /\b\d{1,5}[A-Z]?\b/
+  const postalCodePattern = /\b\d{4}\s?[A-Z]{2}\b/
+
+  for (const line of lines) {
+    const cleaned = truncateAtStopWords(line)
+    if (!cleaned || cleaned.length < 6) continue
+    if (extractEmail(cleaned)) continue
+    if (isLikelyMetaOrTotalsLine(cleaned)) continue
+
+    const hasStreetAndNumber = streetPattern.test(cleaned) && houseNumberPattern.test(cleaned)
+    const hasPostalCode = postalCodePattern.test(cleaned)
+    if (hasStreetAndNumber || hasPostalCode) {
+      return cleaned
+    }
+  }
+
+  return truncateAtStopWords(findFirst(normalizedText, [/adres\s*[:#-]?\s*([^\n]+)/i]))
+}
+
+const normalizeVatNumber = (value: string) =>
+  value
+    .toUpperCase()
+    .replace(/\s+/g, '')
+    .replace(/@/g, '0')
+    .replace(/O(?=\d)/g, '0')
+    .replace(/(?<=\d)O/g, '0')
+
+const extractKvkNumber = (normalizedText: string) => {
+  const labeled = findFirst(normalizedText, [/\bkvk\b\s*[:#-]?\s*(\d{8})/i])
+  if (labeled) return labeled
+
+  const fallback = normalizedText.match(/\b\d{8}\b/)
+  return fallback?.[0] ?? ''
+}
+
+const extractBtwNumber = (normalizedText: string) => {
+  const labeled = findFirst(normalizedText, [
+    /\b(?:btw|vat)\b\s*[:#-]?\s*([A-Z0-9@]{8,24})/i,
+    /\b(?:btw|vat)\b\s*\([^)]*\)\s*[:#-]?\s*([A-Z0-9@]{8,24})/i,
   ])
+  if (labeled) {
+    return normalizeVatNumber(labeled)
+  }
+
+  const nlBtwMatch = normalizedText.match(/\bNL[0-9O@]{9}B[0-9O@]{2}\b/i)
+  return nlBtwMatch ? normalizeVatNumber(nlBtwMatch[0]) : ''
+}
+
+const extractIban = (rawText: string, normalizedText: string) => {
+  const isValidIban = (candidate: string) => {
+    const iban = candidate.toUpperCase().replace(/\s+/g, '')
+    if (!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban)) return false
+
+    const rearranged = `${iban.slice(4)}${iban.slice(0, 4)}`
+    let remainder = 0
+
+    for (const char of rearranged) {
+      const numeric = /[A-Z]/.test(char) ? String(char.charCodeAt(0) - 55) : char
+      for (const digit of numeric) {
+        remainder = (remainder * 10 + Number(digit)) % 97
+      }
+    }
+
+    return remainder === 1
+  }
+
+  const findValidIbanInText = (value: string) => {
+    const matches = value.match(/\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?[A-Z0-9]{1,2})?\b/gi) ?? []
+    for (const match of matches) {
+      const compact = match.replace(/\s+/g, '')
+      if (isValidIban(compact)) {
+        return compact
+      }
+    }
+    return ''
+  }
+
+  const extractIbanFromLabeledSegment = (value: string) => {
+    const segment = value.match(/\biban\b\s*[:#-]?\s*([^\n]+)/i)?.[1]
+    if (!segment) return ''
+
+    const tokens = segment
+      .replace(/[^A-Z0-9\s]/gi, ' ')
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((token) => token.toUpperCase())
+
+    const startIndex = tokens.findIndex((token) => /^[A-Z]{2}\d{2}[A-Z0-9]{0,4}$/.test(token))
+    if (startIndex < 0) return ''
+
+    let compact = tokens[startIndex]
+    for (let i = startIndex + 1; i < tokens.length; i += 1) {
+      const token = tokens[i]
+      if (token.length > 4) break
+      if (!/^[A-Z0-9]+$/.test(token)) break
+      if (compact.length + token.length > 34) break
+      compact += token
+    }
+
+    if (/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(compact)) {
+      return compact
+    }
+
+    return ''
+  }
+
+  const labeled = findFirst(normalizedText, [
+    /\biban\b\s*[:#-]?\s*([A-Z]{2}\d{2}[A-Z0-9]{10,30})/i,
+    /\biban\b\s*[:#-]?\s*([A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?[A-Z0-9]{1,2})?)/i,
+  ])
+  if (labeled) {
+    const compact = labeled.replace(/\s+/g, '')
+    if (isValidIban(compact)) return compact
+  }
+
+  const fallbackFromLabeled = extractIbanFromLabeledSegment(rawText) || extractIbanFromLabeledSegment(normalizedText)
+  if (fallbackFromLabeled) {
+    return fallbackFromLabeled
+  }
+
+  return findValidIbanInText(rawText) || findValidIbanInText(normalizedText)
 }
 
 const cleanDescription = (rawText: string, fileName: string) => {
@@ -406,15 +627,34 @@ const runOcrFallback = async (pdf: PdfDocument, maxPages: number) => {
   const createWorker = (tesseract as unknown as { createWorker: (langs?: string) => Promise<OcrWorker> })
     .createWorker
 
-  const worker = await createWorker('eng+ndl')
+  const pageCount = Math.min(maxPages, pdf.numPages)
+  const ocrParts: string[] = []
+  const warnings: string[] = []
+  let worker: OcrWorker
+
+  try {
+    worker = await withTimeout(
+      createWorker(OCR_PRIMARY_LANG),
+      30000,
+      `OCR worker start timeout voor talen ${OCR_PRIMARY_LANG}.`,
+    )
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Onbekende OCR-startfout.'
+    warnings.push(
+      `OCR taalset ${OCR_PRIMARY_LANG} niet beschikbaar (${message}); fallback naar ${OCR_FALLBACK_LANG}.`,
+    )
+
+    worker = await withTimeout(
+      createWorker(OCR_FALLBACK_LANG),
+      30000,
+      `OCR worker start timeout voor taal ${OCR_FALLBACK_LANG}.`,
+    )
+  }
+
   await worker.setParameters?.({
     preserve_interword_spaces: '1',
     user_defined_dpi: '300',
   })
-
-  const pageCount = Math.min(maxPages, pdf.numPages)
-  const ocrParts: string[] = []
-  const warnings: string[] = []
 
   try {
     for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
@@ -490,7 +730,7 @@ export const extractInvoiceDataFromPdf = async (
   const invoiceNumber = extractInvoiceNumber(normalized)
   if (!invoiceNumber) warnings.push('Factuurnummer niet gevonden; vul handmatig aan.')
 
-  const clientName = extractClientName(normalized, rawText)
+  const clientName = extractClientName(rawText)
   if (!clientName) warnings.push('Klantnaam niet gevonden; vul handmatig aan.')
 
   const total = extractTotal(normalized)
@@ -506,7 +746,11 @@ export const extractInvoiceDataFromPdf = async (
     warnings.push('OCR fallback gebruikt voor scan/slecht leesbare PDF.')
   }
 
-  const email = extractEmail(normalized)
+  const email = extractEmail(rawText) || extractEmail(normalized)
+  const clientAddress = extractClientAddress(rawText, normalized)
+  const clientKvkNumber = extractKvkNumber(normalized)
+  const clientBtwNumber = extractBtwNumber(normalized)
+  const clientIban = extractIban(rawText, normalized)
 
   const finalVatTotal = vatTotal
   const finalSubtotal = subtotal || Math.max(0, total - finalVatTotal)
@@ -517,10 +761,10 @@ export const extractInvoiceDataFromPdf = async (
     companyName: '',
     clientName,
     clientEmail: email,
-    clientAddress: findFirst(normalized, [/adres\s*[:#-]?\s*([^\n]+)/i]),
-    clientKvkNumber: findFirst(normalized, [/\bkvk\b\s*[:#-]?\s*(\d{8})/i]),
-    clientBtwNumber: findFirst(normalized, [/\bbtw\b\s*[:#-]?\s*([A-Z0-9]{8,20})/i]),
-    clientIban: findFirst(normalized, [/\b(IBAN\s*[:#-]?\s*[A-Z]{2}\d{2}[A-Z0-9]{10,30})\b/i]).replace(/^IBAN\s*[:#-]?\s*/i, ''),
+    clientAddress,
+    clientKvkNumber,
+    clientBtwNumber,
+    clientIban,
     issueDate,
     dueDate,
     hasDueDate,
