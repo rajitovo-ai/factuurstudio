@@ -76,16 +76,33 @@ type AuthState = {
 }
 
 let authListenerInitialized = false
+const postAuthSyncInFlight = new Map<string, Promise<void>>()
 
 const syncPostAuthData = async (userId: string | null, email: string | null) => {
   if (!userId) return
 
-  await Promise.all([
-    useBillingStore.getState().syncUserPlan(userId),
-    useReferralStore.getState().syncUserData(userId),
-  ])
+  const runningSync = postAuthSyncInFlight.get(userId)
+  if (runningSync) {
+    await runningSync
+    return
+  }
 
-  await useReferralStore.getState().processPendingReferral(userId, email)
+  const syncTask = (async () => {
+    await Promise.all([
+      useBillingStore.getState().syncUserPlan(userId),
+      useReferralStore.getState().syncUserData(userId),
+    ])
+
+    await useReferralStore.getState().processPendingReferral(userId, email)
+  })()
+
+  postAuthSyncInFlight.set(userId, syncTask)
+
+  try {
+    await syncTask
+  } finally {
+    postAuthSyncInFlight.delete(userId)
+  }
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -309,7 +326,12 @@ export const useAuthStore = create<AuthState>((set) => ({
       return
     }
 
-    await supabase.auth.signOut()
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
+    if (error) {
+      // Logout should still clear local auth state, even if remote revoke fails.
+      console.warn('Supabase logout waarschuwing:', error.message)
+    }
+
     set({
       userId: null,
       email: null,

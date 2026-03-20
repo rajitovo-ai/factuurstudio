@@ -105,3 +105,41 @@ All workflow tests completed successfully:
 - ✅ Version tracking: Tagged and pushed to main branch
 
 **Status:** ✅ **Ready for Deployment**
+
+---
+
+# Bug Fix Notes — v0.3.1
+
+**Release Date:** 2026-03-20
+**Branch:** main
+
+## Fixed
+
+### 1. 409 Registration Race Condition
+- Fixed concurrent post-auth sync that could fire multiple parallel initialization requests after sign-up.
+- Added in-flight deduplication per user in auth sync flow.
+- Hardened referral code initialization to handle duplicate-constraint races safely by re-fetching existing user code.
+- **Files:** `src/stores/authStore.ts`, `src/stores/referralStore.ts`
+
+### 2. Logout Request Noise Handling
+- Updated logout flow to use local scope and explicit non-fatal warning handling when revoke requests are interrupted by redirect timing.
+- Logout remains functionally correct even when network abort noise appears.
+- **File:** `src/stores/authStore.ts`
+
+### 3. Remaining Regression Suite Completed
+- Completed and validated remaining manual regressions:
+	- customer profile update/delete
+	- edit restrictions after `verzonden`
+	- multi-currency preview
+	- VAT-free mode and inclusive VAT mode
+	- multiple invoice line add/remove recalculation
+	- password-forgot flow recheck
+- **Evidence log:** `resumetesting.md`
+
+## Verification
+- `npm run lint` ✅
+- `npm run build` ✅
+- Sign-up retest with new accounts after fix: 0x `409` responses captured in response listener.
+
+## Notes
+- A `net::ERR_ABORTED` logout network event may still appear during immediate redirect in browser tooling; this is informational and does not block logout behavior.

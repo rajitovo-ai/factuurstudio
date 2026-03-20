@@ -65,6 +65,8 @@ const setPendingReferralCodeStorage = (code: string | null) => {
   window.localStorage.setItem(PENDING_REFERRAL_KEY, code.trim().toUpperCase())
 }
 
+const isDuplicateConstraintError = (errorCode?: string | null) => errorCode === '23505'
+
 export const useReferralStore = create<ReferralState>()(
   persist(
     (set, get) => ({
@@ -155,9 +157,20 @@ export const useReferralStore = create<ReferralState>()(
                 break
               }
 
-              const duplicateCode = insertResponse.error.code === '23505'
-              if (!duplicateCode) {
+              if (!isDuplicateConstraintError(insertResponse.error.code)) {
                 console.error('Kon referral-code niet aanmaken:', insertResponse.error.message)
+                break
+              }
+
+              // Concurrency-safe fallback: another sync may have inserted this user's code already.
+              const retryFetch = await supabase
+                .from('referral_codes')
+                .select('code')
+                .eq('user_id', userId)
+                .maybeSingle()
+
+              if (retryFetch.data?.code) {
+                userCode = retryFetch.data.code
                 break
               }
             }

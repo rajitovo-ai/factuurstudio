@@ -67,3 +67,58 @@
 - **Lint status:** Geslaagd (exit 0)
 - **Build status:** Geslaagd (exit 0)
 - **Branch:** main (geen push gedaan, geen push toegestaan zonder expliciete toestemming)
+
+---
+
+## Update 2026-03-20 (hervat)
+
+### Uitgevoerde tests
+- **Logout/login regressie:** ✅ Geslaagd (uitloggen naar `/login`, opnieuw inloggen met bestaand testaccount werkt)
+- **Wachtwoord vergeten:** ⚠️ Gemengd
+	- `test.e2e.20260318151244@example.com` gaf `400` met melding: `Email address "..." is invalid`
+	- `rajitovo@gmail.com` gaf succesmelding: `Als dit e-mailadres bestaat, is er een reset-link verstuurd.`
+- **409 bij registratie:** ✅ Reproduceerbaar
+	- Nieuw account: `test.e2e.409.20260320.1114@gmail.com`
+	- Na succesvolle redirect naar `/dashboard` verschenen **6x** console errors `status 409`
+
+### Nieuwe conclusie
+- De 409-fout is geen eenmalige ruis, maar reproduceert direct bij nieuwe registratie.
+- Functionaliteit blijft bruikbaar (account aangemaakt + dashboard geladen), maar dit verdient een gerichte fix in de onboarding/initialisatieflow.
+
+## Update 2026-03-20 (409-fix)
+
+### Codefix uitgevoerd
+- `src/stores/authStore.ts`
+	- Post-auth synchronisatie gededupliceerd met een in-flight map per user, zodat parallelle auth-events niet dubbel dezelfde sync-run starten.
+- `src/stores/referralStore.ts`
+	- Referral-code aanmaak race-safe gemaakt:
+		- bij duplicate constraint (`23505`) eerst bestaande code ophalen op `user_id`
+		- alleen blijven retrypen als er nog geen bestaande user-code gevonden wordt
+
+### Verificatie
+- `npm run lint`: geslaagd
+- `npm run build`: geslaagd
+- Registratie opnieuw getest met 2 nieuwe accounts:
+	- `test.e2e.409.trace.1774005496560@gmail.com`
+	- `test.e2e.409.trace2.1774005509384@gmail.com`
+- Resultaat: **0x 409 responses** tijdens beide registratieruns (response-listener op status 409)
+
+### Status
+- 409 issue: ✅ opgelost en niet meer reproduceerbaar in huidige testomgeving.
+
+## Update 2026-03-20 (resterende regressie afgerond)
+
+### Uitgevoerde regressietests
+- **PDF output check:** ✅ PDF-knop op factuurlijst werkt zonder fout/crash (downloadactie gestart in browser).
+- **Klantprofiel bijwerken:** ✅ Telefoon in geselecteerd profiel aangepast (`+31 6 99998888`) en direct zichtbaar in klantenoverzicht.
+- **Klantprofiel verwijderen:** ✅ Klant verwijderd; facturenpagina blijft stabiel en factuur blijft leesbaar/laden.
+- **Factuur bewerken na verzonden status:** ✅ Na statuswijziging naar `verzonden` verdwijnt `Bewerken`-actie (niet meer beschikbaar).
+- **Valuta wisselen:** ✅ Preview wisselt correct naar `GBP` (valutasymbool en totalen geformatteerd).
+- **BTW 0% / vrijstelling:** ✅ `Geen BTW toepassen` zet regel op `0%`, schakelt BTW-keuze uit en herberekent totaal.
+- **Meerdere factuurregels:** ✅ Extra regel toegevoegd, totaal stijgt; regel verwijderen herstelt totalen correct.
+- **Inclusief BTW-modus:** ✅ Modus actief; totalen splitsen in subtotaal + BTW met ongewijzigd eindtotaal.
+- **Wachtwoord vergeten (finale check):** ✅ Succesmelding met bestaand testaccount (`test.e2e.409.trace2.1774005509384@gmail.com`).
+
+### Eindoordeel
+- Open regressiepunten uit deze testsessie: **geen**.
+- Bekende informatieve melding blijft: `net::ERR_ABORTED` op logout-request bij redirect (functioneel geen blokkade).
