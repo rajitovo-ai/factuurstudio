@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import RelatedSupport from '../components/support/RelatedSupport'
 import { downloadInvoicePdf } from '../lib/pdf'
 import { useAuthStore } from '../stores/authStore'
 import { getInvoiceDisplayStatus, useInvoiceStore } from '../stores/invoiceStore'
@@ -26,6 +27,10 @@ export default function InvoicesPage() {
   const markInvoiceSent = useInvoiceStore((state) => state.markInvoiceSent)
   const markInvoicePaid = useInvoiceStore((state) => state.markInvoicePaid)
   const removeInvoice = useInvoiceStore((state) => state.removeInvoice)
+  const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<string[]>([])
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<string[]>([])
+  const [undoState, setUndoState] = useState<{ ids: string[]; label: string } | null>(null)
+  const deleteTimersRef = useRef<Record<string, number>>({})
 
   useEffect(() => {
     if (userId) {
@@ -33,7 +38,64 @@ export default function InvoicesPage() {
     }
   }, [loadInvoices, userId])
 
+  useEffect(() => {
+    const timers = deleteTimersRef.current
+    return () => {
+      for (const timerId of Object.values(timers)) {
+        window.clearTimeout(timerId)
+      }
+    }
+  }, [])
+
   const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
+  const visibleInvoices = useMemo(
+    () => userInvoices.filter((invoice) => !pendingDeleteIds.includes(invoice.id)),
+    [pendingDeleteIds, userInvoices],
+  )
+
+  const selectableInvoiceIds = visibleInvoices.map((invoice) => invoice.id)
+  const allSelected = selectableInvoiceIds.length > 0 && selectableInvoiceIds.every((id) => selectedInvoiceIds.includes(id))
+
+  const queueDeleteInvoices = (invoiceIds: string[]) => {
+    const uniqueIds = [...new Set(invoiceIds)].filter((id) => !pendingDeleteIds.includes(id))
+    if (uniqueIds.length === 0) return
+
+    setPendingDeleteIds((current) => [...new Set([...current, ...uniqueIds])])
+    setSelectedInvoiceIds((current) => current.filter((id) => !uniqueIds.includes(id)))
+    setUndoState({
+      ids: uniqueIds,
+      label: uniqueIds.length === 1 ? 'Factuur gemarkeerd voor verwijderen.' : `${uniqueIds.length} facturen gemarkeerd voor verwijderen.`,
+    })
+
+    uniqueIds.forEach((invoiceId) => {
+      deleteTimersRef.current[invoiceId] = window.setTimeout(() => {
+        void removeInvoice(invoiceId)
+        delete deleteTimersRef.current[invoiceId]
+        setPendingDeleteIds((current) => current.filter((id) => id !== invoiceId))
+        setUndoState((current) => {
+          if (!current) return null
+          const remaining = current.ids.filter((id) => id !== invoiceId)
+          if (remaining.length === 0) return null
+          return { ...current, ids: remaining }
+        })
+      }, 5000)
+    })
+  }
+
+  const undoQueuedDelete = () => {
+    if (!undoState) return
+
+    undoState.ids.forEach((invoiceId) => {
+      const timerId = deleteTimersRef.current[invoiceId]
+      if (timerId) {
+        window.clearTimeout(timerId)
+        delete deleteTimersRef.current[invoiceId]
+      }
+    })
+
+    setPendingDeleteIds((current) => current.filter((id) => !undoState.ids.includes(id)))
+    setUndoState(null)
+  }
 
   const handleRemoveInvoice = async (invoiceId: string) => {
     const invoice = userInvoices.find((entry) => entry.id === invoiceId)
@@ -48,7 +110,41 @@ export default function InvoicesPage() {
       return
     }
 
-    await removeInvoice(invoiceId)
+    queueDeleteInvoices([invoiceId])
+  }
+
+  const runBulkMarkSent = async () => {
+    const candidates = visibleInvoices.filter((invoice) => selectedInvoiceIds.includes(invoice.id))
+    await Promise.all(
+      candidates
+        .filter((invoice) => getInvoiceDisplayStatus(invoice) === 'concept')
+        .map((invoice) => markInvoiceSent(invoice.id)),
+    )
+    setSelectedInvoiceIds([])
+  }
+
+  const runBulkMarkPaid = async () => {
+    const candidates = visibleInvoices.filter((invoice) => selectedInvoiceIds.includes(invoice.id))
+    await Promise.all(
+      candidates
+        .filter((invoice) => {
+          const status = getInvoiceDisplayStatus(invoice)
+          return status === 'verzonden' || status === 'vervallen'
+        })
+        .map((invoice) => markInvoicePaid(invoice.id)),
+    )
+    setSelectedInvoiceIds([])
+  }
+
+  const runBulkDelete = () => {
+    const candidates = visibleInvoices.filter((invoice) => selectedInvoiceIds.includes(invoice.id))
+    if (candidates.length === 0) return
+
+    if (!window.confirm(`Weet je zeker dat je ${candidates.length} facturen wilt verwijderen?`)) {
+      return
+    }
+
+    queueDeleteInvoices(candidates.map((invoice) => invoice.id))
   }
 
   return (
@@ -61,6 +157,9 @@ export default function InvoicesPage() {
             <p className="mt-2 text-sm text-slate-600">
               Concept opstellen, verzenden, PDF downloaden en daarna als betaald markeren.
             </p>
+            <Link to="/support" className="mt-2 inline-flex text-xs font-semibold text-cyan-700 hover:underline">
+              Hulp bij factuurstatus en bulkacties
+            </Link>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
@@ -80,7 +179,48 @@ export default function InvoicesPage() {
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        {userInvoices.length === 0 ? (
+        <div className="mb-4">
+          <RelatedSupport context="invoices" />
+        </div>
+        {selectedInvoiceIds.length > 0 ? (
+          <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-cyan-200 bg-cyan-50 p-3">
+            <p className="text-sm font-semibold text-cyan-800">{selectedInvoiceIds.length} geselecteerd</p>
+            <button
+              type="button"
+              onClick={() => {
+                void runBulkMarkSent()
+              }}
+              className="rounded-lg border border-cyan-300 bg-white px-3 py-1.5 text-xs font-semibold text-cyan-700 hover:bg-cyan-100"
+            >
+              Markeer verzonden
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                void runBulkMarkPaid()
+              }}
+              className="rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+            >
+              Markeer betaald
+            </button>
+            <button
+              type="button"
+              onClick={runBulkDelete}
+              className="rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
+            >
+              Verwijder geselecteerd
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedInvoiceIds([])}
+              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+            >
+              Deselecteer
+            </button>
+          </div>
+        ) : null}
+
+        {visibleInvoices.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
             Nog geen facturen opgeslagen. Maak je eerste testfactuur aan via 'Nieuwe factuur'.
           </div>
@@ -91,6 +231,21 @@ export default function InvoicesPage() {
               <table className="w-full min-w-[700px] text-left text-sm">
                 <thead className="border-b border-slate-200 text-slate-500">
                   <tr>
+                    <th className="pb-3 pr-2">
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        onChange={(event) => {
+                          if (event.target.checked) {
+                            setSelectedInvoiceIds(selectableInvoiceIds)
+                          } else {
+                            setSelectedInvoiceIds([])
+                          }
+                        }}
+                        className="h-4 w-4"
+                        aria-label="Selecteer alle facturen"
+                      />
+                    </th>
                     <th className="pb-3 font-semibold">Factuurnummer</th>
                     <th className="pb-3 font-semibold">Klant</th>
                     <th className="pb-3 font-semibold">Datum</th>
@@ -100,14 +255,30 @@ export default function InvoicesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {userInvoices.map((invoice) => {
+                  {visibleInvoices.map((invoice) => {
                     const displayStatus = getInvoiceDisplayStatus(invoice)
                     const canSend = displayStatus === 'concept'
                     const canMarkPaid = displayStatus === 'verzonden' || displayStatus === 'vervallen'
                     const canDelete = true
                     const canEdit = displayStatus === 'concept'
+                    const selected = selectedInvoiceIds.includes(invoice.id)
                     return (
                       <tr key={invoice.id} className="border-b border-slate-100 align-top">
+                        <td className="py-4 pr-2">
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={(event) => {
+                              setSelectedInvoiceIds((current) =>
+                                event.target.checked
+                                  ? [...new Set([...current, invoice.id])]
+                                  : current.filter((id) => id !== invoice.id),
+                              )
+                            }}
+                            className="h-4 w-4"
+                            aria-label={`Selecteer ${invoice.invoiceNumber}`}
+                          />
+                        </td>
                         <td className="py-4 font-semibold text-slate-900">
                           <div className="inline-flex items-center gap-2">
                             <span>{invoice.invoiceNumber}</span>
@@ -148,16 +319,32 @@ export default function InvoicesPage() {
 
             {/* Mobile cards */}
             <div className="space-y-3 md:hidden">
-              {userInvoices.map((invoice) => {
+              {visibleInvoices.map((invoice) => {
                 const displayStatus = getInvoiceDisplayStatus(invoice)
                 const canSend = displayStatus === 'concept'
                 const canMarkPaid = displayStatus === 'verzonden' || displayStatus === 'vervallen'
                 const canDelete = true
                 const canEdit = displayStatus === 'concept'
+                const selected = selectedInvoiceIds.includes(invoice.id)
                 return (
                   <div key={invoice.id} className="rounded-xl border border-slate-200 bg-white p-4">
                     <div className="flex items-start justify-between gap-2">
                       <div>
+                        <label className="mb-2 inline-flex items-center gap-2 text-xs font-semibold text-slate-600">
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={(event) => {
+                              setSelectedInvoiceIds((current) =>
+                                event.target.checked
+                                  ? [...new Set([...current, invoice.id])]
+                                  : current.filter((id) => id !== invoice.id),
+                              )
+                            }}
+                            className="h-4 w-4"
+                          />
+                          Selecteren
+                        </label>
                         <div className="inline-flex items-center gap-2">
                           <p className="font-bold text-slate-900">{invoice.invoiceNumber}</p>
                           {invoice.isImported ? (
@@ -193,6 +380,19 @@ export default function InvoicesPage() {
 
         {isLoading ? <p className="mt-4 text-sm text-slate-500">Facturen laden...</p> : null}
         {storeError ? <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{storeError}</p> : null}
+
+        {undoState ? (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+            <p className="text-sm text-amber-800">{undoState.label} Definitief over 5 seconden.</p>
+            <button
+              type="button"
+              onClick={undoQueuedDelete}
+              className="rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100"
+            >
+              Ongedaan maken
+            </button>
+          </div>
+        ) : null}
       </section>
     </main>
   )

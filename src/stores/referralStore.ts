@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { trackEvent } from '../lib/analytics'
 import {
   DEFAULT_REFERRAL_REWARD_CONFIG,
   type ReferralRewardConfig,
@@ -273,6 +274,12 @@ export const useReferralStore = create<ReferralState>()(
 
           await get().syncUserData(referredUserId)
           await useBillingStore.getState().syncUserPlan(referredUserId)
+          trackEvent('referral_used', {
+            referredUserId,
+            referredEmail,
+            code: normalizedCode,
+            mode: 'supabase',
+          })
           return
         }
 
@@ -299,6 +306,13 @@ export const useReferralStore = create<ReferralState>()(
         }
 
         set((state) => ({ referrals: [...state.referrals, newReferral] }))
+
+        trackEvent('referral_used', {
+          referredUserId,
+          referredEmail,
+          code: normalizedCode,
+          mode: 'local',
+        })
 
         // Controleer of de reward-drempel bereikt is
         const totalConverted = get().referrals.filter((r) => r.referrerId === referrerId).length

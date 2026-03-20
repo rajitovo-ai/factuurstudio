@@ -2,6 +2,25 @@
 
 All notable changes to Factuur Studio are documented here.
 
+## [0.3.4] — 2026-03-20
+
+### Added
+- **Support ticket system:** Added ticket creation flow on `/support` using Supabase RPC `create_support_ticket`
+- **Ticket history for users:** Added `Mijn tickets` section where users can track status and read admin responses
+- **Admin ticket operations:** Added support ticket management to `/admin` with status filtering (`open`, `in_progress`, `resolved`) and response handling via RPC
+- **Support feedback instrumentation:** Added per-article feedback actions (`Was dit nuttig?`) with analytics events
+
+### Changed
+- **Support contact fallback:** Updated support mailto address to `info@webdesignerstudio.nl`
+- **Support hub UX:** Expanded FAQ items with step-by-step details and integrated contextual support blocks across key pages
+
+### Database
+- Added migration `012_support_tickets.sql` with:
+	- `support_tickets` table
+	- RLS policies for user ownership and admin updates
+	- RPCs `create_support_ticket`, `admin_list_support_tickets`, `admin_reply_support_ticket`
+- Remote Supabase migration push completed successfully for `012_support_tickets.sql`
+
 ## [0.3.3] — 2026-03-20
 
 ### Added

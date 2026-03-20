@@ -78,6 +78,7 @@ export default function AppLayout() {
             <NavLink to="/facturen/importeren" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Importeer facturen</NavLink>
             <NavLink to="/referral" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Vrienden uitnodigen</NavLink>
             <NavLink to="/instellingen" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Instellingen</NavLink>
+            <NavLink to="/support" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Support</NavLink>
             {isAdminUser ? (
               <NavLink to="/admin" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Admin</NavLink>
             ) : null}
@@ -109,6 +110,7 @@ export default function AppLayout() {
             <NavLink to="/facturen/importeren" className={navLinkClass}>Importeer facturen</NavLink>
             <NavLink to="/referral" className={navLinkClass}>Vrienden uitnodigen</NavLink>
             <NavLink to="/instellingen" className={navLinkClass}>Instellingen</NavLink>
+            <NavLink to="/support" className={navLinkClass}>Support</NavLink>
             {isAdminUser ? <NavLink to="/admin" className={navLinkClass}>Admin</NavLink> : null}
           </nav>
         </aside>

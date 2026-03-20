@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { trackEvent } from '../lib/analytics'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
 import { useBillingStore } from './billingStore'
 import { useReferralStore } from './referralStore'
@@ -222,6 +223,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         isDemoMode: true,
         error: null,
       })
+      trackEvent('signup', { method: 'demo_local', requiresEmailConfirmation: false })
       return { ok: true, requiresEmailConfirmation: false }
     }
 
@@ -243,6 +245,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     if (data.session?.user?.id) {
       await syncPostAuthData(data.session.user.id, data.session.user.email ?? email)
+      trackEvent('signup', { method: 'supabase_session', requiresEmailConfirmation: false })
       return {
         ok: true,
         requiresEmailConfirmation: false,
@@ -259,11 +262,15 @@ export const useAuthStore = create<AuthState>((set) => ({
         await syncPostAuthData(signedInUser.id, signedInUser.email ?? email)
       }
 
+      trackEvent('signup', { method: 'supabase_direct_signin', requiresEmailConfirmation: false })
+
       return {
         ok: true,
         requiresEmailConfirmation: false,
       }
     }
+
+    trackEvent('signup', { method: 'supabase_pending_confirmation', requiresEmailConfirmation: true })
 
     return {
       ok: true,

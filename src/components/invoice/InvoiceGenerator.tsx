@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { canCreateInvoiceThisMonth, PLAN_CONFIGS } from '../../lib/billing'
 import { downloadInvoicePdf } from '../../lib/pdf'
 import { getNextInvoiceNumber } from '../../lib/invoiceNumber'
+import RelatedSupport from '../support/RelatedSupport'
 import { useAuthStore } from '../../stores/authStore'
 import { useBillingStore } from '../../stores/billingStore'
 import type { CustomerProfile } from '../../stores/customerStore'
@@ -118,11 +119,40 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const [customerProfileError, setCustomerProfileError] = useState<string | null>(null)
   const [customerProfileMessage, setCustomerProfileMessage] = useState<string | null>(null)
   const [showUpsell, setShowUpsell] = useState(() => guestMode && hasUsedGuestDownload())
+  const [lastAutoSavedAt, setLastAutoSavedAt] = useState<string | null>(null)
   const hasAppliedQueryCustomer = useRef(false)
+  const hasRestoredDraft = useRef(false)
   const [lines, setLines] = useState<InvoiceLine[]>(
     editInvoice
       ? editInvoice.lines
       : [{ id: 1, description: 'Mijn eerste opdracht', quantity: 1, unitPrice: 750, vatRate: 21 }],
+  )
+
+  const draftStorageKey = useMemo(() => {
+    if (guestMode || !userId) return null
+    return editInvoice
+      ? `factuurstudio.draft.invoice.${userId}.${editInvoice.id}`
+      : `factuurstudio.draft.invoice.${userId}.new`
+  }, [editInvoice, guestMode, userId])
+
+  const resolveUniqueInvoiceNumber = useCallback(
+    (candidate: string) => {
+      if (!userId || editInvoice) {
+        return candidate.trim()
+      }
+
+      const trimmedCandidate = candidate.trim()
+      const userInvoiceNumbers = new Set(
+        invoices.filter((invoice) => invoice.userId === userId).map((invoice) => invoice.invoiceNumber),
+      )
+
+      if (trimmedCandidate && !userInvoiceNumbers.has(trimmedCandidate)) {
+        return trimmedCandidate
+      }
+
+      return getNextInvoiceNumber(invoices, userId)
+    },
+    [editInvoice, invoices, userId],
   )
 
   useEffect(() => {
@@ -131,6 +161,170 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       void loadCustomers(userId)
     }
   }, [guestMode, loadCustomers, loadProfile, userId])
+
+  useEffect(() => {
+    if (!draftStorageKey || hasRestoredDraft.current) {
+      return
+    }
+
+    const rawDraft = window.localStorage.getItem(draftStorageKey)
+    if (!rawDraft) {
+      hasRestoredDraft.current = true
+      return
+    }
+
+    let restoreTimer = 0
+
+    try {
+      const draft = JSON.parse(rawDraft) as Partial<{
+        invoiceNumber: string
+        issueDate: string
+        dueDate: string
+        hasDueDate: boolean
+        pricingMode: 'excl' | 'incl'
+        noVat: boolean
+        vatExemptionReason: string
+        currencyCode: string
+        invoiceDescription: string
+        clientName: string
+        clientEmail: string
+        clientContactName: string
+        clientPhone: string
+        clientAddress: string
+        clientPostalCode: string
+        clientCity: string
+        clientCountry: string
+        clientKvkNumber: string
+        clientBtwNumber: string
+        clientIban: string
+        clientPaymentTermDays: number
+        clientPaymentTermNotApplicable: boolean
+        clientNotes: string
+        companyName: string
+        lines: InvoiceLine[]
+      }>
+
+      restoreTimer = window.setTimeout(() => {
+        if (typeof draft.invoiceNumber === 'string') {
+          setInvoiceNumber(resolveUniqueInvoiceNumber(draft.invoiceNumber))
+        }
+        if (typeof draft.issueDate === 'string') setIssueDate(draft.issueDate)
+        if (typeof draft.dueDate === 'string') setDueDate(draft.dueDate)
+        if (typeof draft.hasDueDate === 'boolean') setHasDueDate(draft.hasDueDate)
+        if (draft.pricingMode === 'excl' || draft.pricingMode === 'incl') setPricingMode(draft.pricingMode)
+        if (typeof draft.noVat === 'boolean') setNoVat(draft.noVat)
+        if (typeof draft.vatExemptionReason === 'string') setVatExemptionReason(draft.vatExemptionReason)
+        if (typeof draft.currencyCode === 'string') setCurrencyCode(draft.currencyCode)
+        if (typeof draft.invoiceDescription === 'string') setInvoiceDescription(draft.invoiceDescription)
+        if (typeof draft.clientName === 'string') setClientName(draft.clientName)
+        if (typeof draft.clientEmail === 'string') setClientEmail(draft.clientEmail)
+        if (typeof draft.clientContactName === 'string') setClientContactName(draft.clientContactName)
+        if (typeof draft.clientPhone === 'string') setClientPhone(draft.clientPhone)
+        if (typeof draft.clientAddress === 'string') setClientAddress(draft.clientAddress)
+        if (typeof draft.clientPostalCode === 'string') setClientPostalCode(draft.clientPostalCode)
+        if (typeof draft.clientCity === 'string') setClientCity(draft.clientCity)
+        if (typeof draft.clientCountry === 'string') setClientCountry(draft.clientCountry)
+        if (typeof draft.clientKvkNumber === 'string') setClientKvkNumber(draft.clientKvkNumber)
+        if (typeof draft.clientBtwNumber === 'string') setClientBtwNumber(draft.clientBtwNumber)
+        if (typeof draft.clientIban === 'string') setClientIban(draft.clientIban)
+        if (typeof draft.clientPaymentTermDays === 'number') setClientPaymentTermDays(draft.clientPaymentTermDays)
+        if (typeof draft.clientPaymentTermNotApplicable === 'boolean') {
+          setClientPaymentTermNotApplicable(draft.clientPaymentTermNotApplicable)
+        }
+        if (typeof draft.clientNotes === 'string') setClientNotes(draft.clientNotes)
+        if (typeof draft.companyName === 'string') setCompanyName(draft.companyName)
+        if (Array.isArray(draft.lines) && draft.lines.length > 0) {
+          setLines(draft.lines.map((line) => ({
+            id: line.id,
+            description: line.description,
+            quantity: line.quantity,
+            unitPrice: line.unitPrice,
+            vatRate: line.vatRate,
+          })))
+        }
+      }, 0)
+    } catch {
+      // Ignore invalid draft payload.
+    }
+
+    hasRestoredDraft.current = true
+
+    return () => {
+      if (restoreTimer) {
+        window.clearTimeout(restoreTimer)
+      }
+    }
+  }, [draftStorageKey, resolveUniqueInvoiceNumber])
+
+  const draftPayload = useMemo(
+    () => ({
+      invoiceNumber,
+      issueDate,
+      dueDate,
+      hasDueDate,
+      pricingMode,
+      noVat,
+      vatExemptionReason,
+      currencyCode,
+      invoiceDescription,
+      clientName,
+      clientEmail,
+      clientContactName,
+      clientPhone,
+      clientAddress,
+      clientPostalCode,
+      clientCity,
+      clientCountry,
+      clientKvkNumber,
+      clientBtwNumber,
+      clientIban,
+      clientPaymentTermDays,
+      clientPaymentTermNotApplicable,
+      clientNotes,
+      companyName,
+      lines,
+    }),
+    [
+      clientAddress,
+      clientBtwNumber,
+      clientCity,
+      clientContactName,
+      clientCountry,
+      clientEmail,
+      clientIban,
+      clientKvkNumber,
+      clientName,
+      clientNotes,
+      clientPaymentTermDays,
+      clientPaymentTermNotApplicable,
+      clientPhone,
+      clientPostalCode,
+      companyName,
+      currencyCode,
+      dueDate,
+      hasDueDate,
+      invoiceDescription,
+      invoiceNumber,
+      issueDate,
+      lines,
+      noVat,
+      pricingMode,
+      vatExemptionReason,
+    ],
+  )
+
+  useEffect(() => {
+    if (!draftStorageKey) {
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      window.localStorage.setItem(draftStorageKey, JSON.stringify(draftPayload))
+      setLastAutoSavedAt(new Date().toISOString())
+    }, 700)
+
+    return () => window.clearTimeout(timer)
+  }, [draftPayload, draftStorageKey])
 
   const applyCustomerProfile = useCallback((customer: CustomerProfile) => {
     setClientName(customer.companyName || customer.name)
@@ -375,6 +569,11 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         return
       }
     } else {
+      const safeInvoiceNumber = resolveUniqueInvoiceNumber(invoiceNumber)
+      if (safeInvoiceNumber !== invoiceNumber) {
+        setInvoiceNumber(safeInvoiceNumber)
+      }
+
       const quota = canCreateInvoiceThisMonth(planId, invoices, userId)
       if (!quota.allowed) {
         setSaveError(
@@ -385,7 +584,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
 
       const ok = await createInvoice({
         userId,
-        invoiceNumber,
+        invoiceNumber: safeInvoiceNumber,
         companyName,
         logoDataUrl: companyLogoDataUrl,
         clientName,
@@ -422,6 +621,10 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
 
       await loadInvoices(userId, true)
       setInvoiceNumber(getNextInvoiceNumber(useInvoiceStore.getState().invoices, userId))
+
+      if (draftStorageKey) {
+        window.localStorage.removeItem(draftStorageKey)
+      }
     }
 
     navigate('/facturen')
@@ -527,7 +730,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   }, [customers, editInvoice, guestMode, onCustomerSelectionChange, searchParams])
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-100 via-cyan-50 to-white px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-gradient-to-br from-slate-100 via-cyan-50 to-white px-4 py-8 pb-28 text-slate-900 sm:px-6 lg:px-8 lg:pb-8">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <header className="rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-700">
@@ -594,11 +797,24 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
               )}
             </div>
           )}
+          {!guestMode ? (
+            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+              <p className="text-slate-500">
+                {lastAutoSavedAt
+                  ? `Laatst opgeslagen om ${new Date(lastAutoSavedAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}`
+                  : 'Autosave actief'}
+              </p>
+              <Link to="/support" className="font-semibold text-cyan-700 hover:underline">
+                Hulp bij BTW, status of betaaltermijn
+              </Link>
+            </div>
+          ) : null}
           {saveError ? (
             <p className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
               {saveError}
             </p>
           ) : null}
+          {!guestMode ? <div className="mt-4"><RelatedSupport context="invoice-generator" /></div> : null}
         </header>
 
         <section className="grid gap-6 lg:grid-cols-2">
@@ -1066,6 +1282,31 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
           </article>
         </section>
       </div>
+
+      {!showUpsell ? (
+        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 p-3 shadow-[0_-8px_28px_-18px_rgba(15,23,42,0.6)] backdrop-blur lg:hidden">
+          <div className="mx-auto flex max-w-7xl gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                void saveInvoice()
+              }}
+              className="flex-1 rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white"
+            >
+              {guestMode ? 'PDF downloaden' : editInvoice ? 'Opslaan' : 'Factuur opslaan'}
+            </button>
+            {!guestMode ? (
+              <button
+                type="button"
+                onClick={() => navigate('/facturen')}
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+              >
+                Overzicht
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
     </main>
   )
 }

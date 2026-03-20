@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { trackEvent } from '../lib/analytics'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
 
 export type InvoiceStatus = 'concept' | 'verzonden' | 'betaald' | 'vervallen'
@@ -272,7 +273,23 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       ...toStoredInvoice(insertData as DbInvoiceRow),
       isImported: invoice.isImported ?? false,
     }
+    const hadInvoicesBefore = get().invoices.some((item) => item.userId === invoice.userId)
     set((state) => ({ invoices: [created, ...state.invoices], error: null }))
+
+    trackEvent('invoice_created', {
+      userId: invoice.userId,
+      status: created.status,
+      total: created.total,
+      imported: created.isImported,
+    })
+
+    if (!hadInvoicesBefore) {
+      trackEvent('first_invoice_created', {
+        userId: invoice.userId,
+        invoiceId: created.id,
+      })
+    }
+
     return true
   },
 
@@ -375,6 +392,12 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       error: null,
     }))
 
+    trackEvent('invoice_marked_sent', {
+      invoiceId: updatedInvoice.id,
+      userId: updatedInvoice.userId,
+      total: updatedInvoice.total,
+    })
+
     return true
   },
 
@@ -400,6 +423,12 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       invoices: state.invoices.map((invoice) => (invoice.id === invoiceId ? updatedInvoice : invoice)),
       error: null,
     }))
+
+    trackEvent('invoice_marked_paid', {
+      invoiceId: updatedInvoice.id,
+      userId: updatedInvoice.userId,
+      total: updatedInvoice.total,
+    })
 
     return true
   },

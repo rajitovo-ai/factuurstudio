@@ -16,6 +16,7 @@ import ReferralPage from './pages/ReferralPage'
 import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import SettingsPage from './pages/SettingsPage'
+import SupportPage from './pages/SupportPage'
 import { useAuthStore } from './stores/authStore'
 import { useInvoiceStore } from './stores/invoiceStore'
 import { useProfileStore } from './stores/profileStore'
@@ -64,6 +65,7 @@ function App() {
           <Route path="/facturen/:id/bewerken" element={<InvoiceEditPage />} />
           <Route path="/referral" element={<ReferralPage />} />
           <Route path="/instellingen" element={<SettingsPage />} />
+          <Route path="/support" element={<SupportPage />} />
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminPage />} />
           </Route>

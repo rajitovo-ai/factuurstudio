@@ -1,3 +1,58 @@
+# Release Notes / Changelog — v0.3.4
+
+**Release Date:** 2026-03-20
+**Branch:** main
+
+## Added
+
+### 1. Support Tickets (User Side)
+- Added a real support ticket form on `/support` (no longer mail-only).
+- Ticket creation is handled via Supabase RPC: `create_support_ticket`.
+- Added `Mijn tickets` overview so users can see ticket status and admin replies.
+
+### 2. Support Tickets (Admin Side)
+- Added `Support tickets` section in `/admin`.
+- Admin can:
+	- filter by status (`open`, `in_progress`, `resolved`)
+	- write/update ticket responses
+	- change ticket status directly in panel
+- RPCs used:
+	- `admin_list_support_tickets`
+	- `admin_reply_support_ticket`
+
+### 3. Support Quality Signals
+- Added `Was dit nuttig?` feedback buttons per support article.
+- New analytics events:
+	- `support_feedback_yes`
+	- `support_feedback_no`
+	- `support_ticket_submitted`
+
+## Changed
+
+### 1. Contact Address
+- Updated support mail fallback from old address to:
+	- `info@webdesignerstudio.nl`
+
+## Database Rollout
+
+### Migration Applied
+- Applied remote migration: `012_support_tickets.sql`
+- Includes:
+	- `support_tickets` table
+	- RLS policies
+	- trigger for `updated_at`
+	- support/admin RPC functions
+
+### Migration Note
+- Adjusted policy creation syntax for compatibility (`drop policy if exists` + `create policy`) before successful push.
+
+## Verification
+- `npm run lint` ✅
+- `npm run build` ✅
+- `supabase db push --linked --include-all` ✅ (`012_support_tickets.sql` applied)
+
+---
+
 # Release Notes — Factuur Studio v0.3.0
 
 # Release Notes / Changelog — v0.3.3
