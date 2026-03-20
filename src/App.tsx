@@ -4,6 +4,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
 import CustomersPage from './pages/CustomersPage'
 import DashboardPage from './pages/DashboardPage'
+import AdminPage from './pages/AdminPage'
 import InvoiceCreatePage from './pages/InvoiceCreatePage'
 import InvoiceEditPage from './pages/InvoiceEditPage'
 import InvoicesPage from './pages/InvoicesPage'
@@ -48,6 +49,7 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="/klanten" element={<CustomersPage />} />
           <Route path="/facturen" element={<InvoicesPage />} />
           <Route path="/facturen/nieuw" element={<InvoiceCreatePage />} />

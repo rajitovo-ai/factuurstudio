@@ -105,6 +105,17 @@ export const downloadInvoicePdf = (invoice: StoredInvoice) => {
     y += wrappedDescription.length * 4
   }
 
+  if (invoice.vatExemptionReason?.trim()) {
+    y += 8
+    doc.setFont('helvetica', 'bold')
+    doc.text('BTW-vrijstelling', left, y)
+    y += 5
+    doc.setFont('helvetica', 'normal')
+    const wrappedExemption = doc.splitTextToSize(invoice.vatExemptionReason, 170)
+    doc.text(wrappedExemption, left, y)
+    y += wrappedExemption.length * 4
+  }
+
   y += 10
   doc.line(left, y, right, y)
   y += 6

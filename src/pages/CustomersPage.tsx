@@ -32,6 +32,7 @@ export default function CustomersPage() {
   const [btwNumber, setBtwNumber] = useState('')
   const [iban, setIban] = useState('')
   const [paymentTermDays, setPaymentTermDays] = useState(14)
+  const [paymentTermNotApplicable, setPaymentTermNotApplicable] = useState(false)
   const [notes, setNotes] = useState('')
 
   useEffect(() => {
@@ -76,7 +77,7 @@ export default function CustomersPage() {
       kvkNumber,
       btwNumber,
       iban,
-      paymentTermDays,
+      paymentTermDays: paymentTermNotApplicable ? 0 : paymentTermDays,
       notes,
     })
 
@@ -97,6 +98,7 @@ export default function CustomersPage() {
     setBtwNumber('')
     setIban('')
     setPaymentTermDays(14)
+    setPaymentTermNotApplicable(false)
     setNotes('')
     setMessage('Nieuw klantprofiel opgeslagen.')
     setTimeout(() => setMessage(null), 2500)
@@ -207,13 +209,23 @@ export default function CustomersPage() {
             <input
               type="number"
               min={0}
-              value={paymentTermDays}
+              value={paymentTermNotApplicable ? 0 : paymentTermDays}
+              disabled={paymentTermNotApplicable}
               onChange={(event) => {
                 const value = Number(event.target.value)
                 setPaymentTermDays(Number.isNaN(value) ? 0 : value)
               }}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
             />
+          </label>
+          <label className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2">
+            <input
+              type="checkbox"
+              checked={paymentTermNotApplicable}
+              onChange={(event) => setPaymentTermNotApplicable(event.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-600"
+            />
+            <span className="text-sm font-medium text-slate-700">Betaaltermijn niet van toepassing</span>
           </label>
           <label className="flex flex-col gap-1">
             <span className="text-sm font-medium text-slate-700">KvK</span>
@@ -289,7 +301,9 @@ export default function CustomersPage() {
                   Plaats: {customer.postalCode || '-'} {customer.city || '-'} ({customer.country || 'NL'})
                 </p>
                 <p className="text-sm text-slate-600">IBAN: {customer.iban || '-'}</p>
-                <p className="text-sm text-slate-600">Betaaltermijn: {customer.paymentTermDays} dagen</p>
+                <p className="text-sm text-slate-600">
+                  Betaaltermijn: {customer.paymentTermDays > 0 ? `${customer.paymentTermDays} dagen` : 'n.v.t.'}
+                </p>
                 <div className="mt-3 flex flex-wrap justify-end gap-2">
                   <Link
                     to={`/facturen/nieuw?customerId=${encodeURIComponent(customer.id)}`}

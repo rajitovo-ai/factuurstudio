@@ -221,11 +221,10 @@ export default function SettingsPage() {
         </div>
       </form>
 
-      <section className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Planbeheer</p>
-        <h2 className="mt-2 text-xl font-extrabold">Huidig plan: {PLAN_CONFIGS[planId].name}</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Beperkingen en functies worden direct op basis van dit plan toegepast.
+      <section className="mt-8 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Plan</p>
+        <p className="mt-1 text-sm text-slate-700">
+          Huidig plan: <span className="font-semibold">{PLAN_CONFIGS[planId].name}</span>
         </p>
 
         {isAdminUser ? (
@@ -250,8 +249,8 @@ export default function SettingsPage() {
             </button>
           </div>
         ) : (
-          <p className="mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
-            Alleen beheerders kunnen handmatig plannen wijzigen.
+          <p className="mt-3 text-xs text-slate-500">
+            Planwijzigingen worden door een beheerder gedaan.
           </p>
         )}
 

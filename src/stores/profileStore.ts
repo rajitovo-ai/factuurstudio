@@ -20,7 +20,7 @@ type ProfileState = {
 }
 
 export const defaultCompanyProfile: CompanyProfile = {
-  companyName: 'FactuurStudio Demo B.V.',
+  companyName: 'Mijn eerste bedrijf',
   address: '',
   kvkNumber: '',
   btwNumber: '',

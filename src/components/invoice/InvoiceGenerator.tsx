@@ -86,6 +86,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const [hasDueDate, setHasDueDate] = useState(editInvoice?.hasDueDate ?? true)
   const [pricingMode, setPricingMode] = useState<'excl' | 'incl'>(editInvoice?.pricingMode ?? 'excl')
   const [noVat, setNoVat] = useState(false)
+  const [vatExemptionReason, setVatExemptionReason] = useState(editInvoice?.vatExemptionReason ?? '')
   const [currencyCode, setCurrencyCode] = useState(editInvoice?.currencyCode ?? 'EUR')
   const [invoiceDescription, setInvoiceDescription] = useState(editInvoice?.invoiceDescription ?? '')
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
@@ -103,6 +104,9 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const [clientPaymentTermDays, setClientPaymentTermDays] = useState(
     editInvoice?.clientPaymentTermDays ?? 14,
   )
+  const [clientPaymentTermNotApplicable, setClientPaymentTermNotApplicable] = useState(
+    (editInvoice?.clientPaymentTermDays ?? 14) === 0,
+  )
   const [clientNotes, setClientNotes] = useState(editInvoice?.clientNotes ?? '')
   const [companyName, setCompanyName] = useState(
     editInvoice ? editInvoice.companyName : profile.companyName,
@@ -118,7 +122,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const [lines, setLines] = useState<InvoiceLine[]>(
     editInvoice
       ? editInvoice.lines
-      : [{ id: 1, description: 'Webdesign en ontwikkeling', quantity: 1, unitPrice: 750, vatRate: 21 }],
+      : [{ id: 1, description: 'Mijn eerste opdracht', quantity: 1, unitPrice: 750, vatRate: 21 }],
   )
 
   useEffect(() => {
@@ -141,6 +145,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     setClientBtwNumber(customer.btwNumber)
     setClientIban(customer.iban)
     setClientPaymentTermDays(customer.paymentTermDays)
+    setClientPaymentTermNotApplicable(customer.paymentTermDays === 0)
     setClientNotes(customer.notes)
     if (hasDueDate) {
       setDueDate(createDueDateFromIssueDate(issueDate, customer.paymentTermDays))
@@ -282,7 +287,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         clientKvkNumber,
         clientBtwNumber,
         clientIban,
-        clientPaymentTermDays,
+        clientPaymentTermDays: clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays,
         clientNotes,
         invoiceDescription,
         hasDueDate,
@@ -290,6 +295,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         dueDate: resolvedDueDate,
         currencyCode,
         pricingMode,
+        vatExemptionReason,
         subtotal: totals.subtotal,
         vatTotal: totals.vatTotal,
         total: totals.total,
@@ -349,7 +355,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         clientKvkNumber,
         clientBtwNumber,
         clientIban,
-        clientPaymentTermDays,
+        clientPaymentTermDays: clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays,
         clientNotes,
         invoiceDescription,
         hasDueDate,
@@ -357,6 +363,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         dueDate: resolvedDueDate,
         currencyCode,
         pricingMode,
+        vatExemptionReason,
         subtotal: totals.subtotal,
         vatTotal: totals.vatTotal,
         total: totals.total,
@@ -392,7 +399,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         clientKvkNumber,
         clientBtwNumber,
         clientIban,
-        clientPaymentTermDays,
+        clientPaymentTermDays: clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays,
         clientNotes,
         invoiceDescription,
         hasDueDate,
@@ -400,6 +407,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         dueDate: resolvedDueDate,
         currencyCode,
         pricingMode,
+        vatExemptionReason,
         subtotal: totals.subtotal,
         vatTotal: totals.vatTotal,
         total: totals.total,
@@ -431,7 +439,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     kvkNumber: clientKvkNumber,
     btwNumber: clientBtwNumber,
     iban: clientIban,
-    paymentTermDays: clientPaymentTermDays,
+    paymentTermDays: clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays,
     notes: clientNotes,
   })
 
@@ -533,7 +541,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
               ? 'Vul je factuurgegevens in en download hem 1\u00d7 gratis als PDF. Geen account vereist.'
               : editInvoice
                 ? 'Pas de gegevens aan en sla op. Alleen conceptfacturen kunnen worden bewerkt.'
-                : 'Client-side formulier met automatische BTW-berekening (21/9/0) en live factuurpreview.'}
+                : 'Vul hier je factuurgegevens in en controleer direct de preview.'}
           </p>
           {showUpsell && guestMode ? (
             <div className="mt-4 rounded-xl border border-cyan-200 bg-cyan-50 p-4">
@@ -664,6 +672,19 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 />
                 <span className="text-sm font-medium text-slate-700">Geen BTW toepassen op deze factuur</span>
               </label>
+              {noVat ? (
+                <label className="flex flex-col gap-1 sm:col-span-2">
+                  <span className="text-sm font-medium text-slate-700">
+                    Reden vrijstelling (optioneel)
+                  </span>
+                  <input
+                    value={vatExemptionReason}
+                    onChange={(event) => setVatExemptionReason(event.target.value)}
+                    placeholder="Bijv. BTW verlegd of vrijstelling artikel 25"
+                    className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                  />
+                </label>
+              ) : null}
               <label className="flex flex-col gap-1">
                 <span className="text-sm font-medium text-slate-700">Valuta</span>
                 <select
@@ -811,13 +832,28 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                       <input
                         type="number"
                         min={0}
-                        value={clientPaymentTermDays}
+                        value={clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays}
+                        disabled={clientPaymentTermNotApplicable}
                         onChange={(event) => {
                           const value = Number(event.target.value)
                           setClientPaymentTermDays(Number.isNaN(value) ? 0 : value)
                         }}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                       />
+                    </label>
+                    <label className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 sm:col-span-2">
+                      <input
+                        type="checkbox"
+                        checked={clientPaymentTermNotApplicable}
+                        onChange={(event) => {
+                          setClientPaymentTermNotApplicable(event.target.checked)
+                          if (event.target.checked && hasDueDate) {
+                            setDueDate(issueDate)
+                          }
+                        }}
+                        className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-600"
+                      />
+                      <span className="text-sm font-medium text-slate-700">Betaaltermijn niet van toepassing</span>
                     </label>
                     <label className="flex flex-col gap-1 sm:col-span-2">
                       <span className="text-sm font-medium text-slate-700">Notities klantprofiel</span>
@@ -968,6 +1004,13 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 <div className="mt-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Beschrijving</p>
                   <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{invoiceDescription}</p>
+                </div>
+              ) : null}
+
+              {noVat && vatExemptionReason.trim() ? (
+                <div className="mt-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">BTW-vrijstelling</p>
+                  <p className="mt-1 text-sm text-slate-700">{vatExemptionReason}</p>
                 </div>
               ) : null}
 

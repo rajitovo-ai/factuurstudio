@@ -37,6 +37,7 @@ export type StoredInvoice = {
   dueDate: string
   currencyCode: string
   pricingMode: PricingMode
+  vatExemptionReason: string
   subtotal: number
   vatTotal: number
   total: number
@@ -46,10 +47,16 @@ export type StoredInvoice = {
   createdAt: string
 }
 
-type CreateInvoiceInput = Omit<StoredInvoice, 'id' | 'createdAt' | 'isImported'> & {
+type CreateInvoiceInput = Omit<StoredInvoice, 'id' | 'createdAt' | 'isImported' | 'vatExemptionReason'> & {
   isImported?: boolean
+  vatExemptionReason?: string
 }
-type UpdateInvoiceInput = Omit<StoredInvoice, 'id' | 'userId' | 'status' | 'createdAt' | 'isImported'>
+type UpdateInvoiceInput = Omit<
+  StoredInvoice,
+  'id' | 'userId' | 'status' | 'createdAt' | 'isImported' | 'vatExemptionReason'
+> & {
+  vatExemptionReason?: string
+}
 
 type DbInvoiceRow = {
   id: string
@@ -76,6 +83,7 @@ type DbInvoiceRow = {
   due_date: string
   currency_code: string
   pricing_mode: PricingMode
+  vat_exemption_reason: string | null
   subtotal: number
   vat_total: number
   total: number
@@ -110,6 +118,7 @@ const toStoredInvoice = (row: DbInvoiceRow): StoredInvoice => ({
   dueDate: row.due_date,
   currencyCode: row.currency_code,
   pricingMode: row.pricing_mode,
+  vatExemptionReason: row.vat_exemption_reason ?? '',
   subtotal: Number(row.subtotal),
   vatTotal: Number(row.vat_total),
   total: Number(row.total),
@@ -219,6 +228,7 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       due_date: invoice.dueDate,
       currency_code: invoice.currencyCode,
       pricing_mode: invoice.pricingMode,
+      vat_exemption_reason: invoice.vatExemptionReason ?? '',
       subtotal: invoice.subtotal,
       vat_total: invoice.vatTotal,
       total: invoice.total,
@@ -242,6 +252,7 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
     if (insertError && /is_imported|column/i.test(insertError.message)) {
       const legacyPayload = { ...payload }
       delete (legacyPayload as { is_imported?: boolean }).is_imported
+      delete (legacyPayload as { vat_exemption_reason?: string }).vat_exemption_reason
       const legacyInsert = await supabase
         .from('app_invoices')
         .insert(legacyPayload)
@@ -292,6 +303,7 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       due_date: update.dueDate,
       currency_code: update.currencyCode,
       pricing_mode: update.pricingMode,
+      vat_exemption_reason: update.vatExemptionReason ?? '',
       subtotal: update.subtotal,
       vat_total: update.vatTotal,
       total: update.total,

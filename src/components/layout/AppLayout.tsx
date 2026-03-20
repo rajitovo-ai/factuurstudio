@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../../stores/authStore'
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -13,6 +14,28 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const { email, signOut } = useAuthStore()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [isAdminUser, setIsAdminUser] = useState(false)
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (!email) {
+        setIsAdminUser(false)
+        return
+      }
+
+      void supabase
+        .rpc('is_admin')
+        .then(({ data, error }) => {
+          if (error) {
+            setIsAdminUser(false)
+            return
+          }
+          setIsAdminUser(Boolean(data))
+        })
+    }, 0)
+
+    return () => window.clearTimeout(timer)
+  }, [email])
 
   const handleSignOut = async () => {
     await signOut()
@@ -55,6 +78,9 @@ export default function AppLayout() {
             <NavLink to="/facturen/importeren" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Importeer facturen</NavLink>
             <NavLink to="/referral" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Vrienden uitnodigen</NavLink>
             <NavLink to="/instellingen" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Instellingen</NavLink>
+            {isAdminUser ? (
+              <NavLink to="/admin" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Admin</NavLink>
+            ) : null}
           </nav>
           <div className="mt-3 border-t border-slate-100 pt-3">
             <p className="text-xs text-slate-500">{email}</p>
@@ -83,6 +109,7 @@ export default function AppLayout() {
             <NavLink to="/facturen/importeren" className={navLinkClass}>Importeer facturen</NavLink>
             <NavLink to="/referral" className={navLinkClass}>Vrienden uitnodigen</NavLink>
             <NavLink to="/instellingen" className={navLinkClass}>Instellingen</NavLink>
+            {isAdminUser ? <NavLink to="/admin" className={navLinkClass}>Admin</NavLink> : null}
           </nav>
         </aside>
 

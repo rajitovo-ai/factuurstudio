@@ -143,3 +143,77 @@ All workflow tests completed successfully:
 
 ## Notes
 - A `net::ERR_ABORTED` logout network event may still appear during immediate redirect in browser tooling; this is informational and does not block logout behavior.
+
+---
+
+# Release Notes / Changelog — v0.3.2
+
+**Release Date:** 2026-03-20
+**Branch:** main
+
+## New Features
+
+### 1. Admin Panel
+- Added a dedicated `/admin` panel for platform management.
+- Added backend-protected admin capabilities via Supabase RPCs instead of frontend-only checks.
+- Included:
+	- platform stats
+	- recent users overview
+	- direct Free/Pro plan switching
+	- referral reward configuration
+	- admin email management
+- Tested with a real test-admin account.
+
+### 2. VAT Exemption Reason
+- Added an optional text field when `Geen BTW toepassen op deze factuur` is enabled.
+- Reason is stored with the invoice and included in PDF output.
+
+### 3. Friendlier Starter UX
+- Replaced technical invoice intro copy with user-facing language.
+- Default line item changed from `Webdesign en ontwikkeling` to `Mijn eerste opdracht`.
+- Default company name changed from `FactuurStudio Demo B.V.` to `Mijn eerste bedrijf`.
+
+### 4. Payment Term Not Applicable
+- Added a `Betaaltermijn niet van toepassing` option to new customer profiles.
+- Same option added to customer profile fields inside the invoice generator.
+- When enabled, payment term is stored as `0` and shown as `n.v.t.`.
+
+## Database Changes
+
+- `010_app_invoices_vat_exemption_reason.sql`
+	- Adds `vat_exemption_reason` to `app_invoices`
+- `011_admin_panel_rpc.sql`
+	- Adds `admin_users`
+	- Adds `is_admin()`
+	- Adds admin RPCs for stats, user plan updates, reward settings, and admin management
+
+## Verification
+
+- `npm run lint` ✅
+- `npm run build` ✅
+- Supabase rollout verified:
+	- migration `010` remote ✅
+	- migration `011` remote ✅
+- Admin panel validated with real test account:
+	- admin access visible
+	- plan switch works
+	- referral settings save works
+	- admin add/remove works
+
+## Files Included
+
+- `src/App.tsx`
+- `src/components/invoice/InvoiceGenerator.tsx`
+- `src/components/layout/AppLayout.tsx`
+- `src/lib/pdf.ts`
+- `src/pages/AdminPage.tsx`
+- `src/pages/CustomersPage.tsx`
+- `src/pages/SettingsPage.tsx`
+- `src/stores/invoiceStore.ts`
+- `src/stores/profileStore.ts`
+- `supabase/migrations/010_app_invoices_vat_exemption_reason.sql`
+- `supabase/migrations/011_admin_panel_rpc.sql`
+
+## Status
+
+✅ Ready to commit and deploy
