@@ -1,4 +1,59 @@
-# Release Notes — FactuurStudio v0.3.0
+# Release Notes — Factuur Studio v0.3.0
+
+# Release Notes / Changelog — v0.3.3
+
+**Release Date:** 2026-03-20
+**Branch:** main
+
+## Added
+
+### 1. Admin Route Guard (Router Level)
+- Added `AdminRoute` to protect `/admin` at routing level.
+- Non-authenticated users are redirected to `/login`.
+- Authenticated non-admin users are redirected to `/dashboard`.
+- Existing in-page admin validation remains as defense in depth.
+- **Files:** `src/components/auth/AdminRoute.tsx`, `src/App.tsx`
+
+### 2. Dashboard Redesign Implementation Plan
+- Added a phased implementation roadmap for dashboard redesign and optimization.
+- Includes structure, visual layout, actionable content, data optimization, and polish phases.
+- **File:** `todo-next-steps.md`
+
+## Changed
+
+### 1. Landing Page Upgrade
+- Replaced the previous guest generator-first landing approach with a modern marketing-style landing page.
+- Added clear value proposition, feature grid, use-case section, and stronger CTA structure.
+- Replaced the feature card `Veilig account en rollen` with `Sneller betaald` for broader user relevance.
+- **File:** `src/pages/LandingPage.tsx`
+
+### 2. Brand Name Presentation
+- Updated user-facing brand text from `FactuurStudio` to `Factuur Studio` in visible UI copy.
+- Updated document title to match brand spacing.
+- Internal storage keys (`factuurstudio.*`) intentionally unchanged for backward compatibility.
+- **Files:**
+	- `index.html`
+	- `src/components/layout/AppLayout.tsx`
+	- `src/components/invoice/InvoiceGenerator.tsx`
+	- `src/pages/LoginPage.tsx`
+	- `src/pages/RegisterPage.tsx`
+	- `src/pages/ForgotPasswordPage.tsx`
+	- `src/pages/ResetPasswordPage.tsx`
+	- `src/pages/ReferralPage.tsx`
+	- `src/pages/LandingPage.tsx`
+
+## Prepared (Not Yet Integrated)
+- Captured real dashboard/use-case screenshots for future landing-page integration.
+- Assets currently stored under `public/screenshots/` and available for later rollout.
+
+## Verification
+- `npm run lint` ✅
+- `npm run build` ✅
+
+## Status
+✅ Ready to commit and deploy
+
+---
 
 **Release Date:** 2026-03-18  
 **Branch:** main  

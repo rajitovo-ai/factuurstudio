@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
+import AdminRoute from './components/auth/AdminRoute'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
 import CustomersPage from './pages/CustomersPage'
@@ -49,7 +50,6 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/admin" element={<AdminPage />} />
           <Route path="/klanten" element={<CustomersPage />} />
           <Route path="/facturen" element={<InvoicesPage />} />
           <Route path="/facturen/nieuw" element={<InvoiceCreatePage />} />
@@ -64,6 +64,9 @@ function App() {
           <Route path="/facturen/:id/bewerken" element={<InvoiceEditPage />} />
           <Route path="/referral" element={<ReferralPage />} />
           <Route path="/instellingen" element={<SettingsPage />} />
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminPage />} />
+          </Route>
         </Route>
       </Route>
 

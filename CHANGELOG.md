@@ -1,6 +1,26 @@
 # Changelog
 
-All notable changes to FactuurStudio are documented here.
+All notable changes to Factuur Studio are documented here.
+
+## [0.3.3] — 2026-03-20
+
+### Added
+- **Admin route guard:** Added a dedicated `AdminRoute` guard to protect `/admin` at router level, redirecting non-admin users away before page render
+- **Dashboard implementation roadmap:** Added a phased implementation plan in `todo-next-steps.md` for structure, visual redesign, actionable insights, data optimization, and polish
+
+### Changed
+- **Landing page redesign:** Upgraded to a modern marketing-first layout with clearer value communication, feature framing, and CTA hierarchy
+- **Feature copy refinement:** Replaced the landing feature `Veilig account en rollen` with `Sneller betaald` to better match end-user value
+- **Brand text update:** Changed visible UI text from `FactuurStudio` to `Factuur Studio` across key user-facing pages and shell layout
+- **Document title update:** Updated HTML title to `Factuur Studio`
+
+### Security
+- Strengthened admin panel access with route-level authorization checks in addition to existing in-page checks
+
+### Notes
+- Real screenshot assets for future landing integration were prepared in `public/screenshots/` but are not yet wired in the current landing section
+
+---
 
 ## [0.3.0] — 2026-03-18
 

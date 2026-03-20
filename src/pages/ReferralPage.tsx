@@ -241,7 +241,7 @@ export default function ReferralPage() {
             <div>
               <p className="font-semibold text-slate-800">Vriend registreert</p>
               <p className="mt-0.5 text-sm text-slate-600">
-                De vriend klikt op jouw link en maakt een gratis FactuurStudio-account aan. De registratie
+                De vriend klikt op jouw link en maakt een gratis Factuur Studio-account aan. De registratie
                 wordt automatisch aan jou gekoppeld.
               </p>
             </div>

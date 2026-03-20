@@ -534,7 +534,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
             {guestMode ? 'Gratis proberen' : editInvoice ? 'Factuur bewerken' : 'Nieuwe factuur'}
           </p>
           <h1 className="mt-2 text-3xl font-extrabold leading-tight sm:text-4xl">
-            {editInvoice ? `Factuur ${editInvoice.invoiceNumber}` : 'FactuurStudio Generator'}
+            {editInvoice ? `Factuur ${editInvoice.invoiceNumber}` : 'Factuur Studio Generator'}
           </h1>
           <p className="mt-3 max-w-3xl text-sm text-slate-600 sm:text-base">
             {guestMode

@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-cyan-50 via-white to-slate-100 px-4">
       <form onSubmit={onSubmit} className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">FactuurStudio</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Factuur Studio</p>
         <h1 className="mt-2 text-3xl font-extrabold">Nieuw wachtwoord</h1>
         <p className="mt-2 text-sm text-slate-600">Stel hieronder een nieuw wachtwoord in voor je account.</p>
 

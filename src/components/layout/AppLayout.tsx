@@ -47,7 +47,7 @@ export default function AppLayout() {
       {/* Mobile top bar */}
       <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
         <Link to="/dashboard" className="text-lg font-extrabold text-cyan-800">
-          FactuurStudio
+          Factuur Studio
         </Link>
         <button
           type="button"
@@ -99,7 +99,7 @@ export default function AppLayout() {
         {/* Desktop sidebar */}
         <aside className="hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:block">
           <Link to="/dashboard" className="block text-xl font-extrabold text-cyan-800">
-            FactuurStudio
+            Factuur Studio
           </Link>
           <nav className="mt-6 flex flex-col gap-2">
             <NavLink to="/dashboard" className={navLinkClass}>Dashboard</NavLink>
