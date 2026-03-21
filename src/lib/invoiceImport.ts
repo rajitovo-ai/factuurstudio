@@ -813,7 +813,7 @@ export const extractInvoiceDataFromPdf = async (
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Onbekende OCR-fout.'
-      warnings.push(`OCR fallback niet voltooid: ${message}`)
+      warnings.push(`Diepe scan niet voltooid: ${message}`)
     }
   }
 
@@ -845,7 +845,7 @@ export const extractInvoiceDataFromPdf = async (
   }
 
   if (usedOcr) {
-    warnings.push('OCR fallback gebruikt voor scan/slecht leesbare PDF.')
+    warnings.push('Diepe scan gebruikt voor scan/slecht leesbare PDF.')
   }
 
   const email = extractEmail(rawText) || extractEmail(normalized)

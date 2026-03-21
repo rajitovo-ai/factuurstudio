@@ -3,26 +3,54 @@ import { persist } from 'zustand/middleware'
 import type { PlanId } from '../lib/billing'
 import { hasSupabaseConfig, supabase } from '../lib/supabase'
 
+type BillingDetails = {
+  plan: PlanId
+  stripeStatus: string
+  currentPeriodEnd: string | null
+  cancelAtPeriodEnd: boolean
+}
+
 type BillingState = {
   userPlans: Record<string, PlanId>
+  userBillingDetails: Record<string, BillingDetails>
   getUserPlan: (userId: string | null) => PlanId
+  getUserBillingDetails: (userId: string | null) => BillingDetails
   setUserPlan: (userId: string, planId: PlanId) => Promise<void>
   syncUserPlan: (userId: string | null) => Promise<void>
+}
+
+const defaultBillingDetails: BillingDetails = {
+  plan: 'free',
+  stripeStatus: 'inactive',
+  currentPeriodEnd: null,
+  cancelAtPeriodEnd: false,
 }
 
 export const useBillingStore = create<BillingState>()(
   persist(
     (set, get) => ({
       userPlans: {},
+      userBillingDetails: {},
       getUserPlan: (userId) => {
         if (!userId) return 'free'
         return get().userPlans[userId] ?? 'free'
+      },
+      getUserBillingDetails: (userId) => {
+        if (!userId) return defaultBillingDetails
+        return get().userBillingDetails[userId] ?? defaultBillingDetails
       },
       setUserPlan: async (userId, planId) => {
         set((state) => ({
           userPlans: {
             ...state.userPlans,
             [userId]: planId,
+          },
+          userBillingDetails: {
+            ...state.userBillingDetails,
+            [userId]: {
+              ...(state.userBillingDetails[userId] ?? defaultBillingDetails),
+              plan: planId,
+            },
           },
         }))
 
@@ -45,7 +73,7 @@ export const useBillingStore = create<BillingState>()(
 
         const { data, error } = await supabase
           .from('subscriptions')
-          .select('plan')
+          .select('plan, stripe_status, current_period_end, cancel_at_period_end')
           .eq('user_id', userId)
           .maybeSingle()
 
@@ -59,6 +87,15 @@ export const useBillingStore = create<BillingState>()(
           userPlans: {
             ...state.userPlans,
             [userId]: plan,
+          },
+          userBillingDetails: {
+            ...state.userBillingDetails,
+            [userId]: {
+              plan,
+              stripeStatus: data?.stripe_status ?? 'inactive',
+              currentPeriodEnd: data?.current_period_end ?? null,
+              cancelAtPeriodEnd: Boolean(data?.cancel_at_period_end),
+            },
           },
         }))
       },

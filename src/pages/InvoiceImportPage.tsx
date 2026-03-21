@@ -339,7 +339,7 @@ export default function InvoiceImportPage() {
             />
           </label>
           <p className="mt-2 text-xs text-slate-500">
-            Fase 2: OCR fallback is beschikbaar voor scan-PDF's. Dit duurt langer maar verhoogt herkenning.
+            Fase 2: Diepe scan voor scan-PDF's. Dit duurt iets langer maar herkent meer gegevens.
           </p>
           <label className="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2">
             <input
@@ -347,7 +347,7 @@ export default function InvoiceImportPage() {
               checked={useOcrFallback}
               onChange={(event) => setUseOcrFallback(event.target.checked)}
             />
-            <span className="text-sm text-slate-700">OCR fallback voor scans inschakelen</span>
+            <span className="text-sm text-slate-700">Diepe scan voor scans inschakelen</span>
           </label>
         </div>
 

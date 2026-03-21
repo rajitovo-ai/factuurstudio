@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { PLAN_CONFIGS } from '../lib/billing'
+import { startProCheckout, syncBillingAfterCheckout } from '../lib/stripeBilling'
 import { useAuthStore } from '../stores/authStore'
 import { useBillingStore } from '../stores/billingStore'
 import { defaultCompanyProfile, useProfileStore } from '../stores/profileStore'
@@ -18,8 +19,14 @@ export default function SettingsPage() {
   const upsertProfile = useProfileStore((state) => state.upsertProfile)
   const profileError = useProfileStore((state) => state.error)
   const planId = useBillingStore((state) => state.getUserPlan(userId))
+  const billingDetails = useBillingStore((state) => state.getUserBillingDetails(userId))
   const setUserPlan = useBillingStore((state) => state.setUserPlan)
+  const syncUserPlan = useBillingStore((state) => state.syncUserPlan)
   const [planMessage, setPlanMessage] = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const [checkoutLoading, setCheckoutLoading] = useState<null | 'monthly' | 'yearly'>(null)
+  const [syncLoading, setSyncLoading] = useState(false)
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly' | null>(null)
 
   const profile = useMemo(() => {
     if (!userId) return defaultCompanyProfile
@@ -48,6 +55,42 @@ export default function SettingsPage() {
     setIban(profile.iban)
     setLogoDataUrl(profile.logoDataUrl)
   }, [profile])
+
+  useEffect(() => {
+    if (!userId) return
+
+    const searchParams = new URLSearchParams(window.location.search)
+    const billingState = searchParams.get('billing')
+
+    if (billingState === 'success') {
+      setPlanMessage('Betaling ontvangen. We synchroniseren je abonnement...')
+      window.setTimeout(() => {
+        void (async () => {
+          try {
+            const syncResult = await syncBillingAfterCheckout()
+            setBillingCycle(syncResult.billingCycle ?? null)
+          } catch (error) {
+            console.error('Directe billing-sync mislukt:', error)
+          } finally {
+            await syncUserPlan(userId)
+            setPlanMessage('Abonnement gesynchroniseerd.')
+          }
+        })()
+      }, 0)
+      searchParams.delete('billing')
+      const nextQuery = searchParams.toString()
+      const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}`
+      window.history.replaceState({}, document.title, nextUrl)
+    }
+
+    if (billingState === 'cancelled') {
+      setPlanMessage('Afrekenen is geannuleerd. Je huidige plan blijft actief.')
+      searchParams.delete('billing')
+      const nextQuery = searchParams.toString()
+      const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}`
+      window.history.replaceState({}, document.title, nextUrl)
+    }
+  }, [syncUserPlan, userId])
 
 
   const MAX_LOGO_WIDTH = 400
@@ -124,6 +167,52 @@ export default function SettingsPage() {
     setPlanMessage(`Plan bijgewerkt naar ${PLAN_CONFIGS[nextPlan].name}.`)
     setTimeout(() => setPlanMessage(null), 2500)
   }
+
+  const startCheckout = async (billingCycle: 'monthly' | 'yearly') => {
+    setCheckoutError(null)
+    setCheckoutLoading(billingCycle)
+    try {
+      await startProCheckout(billingCycle)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Checkout starten is mislukt.'
+      setCheckoutError(message)
+      setCheckoutLoading(null)
+    }
+  }
+
+  const syncBillingNow = async () => {
+    if (!userId) return
+    setSyncLoading(true)
+    setCheckoutError(null)
+    try {
+      const syncResult = await syncBillingAfterCheckout()
+      setBillingCycle(syncResult.billingCycle ?? null)
+      await syncUserPlan(userId)
+      setPlanMessage('Abonnement gesynchroniseerd met Stripe.')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Synchroniseren is mislukt.'
+      setCheckoutError(message)
+    } finally {
+      setSyncLoading(false)
+    }
+  }
+
+  const formattedPeriodEnd = billingDetails.currentPeriodEnd
+    ? new Intl.DateTimeFormat('nl-NL', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }).format(new Date(billingDetails.currentPeriodEnd))
+    : null
+
+  const currentPlanLabel =
+    planId === 'pro'
+      ? billingCycle === 'yearly'
+        ? 'Pro jaarlijks'
+        : billingCycle === 'monthly'
+          ? 'Pro maandelijks'
+          : 'Pro'
+      : PLAN_CONFIGS[planId].name
 
   return (
     <main className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -224,8 +313,56 @@ export default function SettingsPage() {
       <section className="mt-8 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Plan</p>
         <p className="mt-1 text-sm text-slate-700">
-          Huidig plan: <span className="font-semibold">{PLAN_CONFIGS[planId].name}</span>
+          Huidig plan: <span className="font-semibold">{currentPlanLabel}</span>
         </p>
+        <p className="mt-1 text-xs text-slate-500">
+          {formattedPeriodEnd ? `Volgende verlenging: ${formattedPeriodEnd}` : ''}
+          {billingDetails.cancelAtPeriodEnd ? ' · Eindigt aan het einde van deze periode' : ''}
+        </p>
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => {
+              void syncBillingNow()
+            }}
+            disabled={syncLoading}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {syncLoading ? 'Synchroniseren...' : 'Synchroniseer abonnement'}
+          </button>
+        </div>
+
+        {!isAdminUser ? (
+          <div className="mt-4 rounded-xl border border-cyan-200 bg-cyan-50/70 p-4">
+            <p className="text-sm font-semibold text-cyan-900">Upgrade naar Pro</p>
+            <p className="mt-1 text-xs text-cyan-800">
+              Kies je betaalcyclus. Je wordt doorgestuurd naar Stripe Checkout.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  void startCheckout('monthly')
+                }}
+                disabled={checkoutLoading !== null}
+                className="rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-semibold text-cyan-800 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {checkoutLoading === 'monthly' ? 'Bezig...' : 'Pro maandelijks (€5)'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  void startCheckout('yearly')
+                }}
+                disabled={checkoutLoading !== null}
+                className="rounded-lg border border-cyan-700 bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {checkoutLoading === 'yearly' ? 'Bezig...' : 'Pro jaarlijks (€50)'}
+              </button>
+            </div>
+            {checkoutError ? <p className="mt-3 text-xs text-rose-700">{checkoutError}</p> : null}
+          </div>
+        ) : null}
 
         {isAdminUser ? (
           <div className="mt-4 flex flex-wrap gap-3">
@@ -248,11 +385,7 @@ export default function SettingsPage() {
               Zet plan op Pro
             </button>
           </div>
-        ) : (
-          <p className="mt-3 text-xs text-slate-500">
-            Planwijzigingen worden door een beheerder gedaan.
-          </p>
-        )}
+        ) : null}
 
         {planMessage ? <p className="mt-3 text-sm text-emerald-700">{planMessage}</p> : null}
       </section>
