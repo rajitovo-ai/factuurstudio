@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
+import { trackEvent } from '../lib/analytics'
 import { PLAN_CONFIGS } from '../lib/billing'
 import { startProCheckout, syncBillingAfterCheckout } from '../lib/stripeBilling'
 import { useAuthStore } from '../stores/authStore'
@@ -68,6 +69,18 @@ export default function SettingsPage() {
         void (async () => {
           try {
             const syncResult = await syncBillingAfterCheckout()
+            const hasProPlan = syncResult.plan === 'pro'
+            const purchaseCycle = syncResult.billingCycle ?? 'monthly'
+            const purchaseValue = purchaseCycle === 'yearly' ? 39.99 : 4.99
+
+            if (hasProPlan) {
+              trackEvent('purchase', {
+                currency: 'EUR',
+                value: purchaseValue,
+                billing_cycle: purchaseCycle,
+                plan: 'pro',
+              })
+            }
             setBillingCycle(syncResult.billingCycle ?? null)
           } catch (error) {
             console.error('Directe billing-sync mislukt:', error)
@@ -172,6 +185,12 @@ export default function SettingsPage() {
     setCheckoutError(null)
     setCheckoutLoading(billingCycle)
     try {
+      trackEvent('start_checkout', {
+        currency: 'EUR',
+        value: billingCycle === 'yearly' ? 39.99 : 4.99,
+        billing_cycle: billingCycle,
+        plan: 'pro',
+      })
       await startProCheckout(billingCycle)
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Checkout starten is mislukt.'

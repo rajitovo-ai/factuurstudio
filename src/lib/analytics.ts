@@ -1,5 +1,8 @@
 type AnalyticsEventName =
   | 'signup'
+  | 'sign_up'
+  | 'start_checkout'
+  | 'purchase'
   | 'invoice_created'
   | 'first_invoice_created'
   | 'invoice_marked_sent'
@@ -52,16 +55,24 @@ export const trackEvent = (name: AnalyticsEventName, payload?: AnalyticsPayload)
   const events = readEvents()
   writeEvents([...events, event])
 
-  // Optional bridge for external trackers if added later.
+  const gaEventName = name === 'signup' ? 'sign_up' : name
+
+  // Optional bridge for GTM-like setups.
   const bridgeWindow = window as Window & { dataLayer?: unknown[] }
   if (Array.isArray(bridgeWindow.dataLayer)) {
     bridgeWindow.dataLayer.push({
-      event: name,
+      event: gaEventName,
       ...payload,
     })
   }
 
+  // Direct GA4 tracking via gtag (used in production).
+  const gtagWindow = window as Window & { gtag?: (...args: unknown[]) => void }
+  if (typeof gtagWindow.gtag === 'function') {
+    gtagWindow.gtag('event', gaEventName, payload ?? {})
+  }
+
   if (import.meta.env.DEV) {
-    console.info('[analytics]', name, payload ?? {})
+    console.info('[analytics]', gaEventName, payload ?? {})
   }
 }
