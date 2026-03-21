@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import AdminRoute from './components/auth/AdminRoute'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
@@ -25,6 +25,7 @@ import { useProfileStore } from './stores/profileStore'
 const InvoiceImportPage = lazy(() => import('./pages/InvoiceImportPage'))
 
 function App() {
+  const location = useLocation()
   const init = useAuthStore((state) => state.init)
   const userId = useAuthStore((state) => state.userId)
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
@@ -41,12 +42,23 @@ function App() {
     }
   }, [isAuthenticated, loadInvoices, loadProfile, userId])
 
+  useEffect(() => {
+    const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag
+    if (!gtag) return
+
+    gtag('event', 'page_view', {
+      page_path: `${location.pathname}${location.search}`,
+      page_location: window.location.href,
+      page_title: document.title,
+    })
+  }, [location.pathname, location.search])
+
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-        <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
       <Route path="/wachtwoord-vergeten" element={<ForgotPasswordPage />} />
       <Route path="/reset-wachtwoord" element={<ResetPasswordPage />} />
 
