@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { useAuthStore } from '../stores/authStore'
 
 const isDev = import.meta.env.DEV
@@ -50,6 +51,15 @@ export default function LandingPage() {
   if (userId) return <Navigate to="/dashboard" replace />
 
   return (
+    <>
+    <Helmet>
+      <title>Factuur Studio – Online facturen maken voor zzp'ers en mkb</title>
+      <meta name="description" content="Maak professionele facturen in seconden. Factuur Studio is dé eenvoudige factuurapp voor Nederlandse zzp'ers en mkb. Gratis starten, geen abonnement nodig." />
+      <link rel="canonical" href="https://factuurstudio.nl/" />
+      <meta property="og:url" content="https://factuurstudio.nl/" />
+      <meta property="og:title" content="Factuur Studio – Online facturen maken voor zzp'ers en mkb" />
+      <meta property="og:description" content="Maak professionele facturen in seconden. Gratis starten, geen abonnement nodig." />
+    </Helmet>
     <div className="min-h-screen bg-[radial-gradient(circle_at_15%_10%,#cffafe_0%,transparent_38%),radial-gradient(circle_at_85%_0%,#e2e8f0_0%,transparent_35%),linear-gradient(160deg,#f8fafc_0%,#ecfeff_45%,#f8fafc_100%)] text-slate-900">
       <nav className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/85 px-6 py-4 backdrop-blur sm:px-10">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
@@ -361,5 +371,6 @@ export default function LandingPage() {
         ) : null}
       </main>
     </div>
+    </>
   )
 }

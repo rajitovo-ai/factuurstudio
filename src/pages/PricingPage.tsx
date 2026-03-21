@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { useAuthStore } from '../stores/authStore'
 
 const features = [
@@ -21,6 +22,14 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <Helmet>
+        <title>Factuur Studio – Prijzen en abonnementen | Gratis of Pro vanaf €4,99/maand</title>
+        <meta name="description" content="Bekijk de Factuur Studio abonnementen. Gratis voor starters (5 facturen/maand) of Pro vanaf €4,99/maand met onbeperkte facturen, OCR, sjablonen en meer." />
+        <link rel="canonical" href="https://factuurstudio.nl/pricing" />
+        <meta property="og:url" content="https://factuurstudio.nl/pricing" />
+        <meta property="og:title" content="Factuur Studio – Prijzen | Gratis of Pro vanaf €4,99/maand" />
+        <meta property="og:description" content="Gratis voor starters of Pro vanaf €4,99/maand. Bekijk wat bij jouw bedrijf past." />
+      </Helmet>
       {/* Navigation Bar */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
