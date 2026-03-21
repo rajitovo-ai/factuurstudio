@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /facturen
+Disallow: /facturen/
+Disallow: /instellingen
+Disallow: /referral
+
+Sitemap: https://factuurstudio.nl/sitemap.xml
