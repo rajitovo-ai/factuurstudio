@@ -18,6 +18,7 @@ import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import SettingsPage from './pages/SettingsPage'
 import SupportPage from './pages/SupportPage'
+import { captureAttributionFromUrl, getAttributionPayload } from './lib/attribution'
 import { useAuthStore } from './stores/authStore'
 import { useInvoiceStore } from './stores/invoiceStore'
 import { useProfileStore } from './stores/profileStore'
@@ -43,6 +44,8 @@ function App() {
   }, [isAuthenticated, loadInvoices, loadProfile, userId])
 
   useEffect(() => {
+    captureAttributionFromUrl()
+
     const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag
     if (!gtag) return
 
@@ -50,6 +53,7 @@ function App() {
       page_path: `${location.pathname}${location.search}`,
       page_location: window.location.href,
       page_title: document.title,
+      ...getAttributionPayload(),
     })
   }, [location.pathname, location.search])
 

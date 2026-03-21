@@ -1,3 +1,5 @@
+import { getAttributionPayload } from './attribution'
+
 type AnalyticsEventName =
   | 'signup'
   | 'sign_up'
@@ -46,9 +48,14 @@ const writeEvents = (events: AnalyticsEvent[]) => {
 export const trackEvent = (name: AnalyticsEventName, payload?: AnalyticsPayload) => {
   if (typeof window === 'undefined') return
 
+  const mergedPayload: AnalyticsPayload = {
+    ...getAttributionPayload(),
+    ...(payload ?? {}),
+  }
+
   const event: AnalyticsEvent = {
     name,
-    payload,
+    payload: mergedPayload,
     timestamp: new Date().toISOString(),
   }
 
@@ -62,17 +69,17 @@ export const trackEvent = (name: AnalyticsEventName, payload?: AnalyticsPayload)
   if (Array.isArray(bridgeWindow.dataLayer)) {
     bridgeWindow.dataLayer.push({
       event: gaEventName,
-      ...payload,
+      ...mergedPayload,
     })
   }
 
   // Direct GA4 tracking via gtag (used in production).
   const gtagWindow = window as Window & { gtag?: (...args: unknown[]) => void }
   if (typeof gtagWindow.gtag === 'function') {
-    gtagWindow.gtag('event', gaEventName, payload ?? {})
+    gtagWindow.gtag('event', gaEventName, mergedPayload)
   }
 
   if (import.meta.env.DEV) {
-    console.info('[analytics]', gaEventName, payload ?? {})
+    console.info('[analytics]', gaEventName, mergedPayload)
   }
 }
