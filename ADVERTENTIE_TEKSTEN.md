@@ -49,7 +49,7 @@ Probeer het gratis als je:
 
 Gebruiksvriendelijk, snel, geen gedoe. Veel van mijn buren gebruiken het al!
 
-factuurstudio.nl | Vragen? Stuur me een DM."
+www.factuurstudio.nl | Vragen? Stuur me een DM."
 
 ### Variant C - Help & Support Angle
 "Wonen in de buurt en ondernemer? 🏢
@@ -69,7 +69,7 @@ Ik help graag met administratieve problemen. Daarvoor heb ik **Factuur Studio** 
 - 💰 Geen abonnementskosten
 - 🛡️ Veilige opslag, altijd beschikbaar
 
-Wil je 2 minuten voelen hoe snel het gaat? factuurstudio.nl
+Wil je 2 minuten voelen hoe snel het gaat? [link]
 
 Groeten,
 [Naam]
@@ -85,10 +85,10 @@ Hoe veel tijd spendeer je elke maand aan facturen maken? Voor veel ondernemers l
 
 **Factuur Studio:** Professionele facturen in 60 seconden. Plus realtime inzicht in je omzet en openstaande facturen. Geen gedoe.
 
-Gratis proberen → factuurstudio.nl
+Gratis proberen → www.factuurstudio.nlten
 - 🛡️ Veilige opslag, altijd beschikbaar
 
-Wil je 2 minuten voelen hoe snel het gaat? factuurstudio.nl
+Wil je 2 minuten voelen hoe snel het gaat? [link]
 
 Groeten,
 [Naam]
@@ -104,7 +104,7 @@ Hoe veel tijd spendeer je elke maand aan facturen maken? Voor veel ondernemers l
 
 **FactuurGenerator:** Professionele facturen in 60 seconden. Meer niet. Minder gedoe.
 
-Gratis proberen → factuurstudio.nl
+Gratis proberen → [link]
 
 ---
 
@@ -121,7 +121,7 @@ Geen ingewikkelde features. Geen onnodige kosten. Gewoon: snel, professioneel en
 
 Of je nu ZZP bent, klein consultant, of ondernemer - je tijd is kostbaarder dan het uitvoeren van administratie.
 
-Wil je je workflow optimaliseren? Check het hier → factuurstudio.nl
+Wil je je workflow optimaliseren? Check het hier → www.factuurstudio.nl
 
 #AdministratieVereenvoudigd #Ondernemen #Productiviteit"
 
@@ -173,7 +173,7 @@ Feedback? Graag! Zowel in Minuten - Factuur Studio
 
 Je kan het gratis proberen, geen creditcard nodig.
 
-Interessant? → factuurstudio.nl
+Interessant? → www.factuurstudio.nl
 "Hé! 👋
 
 Ik wil je graag op iets attent maken dat ik recent heb gelanceerd: **FactuurGenerator**.
@@ -184,7 +184,7 @@ Ik wil je graag op iets attent maken dat ik recent heb gelanceerd: **FactuurGene
 
 Je kan het gratis proberen, geen creditcard nodig.
 
-Interessant? → factuurstudio.nl
+Interessant? → [link]
 
 Graag je feedback! 😊"
 
@@ -206,7 +206,7 @@ Geen gedoe, geen ingewikkelde settings, gewoon: snel, professioneel en handig.
 
 Benieuwd naar jullie mening! Hebben jullie zoiets nodig? Wat zou het nog beter maken?
 
-Gratis proberen: factuurstudio.nl
+Gratis proberen: www.factuurstudio.nl
 
 Heel graag jullie feedback! 👊"
 
@@ -221,13 +221,13 @@ Veel van mijn contacten in jouw situatie besparen er 4-5 uren per maand mee, plu
 
 Geen verplichtingen, gewoon kijken. Ik denk dat jij er voordeel mee zou hebben.
 
-factuurstudio.nl FactuurGenerator gemaakt - basically een tool om facturen in seconden te maken. Geen gedoe, geen abonnementen.
+www.factuurstudio.nl FactuurGenerator gemaakt - basically een tool om facturen in seconden te maken. Geen gedoe, geen abonnementen.
 
 Veel van mijn contacten in jouw situatie besparen er 4-5 uren per maand mee.
 
 Geen verplichtingen, gewoon kijken. Ik denk dat jij er voordeel mee zou hebben.
 
-factuurstudio.nl #ZZP #AdminLifeHack #GrowYourBusiness"
+[link]www.factuurstudio.nl #ZZP #AdminLifeHack #GrowYourBusiness"
 
 ### Variant B
 "Ik maak facturen in 2 minuten. Jij nog steeds aan het typen? 📝⚡ Factuur Studio = game changer. #BusinessTip #Freelancer #Smart
@@ -244,7 +244,7 @@ factuurstudio.nl #ZZP #AdminLifeHack #GrowYourBusiness"
 
 *'Best discover van dit jaar. Voor ondernemers gemaakt, door een ondernemer.'* - Tom, Kleine Bedrijf
 
-Jij volgende? factuurstudio.nl
+Jij volgende? www.factuurstudio.nl
 "💬 **Van FactuurGenerator gebruikers:**
 
 *'Ik bespaar minstens 4 uur per week. Eindelijk kan ik me richten op wat ik echt good in ben.'* - Mark, Consultant
@@ -253,7 +253,7 @@ Jij volgende? factuurstudio.nl
 
 *'Best discover van dit jaar. Simpel en effective.'* - Tom, Kleine Bedrijf
 
-Jij volgende? factuurstudio.nl"
+Jij volgende? [link]"
 
 ---
 
@@ -272,11 +272,11 @@ Jij volgende? factuurstudio.nl"
 
 - "Gratis proberen"
 - "Probeer Factuur Studio"
-- "Check factuurstudio.nl"
+- "Check www.factuurstudio.nl"
 - "Laat me je feedback weten"
 - "Geen creditcard nodig"
 
-**Website:** factuurstudio.nl
+**Website:** www.factuurstudio.nl
 
 --Veel succes met je marketing van Factuur Studio
 

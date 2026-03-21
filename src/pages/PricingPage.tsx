@@ -5,12 +5,12 @@ const features = [
   { name: 'Professionele facturen', free: true, pro: true },
   { name: 'Klantenbeheer', free: true, pro: true },
   { name: 'Dashboard inzicht', free: true, pro: true },
-  { name: 'Facturen per maand', free: '5', pro: 'Onbeperkt' },
+  { name: 'Facturen per maand', free: '5 facturen', pro: 'Onbeperkt' },
   { name: 'PDF export', free: true, pro: true },
   { name: 'Factuur import (PDF)', free: true, pro: true },
   { name: 'Diepe scan (OCR)', free: false, pro: true },
   { name: 'Factuur sjablonen', free: false, pro: true },
-  { name: 'Betaalavis via email', free: false, pro: true },
+  { name: 'Betaaladvies via email', free: false, pro: true },
   { name: 'Automatische herinneringen', free: false, pro: true },
   { name: 'API toegang', free: false, pro: true },
   { name: 'Prioriteitsupport', free: false, pro: true },
@@ -24,15 +24,15 @@ export default function PricingPage() {
       {/* Navigation Bar */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-2xl font-bold text-blue-600">
+          <div className="flex h-16 flex-wrap items-center justify-between gap-2">
+            <Link to="/" className="text-xl font-bold text-blue-600 sm:text-2xl">
               Factuur Studio
             </Link>
-            <div className="flex gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               {userId ? (
                 <Link
                   to="/dashboard"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white transition hover:bg-blue-700 sm:px-6"
                 >
                   Dashboard
                 </Link>
@@ -40,13 +40,13 @@ export default function PricingPage() {
                 <>
                   <Link
                     to="/login"
-                    className="px-6 py-2 text-gray-700 hover:text-gray-900 transition"
+                    className="px-3 py-2 text-sm text-gray-700 transition hover:text-gray-900 sm:px-6"
                   >
                     Inloggen
                   </Link>
                   <Link
                     to="/register"
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white transition hover:bg-blue-700 sm:px-6"
                   >
                     Gratis starten
                   </Link>
@@ -71,7 +71,7 @@ export default function PricingPage() {
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
           {/* Free Plan */}
-          <div className="border-2 border-gray-200 rounded-2xl p-8 relative">
+          <div className="relative rounded-2xl border-2 border-gray-200 p-6 sm:p-8">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Free</h2>
               <p className="text-gray-600 mb-4">Perfect om te starten</p>
@@ -127,7 +127,7 @@ export default function PricingPage() {
           </div>
 
           {/* Pro Plan */}
-          <div className="border-2 border-blue-600 rounded-2xl p-8 relative bg-blue-50 ring-2 ring-inset ring-blue-100">
+          <div className="relative rounded-2xl border-2 border-blue-600 bg-blue-50 p-6 ring-2 ring-inset ring-blue-100 sm:p-8">
             <div className="absolute top-0 left-8 -translate-y-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
               Populair
             </div>
@@ -135,21 +135,21 @@ export default function PricingPage() {
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Pro</h2>
               <p className="text-gray-600 mb-4">Voor groeiende ondernemers</p>
-              <div className="flex gap-6 mb-4">
+              <div className="mb-4 flex flex-wrap gap-4 sm:gap-6">
                 <div>
                   <div className="text-sm text-gray-600 mb-1">Maandelijks</div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-gray-900">€5</span>
+                    <span className="text-3xl font-bold text-gray-900">€4,99</span>
                     <span className="text-gray-600">/maand</span>
                   </div>
                 </div>
                 <div>
                   <div className="text-sm text-gray-600 mb-1">Jaarlijks</div>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-gray-900">€50</span>
+                    <span className="text-3xl font-bold text-gray-900">€39,99</span>
                     <span className="text-gray-600">/jaar</span>
                   </div>
-                  <div className="text-xs text-green-600 font-semibold">Bespaar 17%</div>
+                  <div className="text-xs text-green-600 font-semibold">Bespaar 33%</div>
                 </div>
               </div>
               <p className="text-sm text-gray-600">Altijd opzegbaar</p>

@@ -347,7 +347,7 @@ export default function SettingsPage() {
                 disabled={checkoutLoading !== null}
                 className="rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-semibold text-cyan-800 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {checkoutLoading === 'monthly' ? 'Bezig...' : 'Pro maandelijks (€5)'}
+                {checkoutLoading === 'monthly' ? 'Bezig...' : 'Pro maandelijks (€4,99)'}
               </button>
               <button
                 type="button"
@@ -357,7 +357,7 @@ export default function SettingsPage() {
                 disabled={checkoutLoading !== null}
                 className="rounded-lg border border-cyan-700 bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {checkoutLoading === 'yearly' ? 'Bezig...' : 'Pro jaarlijks (€50)'}
+                {checkoutLoading === 'yearly' ? 'Bezig...' : 'Pro jaarlijks (€39,99)'}
               </button>
             </div>
             {checkoutError ? <p className="mt-3 text-xs text-rose-700">{checkoutError}</p> : null}
