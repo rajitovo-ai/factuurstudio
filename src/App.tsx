@@ -12,6 +12,7 @@ import InvoicesPage from './pages/InvoicesPage'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import PricingPage from './pages/PricingPage'
 import ReferralPage from './pages/ReferralPage'
 import RegisterPage from './pages/RegisterPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
@@ -45,6 +46,7 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
       <Route path="/wachtwoord-vergeten" element={<ForgotPasswordPage />} />
       <Route path="/reset-wachtwoord" element={<ResetPasswordPage />} />
 
