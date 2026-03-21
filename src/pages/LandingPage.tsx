@@ -221,6 +221,100 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section className="mt-20 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-10">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+                Vertrouwd door ondernemers
+              </h2>
+              <p className="mt-2 text-slate-600">Gemaakt voor zzp'ers en kleine bedrijven die snel willen factureren.</p>
+            </div>
+            <Link
+              to="/pricing"
+              className="rounded-lg border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-800 hover:bg-cyan-100"
+            >
+              Bekijk prijzen
+            </Link>
+          </div>
+
+          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-center">
+              <p className="text-2xl">🇳🇱</p>
+              <p className="mt-2 text-sm font-semibold text-slate-900">Nederlands platform</p>
+              <p className="mt-1 text-xs text-slate-600">Gebouwd voor lokale facturatiebehoeften.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-center">
+              <p className="text-2xl">🔒</p>
+              <p className="mt-2 text-sm font-semibold text-slate-900">Veilige opslag</p>
+              <p className="mt-1 text-xs text-slate-600">Data blijft beschermd en versleuteld.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-center">
+              <p className="text-2xl">⚡</p>
+              <p className="mt-2 text-sm font-semibold text-slate-900">Snel in gebruik</p>
+              <p className="mt-1 text-xs text-slate-600">Binnen minuten je eerste factuur versturen.</p>
+            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5 text-center">
+              <p className="text-2xl">📈</p>
+              <p className="mt-2 text-sm font-semibold text-slate-900">Groeit met je mee</p>
+              <p className="mt-1 text-xs text-slate-600">Start gratis en upgrade alleen als je wilt.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-20">
+          <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Veelgestelde vragen</h2>
+          <p className="mt-2 max-w-2xl text-slate-600">
+            Korte antwoorden op de vragen die we het meest krijgen van starters en zzp'ers.
+          </p>
+
+          <div className="mt-7 space-y-3">
+            <details className="rounded-2xl border border-slate-200 bg-white p-5">
+              <summary className="cursor-pointer text-sm font-bold text-slate-900 sm:text-base">
+                Is Factuur Studio echt gratis te gebruiken?
+              </summary>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Ja. Je kunt starten met het Free-plan zonder creditcard. Je betaalt pas zodra je kiest voor Pro.
+              </p>
+            </details>
+
+            <details className="rounded-2xl border border-slate-200 bg-white p-5">
+              <summary className="cursor-pointer text-sm font-bold text-slate-900 sm:text-base">
+                Kan ik later upgraden of terugschakelen?
+              </summary>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Zeker. Je kunt op elk moment upgraden naar Pro of later weer terug naar Free.
+              </p>
+            </details>
+
+            <details className="rounded-2xl border border-slate-200 bg-white p-5">
+              <summary className="cursor-pointer text-sm font-bold text-slate-900 sm:text-base">
+                Hoe snel kan ik mijn eerste factuur versturen?
+              </summary>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Meestal binnen enkele minuten. Vul je profiel aan, voeg een klant toe en maak direct je eerste factuur.
+              </p>
+            </details>
+
+            <details className="rounded-2xl border border-slate-200 bg-white p-5">
+              <summary className="cursor-pointer text-sm font-bold text-slate-900 sm:text-base">
+                Zijn mijn facturen en klantgegevens veilig?
+              </summary>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Ja. Gegevens worden veilig opgeslagen en alleen gebruikt voor jouw facturatieproces.
+              </p>
+            </details>
+
+            <details className="rounded-2xl border border-slate-200 bg-white p-5">
+              <summary className="cursor-pointer text-sm font-bold text-slate-900 sm:text-base">
+                Werkt dit ook op mobiel?
+              </summary>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Ja, de interface is responsive en werkt op desktop, tablet en mobiel.
+              </p>
+            </details>
+          </div>
+        </section>
+
         <section className="mt-20 rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10">
           <h2 className="text-2xl font-extrabold text-slate-900 sm:text-3xl">Klaar om slimmer te factureren?</h2>
           <p className="mx-auto mt-3 max-w-2xl text-slate-600">
