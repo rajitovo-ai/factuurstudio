@@ -66,6 +66,12 @@ export default function LandingPage() {
           <span className="text-lg font-extrabold tracking-tight text-cyan-700">Factuur Studio</span>
           <div className="flex gap-3">
             <Link
+              to="/blog/administratie-besparen"
+              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:text-slate-900"
+            >
+              Blog
+            </Link>
+            <Link
               to="/login"
               className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:text-slate-900"
             >
@@ -97,6 +103,12 @@ export default function LandingPage() {
               een strak platform dat direct duidelijk is voor jou en je klanten.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                to="/blog/administratie-besparen"
+                className="rounded-xl border border-cyan-200 bg-cyan-50 px-5 py-3 text-sm font-bold text-cyan-800 transition hover:bg-cyan-100"
+              >
+                Lees slimme tips
+              </Link>
               <Link
                 to="/register"
                 className="rounded-xl bg-cyan-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-cyan-800"
@@ -269,6 +281,63 @@ export default function LandingPage() {
               <p className="mt-1 text-xs text-slate-600">Start gratis en upgrade alleen als je wilt.</p>
             </div>
           </div>
+        </section>
+
+        <section className="mt-20 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-10">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="max-w-2xl">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-700">Praktische inzichten</p>
+              <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+                Slimme tips voor ondernemers die minder tijd kwijt willen zijn aan administratie
+              </h2>
+              <p className="mt-3 text-slate-600">
+                Niet alleen software, maar ook bruikbare kennis. Lees hoe ondernemers hun facturatie strakker organiseren,
+                cashflow beter bewaken en sneller betaald worden zonder extra gedoe.
+              </p>
+            </div>
+            <Link
+              to="/blog/administratie-besparen"
+              className="rounded-lg border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-semibold text-cyan-800 transition hover:bg-cyan-100"
+            >
+              Bekijk artikel
+            </Link>
+          </div>
+
+          <article className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 transition hover:border-cyan-200 hover:bg-white">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500">
+              <span className="rounded-full bg-cyan-100 px-3 py-1 text-cyan-800">Nieuwe blogpost</span>
+              <span>8-10 min lezen</span>
+              <span>26 maart 2026</span>
+            </div>
+            <h3 className="mt-4 text-xl font-bold text-slate-900">
+              <Link to="/blog/administratie-besparen" className="transition hover:text-cyan-700">
+                Hoe ondernemers echt uren administratie besparen en tegelijk grip houden op hun cashflow
+              </Link>
+            </h3>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-600 sm:text-base">
+              Een praktisch artikel voor zzp'ers en kleine bedrijven over sneller factureren, openstaande facturen beter
+              opvolgen en slimmer werken zonder je administratie zwaarder te maken.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                Minder handmatig werk bij terugkerende facturen.
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                Meer overzicht over openstaande bedragen en betaalmomenten.
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                Betere basis voor stabiele cashflow en minder stress.
+              </div>
+            </div>
+            <div className="mt-6">
+              <Link
+                to="/blog/administratie-besparen"
+                className="text-sm font-bold text-cyan-700 transition hover:text-cyan-800"
+              >
+                Lees het volledige artikel →
+              </Link>
+            </div>
+          </article>
         </section>
 
         <section className="mt-20">

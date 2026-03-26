@@ -15,6 +15,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import PricingPage from './pages/PricingPage'
 import ReferralPage from './pages/ReferralPage'
 import RegisterPage from './pages/RegisterPage'
+import BlogAdministratieBesparenPage from './pages/BlogAdministratieBesparenPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import SettingsPage from './pages/SettingsPage'
 import SupportPage from './pages/SupportPage'
@@ -63,6 +64,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/blog/administratie-besparen" element={<BlogAdministratieBesparenPage />} />
       <Route path="/wachtwoord-vergeten" element={<ForgotPasswordPage />} />
       <Route path="/reset-wachtwoord" element={<ResetPasswordPage />} />
 

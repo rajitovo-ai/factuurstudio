@@ -48,6 +48,12 @@ export default function PricingPage() {
               ) : (
                 <>
                   <Link
+                    to="/blog/administratie-besparen"
+                    className="px-3 py-2 text-sm text-gray-700 transition hover:text-gray-900 sm:px-6"
+                  >
+                    Blog
+                  </Link>
+                  <Link
                     to="/login"
                     className="px-3 py-2 text-sm text-gray-700 transition hover:text-gray-900 sm:px-6"
                   >
