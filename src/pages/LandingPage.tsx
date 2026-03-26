@@ -104,12 +104,6 @@ export default function LandingPage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/blog/administratie-besparen"
-                className="rounded-xl border border-cyan-200 bg-cyan-50 px-5 py-3 text-sm font-bold text-cyan-800 transition hover:bg-cyan-100"
-              >
-                Lees slimme tips
-              </Link>
-              <Link
                 to="/register"
                 className="rounded-xl bg-cyan-700 px-5 py-3 text-sm font-bold text-white transition hover:bg-cyan-800"
               >
