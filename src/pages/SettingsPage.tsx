@@ -7,6 +7,7 @@ import { startProCheckout, syncBillingAfterCheckout } from '../lib/stripeBilling
 import { useAuthStore } from '../stores/authStore'
 import { useBillingStore } from '../stores/billingStore'
 import { defaultCompanyProfile, useProfileStore } from '../stores/profileStore'
+import { supabase } from '../lib/supabase'
 
 const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS ?? '')
   .split(',')
@@ -23,7 +24,6 @@ export default function SettingsPage() {
   const profileError = useProfileStore((state) => state.error)
   const planId = useBillingStore((state) => state.getUserPlan(userId))
   const billingDetails = useBillingStore((state) => state.getUserBillingDetails(userId))
-  const setUserPlan = useBillingStore((state) => state.setUserPlan)
   const syncUserPlan = useBillingStore((state) => state.syncUserPlan)
   const [planMessage, setPlanMessage] = useState<string | null>(null)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
@@ -176,11 +176,25 @@ export default function SettingsPage() {
     setTimeout(() => setSavedMessage(null), 3000)
   }
 
+  // Secure admin-only plan mutation via RPC
   const setPlan = async (nextPlan: 'free' | 'pro') => {
     if (!userId) return
-    await setUserPlan(userId, nextPlan)
-    const planName = nextPlan === 'pro' ? t('settings:plan.pro') : t('settings:plan.free')
-    setPlanMessage(t('settings:messages.planUpdated', { plan: planName }))
+    try {
+      const { error } = await supabase.rpc('admin_set_user_plan', {
+        target_user_id: userId,
+        new_plan: nextPlan,
+      })
+      if (error) throw error
+      
+      // Sync to update local state
+      await syncUserPlan(userId)
+      
+      const planName = nextPlan === 'pro' ? t('settings:plan.pro') : t('settings:plan.free')
+      setPlanMessage(t('settings:messages.planUpdated', { plan: planName }))
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update plan'
+      setPlanMessage(`Error: ${message}`)
+    }
     setTimeout(() => setPlanMessage(null), 2500)
   }
 

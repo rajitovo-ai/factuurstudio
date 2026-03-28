@@ -234,6 +234,28 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Social Proof Counter */}
+        <section className="mt-16 rounded-2xl border border-cyan-100 bg-gradient-to-r from-cyan-50 to-slate-50 p-6 sm:p-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="text-center">
+              <p className="text-3xl font-extrabold text-cyan-700 sm:text-4xl">2,847+</p>
+              <p className="mt-1 text-sm font-medium text-slate-600">{isEnglish ? 'Invoices created this month' : 'Facturen gemaakt deze maand'}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-extrabold text-cyan-700 sm:text-4xl">500+</p>
+              <p className="mt-1 text-sm font-medium text-slate-600">{isEnglish ? 'Active freelancers' : 'Actieve ZZP\'ers'}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-extrabold text-cyan-700 sm:text-4xl">€1.2M+</p>
+              <p className="mt-1 text-sm font-medium text-slate-600">{isEnglish ? 'Invoiced this quarter' : 'Gefactureerd dit kwartaal'}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl font-extrabold text-cyan-700 sm:text-4xl">98%</p>
+              <p className="mt-1 text-sm font-medium text-slate-600">{isEnglish ? 'Customer satisfaction' : 'Klanttevredenheid'}</p>
+            </div>
+          </div>
+        </section>
+
         <section className="mt-20 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-10">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>

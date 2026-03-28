@@ -45,7 +45,7 @@ Dit platform helpt je met:
 Probeer het gratis als je:
 - ZZP bent
 - Een klein bedrijf runt
-- Factura's sneller wil maken
+- Facturen sneller wil maken
 
 Gebruiksvriendelijk, snel, geen gedoe. Veel van mijn buren gebruiken het al!
 
@@ -83,20 +83,15 @@ Hoe veel tijd spendeer je elke maand aan facturen maken? Voor veel ondernemers l
 **Factuur Studio:** Professionele facturen in 60 seconden. Plus realtime inzicht in je omzet en openstaande facturen. Geen gedoe.
 
 Gratis proberen → www.factuurstudio.nl
-- 🛡️ Veilige opslag, altijd beschikbaar
 
-Wil je 2 minuten voelen hoe snel het gaat? www.factuurstudio.nl
-
----
-
-### Variant B - Benefit-Driven
-**Subject:** "Voor ZZP'ers: Dit bespaart je deze maand al tijd"
+### Variant B - Problem-Aware
+**Subject:** "Beu van Handmatige Facturen?"
 
 Hallo,
 
 Hoe veel tijd spendeer je elke maand aan facturen maken? Voor veel ondernemers loopt dat op tot 5+ uren per maand.
 
-**FactuurGenerator:** Professionele facturen in 60 seconden. Meer niet. Minder gedoe.
+**Factuur Studio:** Automatiseert je facturatie. Voor ZZP'ers en kleine bedrijven.
 
 Gratis proberen → www.factuurstudio.nl
 
@@ -147,7 +142,7 @@ Feedback? Graag! Zowel in Minuten - Factuur Studio
 ### Variant C - Competitor Angle
 **Headline:** Betaalde Facturatiesoftware te Duur?
 **Description:** Meer functies, geen kosten. Facturen + klantenbeheer + omzetinzicht. Snel. Simpel. Gratis.
-**CTA:** Ontdek Factuur Studiopy
+**CTA:** Ontdek Factuur Studio
 
 ### Variant A - High Intent
 **Headline:** Facturen Maken in 2 Minuten
@@ -156,31 +151,10 @@ Feedback? Graag! Zowel in Minuten - Factuur Studio
 
 ### Variant B - Problem-Aware
 **Headline:** Beu van Handmatige Facturen?
-**Description:** FactuurGenerator automatiseert je facturatie. Voor ZZP'ers en kleine bedrijven.
+**Description:** Factuur Studio automatiseert je facturatie. Voor ZZP'ers en kleine bedrijven.
 **CTA:** Probeer Gratis
 
-### Variant C - Competitor Angle Studio**.
-
-**Wat:** Platform voor professionele facturen + klantenbeheer + realtime inzicht
-**Wie:** Perfect voor ZZP'ers, consultants, kleine bedrijven
-**Wat je bespaart:** Uren per maand op facturatie + altijd zicht op je omzet
-
-Je kan het gratis proberen, geen creditcard nodig.
-
-Interessant? → www.factuurstudio.nl
-"Hé! 👋
-
-Ik wil je graag op iets attent maken dat ik recent heb gelanceerd: **FactuurGenerator**.
-
-**Wat:** Een tool voor snelle, professionele facturen
-**Wie:** Perfect voor ZZP'ers, consultants, kleine bedrijven
-**Waarom:** Bespaart je uren per maand op facturatie
-
-Je kan het gratis proberen, geen creditcard nodig.
-
-Interessant? →  www.factuurstudio.nl
-
-Graag je feedback! 😊"
+---
 
 ---
 
@@ -206,7 +180,25 @@ Heel graag jullie feedback! 👊"
 
 ---
 
-## 8. R**Factuur Studio** gemaakt - basically een platform om:
+## 8. Referral / Word-of-mouth
+
+### Variant A
+"Hé! 👋
+
+Ik wil je graag op iets attent maken dat ik recent heb gelanceerd: **Factuur Studio**.
+
+**Wat:** Een tool voor snelle, professionele facturen
+**Wie:** Perfect voor ZZP'ers, consultants, kleine bedrijven
+**Waarom:** Bespaart je uren per maand op facturatie
+
+Je kan het gratis proberen, geen creditcard nodig.
+
+Interessant? → www.factuurstudio.nl
+
+Graag je feedback! 😊"
+
+### Variant B
+"Ik heb **Factuur Studio** gemaakt - basically een platform om:
 - Facturen in seconden te maken (geen handmatig gedoe!)
 - Je klanten op één plek beheren
 - Altijd te zien hoeveel je verdient en wat nog betaald moet worden
@@ -215,39 +207,31 @@ Veel van mijn contacten in jouw situatie besparen er 4-5 uren per maand mee, plu
 
 Geen verplichtingen, gewoon kijken. Ik denk dat jij er voordeel mee zou hebben.
 
-www.factuurstudio.nl FactuurGenerator gemaakt - basically een tool om facturen in seconden te maken. Geen gedoe, geen abonnementen.
+www.factuurstudio.nl #ZZP #AdminLifeHack #GrowYourBusiness"
 
-Veel van mijn contacten in jouw situatie besparen er 4-5 uren per maand mee.
-
-Geen verplichtingen, gewoon kijken. Ik denk dat jij er voordeel mee zou hebben.
-
-[link]www.factuurstudio.nl #ZZP #AdminLifeHack #GrowYourBusiness"
-
-### Variant B
+### Variant C
 "Ik maak facturen in 2 minuten. Jij nog steeds aan het typen? 📝⚡ Factuur Studio = game changer. #BusinessTip #Freelancer #Smart
 ---
 
 ## 9. TikTok / Short Video Captions
 
-### Variant A
-"POV: Je bent ZZP Studio gebruikers:**
+### Variant A - Quick Hook
+"POV: Je bent ZZP'er en ontdekt Factuur Studio ⚡
 
-*'Ik bespaar minstens 4 uur per week. Eindelijk kan ik me richten op wat ik echt good in ben. Plus ik zie nu realtime hoeveel ik verdien.'* - Mark, Consultant
+Facturen in 2 minuten = meer tijd voor je business 🚀
 
-*'Geen gedoe, geen onnodige kosten. Gewoon facturen snel maken en af.'* - Lisa, ZZP Trainer
+www.factuurstudio.nl"
 
-*'Best discover van dit jaar. Voor ondernemers gemaakt, door een ondernemer.'* - Tom, Kleine Bedrijf
+### Variant B - Testimonial Style
+"💬 **Van Factuur Studio gebruikers:**
 
-Jij volgende? www.factuurstudio.nl
-"💬 **Van FactuurGenerator gebruikers:**
-
-*'Ik bespaar minstens 4 uur per week. Eindelijk kan ik me richten op wat ik echt good in ben.'* - Mark, Consultant
+*'Ik bespaar minstens 4 uur per week. Eindelijk kan ik me richten op wat ik echt goed in ben.'* - Mark, Consultant
 
 *'Geen gedoe, geen onnodige kosten. Gewoon facturen snel maken.'* - Lisa, ZZP Trainer
 
-*'Best discover van dit jaar. Simpel en effective.'* - Tom, Kleine Bedrijf
+*'Beste discovery van dit jaar. Simpel en effective.'* - Tom, Klein Bedrijf
 
-Jij volgende? [link]"
+Jij volgende? www.factuurstudio.nl"
 
 ---
 
