@@ -18,8 +18,12 @@ type SignUpResult = {
 const DEMO_USERS_KEY = 'factuurstudio.demo.users'
 const DEMO_SESSION_KEY = 'factuurstudio.demo.session'
 
+// Demo mode is disabled in production
+const isProduction = import.meta.env.PROD
+const enableDemoMode = !isProduction && !hasSupabaseConfig
+
 const getDemoUsers = (): DemoUser[] => {
-  if (typeof window === 'undefined') return []
+  if (typeof window === 'undefined' || !enableDemoMode) return []
 
   const rawUsers = window.localStorage.getItem(DEMO_USERS_KEY)
   if (!rawUsers) return []
@@ -32,12 +36,12 @@ const getDemoUsers = (): DemoUser[] => {
 }
 
 const setDemoUsers = (users: DemoUser[]) => {
-  if (typeof window === 'undefined') return
+  if (typeof window === 'undefined' || !enableDemoMode) return
   window.localStorage.setItem(DEMO_USERS_KEY, JSON.stringify(users))
 }
 
 const getDemoSession = () => {
-  if (typeof window === 'undefined') return null
+  if (typeof window === 'undefined' || !enableDemoMode) return null
 
   const rawSession = window.localStorage.getItem(DEMO_SESSION_KEY)
   if (!rawSession) return null
@@ -50,7 +54,7 @@ const getDemoSession = () => {
 }
 
 const setDemoSession = (user: Pick<DemoUser, 'id' | 'email'> | null) => {
-  if (typeof window === 'undefined') return
+  if (typeof window === 'undefined' || !enableDemoMode) return
 
   if (!user) {
     window.localStorage.removeItem(DEMO_SESSION_KEY)
@@ -111,11 +115,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   email: null,
   isLoading: true,
   isAuthenticated: false,
-  isDemoMode: !hasSupabaseConfig,
+  isDemoMode: enableDemoMode,
   error: null,
 
   init: async () => {
-    if (!hasSupabaseConfig) {
+    if (enableDemoMode) {
       const session = getDemoSession()
       set({
         userId: session?.id ?? null,
@@ -164,7 +168,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   signIn: async (email, password) => {
     set({ isLoading: true, error: null })
 
-    if (!hasSupabaseConfig) {
+    if (enableDemoMode) {
       const user = getDemoUsers().find((entry) => entry.email === email && entry.password === password)
 
       if (!user) {
@@ -198,7 +202,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   signUp: async (email, password) => {
     set({ isLoading: true, error: null })
 
-    if (!hasSupabaseConfig) {
+    if (enableDemoMode) {
       const users = getDemoUsers()
       const existingUser = users.find((entry) => entry.email === email)
 
@@ -281,7 +285,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   requestPasswordReset: async (email) => {
     set({ isLoading: true, error: null })
 
-    if (!hasSupabaseConfig) {
+    if (enableDemoMode) {
       set({ isLoading: false, error: 'Wachtwoord reset is alleen beschikbaar met Supabase-auth.' })
       return false
     }
@@ -303,7 +307,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   updatePassword: async (newPassword) => {
     set({ isLoading: true, error: null })
 
-    if (!hasSupabaseConfig) {
+    if (enableDemoMode) {
       set({ isLoading: false, error: 'Wachtwoord wijzigen is alleen beschikbaar met Supabase-auth.' })
       return false
     }
@@ -320,7 +324,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   signOut: async () => {
-    if (!hasSupabaseConfig) {
+    if (enableDemoMode) {
       setDemoSession(null)
       set({
         userId: null,

@@ -1,0 +1,89 @@
+{
+  "title": "Invoices",
+  "subtitle": "Manage all your invoices in one place",
+  "search": "Search invoices...",
+  "management": "Invoice Management",
+  "allInvoices": "All Invoices",
+  "managementDescription": "Create drafts, send, download PDF and then mark as paid.",
+  "help": "Help with invoice status and bulk actions",
+  "importPDF": "Import PDF",
+  "filters": {
+    "all": "All",
+    "draft": "Draft",
+    "sent": "Sent",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "cancelled": "Cancelled"
+  },
+  "sort": {
+    "dateDesc": "Date (newest first)",
+    "dateAsc": "Date (oldest first)",
+    "amountDesc": "Amount (highest first)",
+    "amountAsc": "Amount (lowest first)",
+    "numberDesc": "Number (newest first)",
+    "numberAsc": "Number (oldest first)"
+  },
+  "table": {
+    "number": "Invoice number",
+    "customer": "Customer",
+    "date": "Date",
+    "dueDate": "Due date",
+    "amount": "Amount",
+    "status": "Status",
+    "actions": "Actions",
+    "selectAll": "Select all invoices",
+    "noEmail": "No email",
+    "imported": "Imported invoice"
+  },
+  "status": {
+    "draft": "Draft",
+    "sent": "Sent",
+    "paid": "Paid",
+    "overdue": "Overdue",
+    "cancelled": "Cancelled"
+  },
+  "actions": {
+    "newInvoice": "New invoice",
+    "import": "Import",
+    "edit": "Edit",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "send": "Send",
+    "markSent": "Mark sent",
+    "markPaid": "Mark paid",
+    "download": "Download PDF",
+    "print": "Print",
+    "bulkDelete": "Delete selected",
+    "deselect": "Deselect",
+    "selected": "selected"
+  },
+  "empty": {
+    "title": "No invoices yet",
+    "description": "Create your first test invoice via 'New invoice'.",
+    "noSearchResults": "No invoices found for",
+    "tryDifferent": "Try a different search term."
+  },
+  "loading": "Loading invoices...",
+  "undo": {
+    "deleteSingle": "Invoice marked for deletion.",
+    "deleteMultiple": "{{count}} invoices marked for deletion.",
+    "confirmDelete": "Permanent in 5 seconds.",
+    "undoAction": "Undo"
+  },
+  "deleteConfirm": {
+    "title": "Delete invoice",
+    "message": "Are you sure you want to delete invoice {{number}}? This cannot be undone.",
+    "paidWarning": "Warning: invoice {{number}} is marked as paid. If you delete it, the paid amount will be removed from your dashboard immediately. Are you sure?",
+    "bulkConfirm": "Are you sure you want to delete {{count}} invoices?"
+  },
+  "import": {
+    "title": "Import invoice",
+    "subtitle": "Import an existing invoice from PDF",
+    "dropzone": "Drop a PDF here or click to upload",
+    "uploading": "Uploading...",
+    "processing": "Processing invoice...",
+    "success": "Invoice successfully imported",
+    "error": "Import failed"
+  },
+  "searchResults": "results for"
+}

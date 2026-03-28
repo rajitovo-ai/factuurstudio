@@ -1,0 +1,88 @@
+{
+  "title": "Dashboard",
+  "hero": {
+    "description": "Openstaande facturen, aandachtspunten en recente activiteit staan nu in een heldere volgorde zodat je sneller acties kunt nemen."
+  },
+  "stats": {
+    "outstanding": "Openstaand",
+    "overdue": "Achterstallig",
+    "thisMonth": "Deze maand",
+    "thisYear": "Dit jaar",
+    "overdueDescription": "Facturen met verlopen termijn",
+    "paidThisMonth": "betaald deze maand"
+  },
+  "quickActions": {
+    "title": "Snelle acties"
+  },
+  "actions": {
+    "newInvoice": "Nieuwe factuur",
+    "viewInvoices": "Bekijk facturen",
+    "manageCustomers": "Klanten beheren",
+    "addCustomer": "Klant toevoegen",
+    "importInvoice": "Factuur importeren"
+  },
+  "gettingStarted": {
+    "title": "Eerste stappen",
+    "subtitle": "Start in 3 stappen",
+    "step1": "Vul je bedrijfsprofiel aan in",
+    "step2": "Maak je eerste klant aan via",
+    "step3": "Verstuur je eerste factuur via"
+  },
+  "today": {
+    "title": "Vandaag belangrijk",
+    "priorities": "Prioriteiten",
+    "draftsDescription": "Nog niet verzonden facturen",
+    "followUp": "Opvolging",
+    "followUpDescription": "Openstaande facturen",
+    "growth": "Groei"
+  },
+  "attention": {
+    "title": "Aandacht nodig",
+    "overdueTitle": "Vervallen facturen",
+    "overdueDescription": "facturen zijn verlopen en vragen directe opvolging.",
+    "followUpNow": "Nu opvolgen",
+    "draftsTitle": "Concepten klaarzetten",
+    "draftsDescription": "conceptfacturen zijn nog niet verzonden.",
+    "send": "Verzenden",
+    "quotaTitle": "Maandlimiet in zicht",
+    "quotaDescription": "Je hebt {used} van {limit} facturen gebruikt deze maand.",
+    "viewPlan": "Bekijk plan",
+    "allGood": "Alles staat er goed voor. Er zijn geen directe actiepunten."
+  },
+  "invoices": {
+    "title": "Recente facturen",
+    "viewAll": "Alles bekijken",
+    "noInvoices": "Nog geen facturen beschikbaar.",
+    "createFirst": "Maak je eerste factuur"
+  },
+  "activities": {
+    "title": "Recente activiteit",
+    "noActivity": "Geen recente activiteit",
+    "invoiceCreated": "Factuur aangemaakt",
+    "invoiceSent": "Factuur verstuurd",
+    "invoicePaid": "Factuur betaald",
+    "customerAdded": "Klant toegevoegd",
+    "customerUpdated": "Klant bijgewerkt"
+  },
+  "chart": {
+    "title": "Trend",
+    "subtitle": "Betaald laatste 6 maanden",
+    "revenue": "Omzet",
+    "invoices": "Facturen",
+    "thisMonth": "Deze maand",
+    "lastMonth": "Vorige maand"
+  },
+  "subscription": {
+    "title": "Abonnement",
+    "free": "Starter",
+    "active": "Actief",
+    "unlimited": "Onbeperkt facturen per maand.",
+    "used": "facturen gebruikt deze maand.",
+    "upgrade": "Upgrade naar",
+    "pro": "Pro",
+    "upgradeDescription": "voor onbeperkte facturen en extra functies."
+  },
+  "search": {
+    "placeholder": "Dashboard zoeken..."
+  }
+}

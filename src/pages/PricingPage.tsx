@@ -1,34 +1,37 @@
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 
-const features = [
-  { name: 'Professionele facturen', free: true, pro: true },
-  { name: 'Klantenbeheer', free: true, pro: true },
-  { name: 'Dashboard inzicht', free: true, pro: true },
-  { name: 'Facturen per maand', free: '5 facturen', pro: 'Onbeperkt' },
-  { name: 'PDF export', free: true, pro: true },
-  { name: 'Factuur import (PDF)', free: true, pro: true },
-  { name: 'Diepe scan (OCR)', free: false, pro: true },
-  { name: 'Factuur sjablonen', free: false, pro: true },
-  { name: 'Betaaladvies via email', free: false, pro: true },
-  { name: 'Automatische herinneringen', free: false, pro: true },
-  { name: 'API toegang', free: false, pro: true },
-  { name: 'Prioriteitsupport', free: false, pro: true },
+const getFeatures = (t: (key: string) => string) => [
+  { name: t('pricing:features.professionalInvoices'), free: true, pro: true },
+  { name: t('pricing:features.customerManagement'), free: true, pro: true },
+  { name: t('pricing:features.dashboard'), free: true, pro: true },
+  { name: t('pricing:features.invoicesPerMonth'), free: t('pricing:features.fiveInvoices'), pro: t('pricing:features.unlimited') },
+  { name: t('pricing:features.pdfExport'), free: true, pro: true },
+  { name: t('pricing:features.invoiceImport'), free: true, pro: true },
+  { name: t('pricing:features.deepScan'), free: false, pro: true },
+  { name: t('pricing:features.templates'), free: false, pro: true },
+  { name: t('pricing:features.paymentAdvice'), free: false, pro: true },
+  { name: t('pricing:features.reminders'), free: false, pro: true },
+  { name: t('pricing:features.api'), free: false, pro: true },
+  { name: t('pricing:features.prioritySupport'), free: false, pro: true },
 ]
 
 export default function PricingPage() {
+  const { t } = useTranslation(['pricing', 'common'])
   const userId = useAuthStore((state) => state.userId)
+  const features = getFeatures(t)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <Helmet>
-        <title>Factuur Studio – Prijzen en abonnementen | Gratis of Pro vanaf €4,99/maand</title>
-        <meta name="description" content="Bekijk de Factuur Studio abonnementen. Gratis voor starters (5 facturen/maand) of Pro vanaf €4,99/maand met onbeperkte facturen, OCR, sjablonen en meer." />
+        <title>{t('pricing:meta.title')}</title>
+        <meta name="description" content={t('pricing:meta.description')} />
         <link rel="canonical" href="https://factuurstudio.nl/pricing" />
         <meta property="og:url" content="https://factuurstudio.nl/pricing" />
-        <meta property="og:title" content="Factuur Studio – Prijzen | Gratis of Pro vanaf €4,99/maand" />
-        <meta property="og:description" content="Gratis voor starters of Pro vanaf €4,99/maand. Bekijk wat bij jouw bedrijf past." />
+        <meta property="og:title" content={t('pricing:meta.title')} />
+        <meta property="og:description" content={t('pricing:meta.description')} />
       </Helmet>
       {/* Navigation Bar */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -43,27 +46,27 @@ export default function PricingPage() {
                   to="/dashboard"
                   className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white transition hover:bg-blue-700 sm:px-6"
                 >
-                  Dashboard
+                  {t('pricing:nav.dashboard')}
                 </Link>
               ) : (
                 <>
                   <Link
-                    to="/blog/administratie-besparen"
+                    to="/blog"
                     className="px-3 py-2 text-sm text-gray-700 transition hover:text-gray-900 sm:px-6"
                   >
-                    Blog
+                    {t('pricing:nav.blog')}
                   </Link>
                   <Link
                     to="/login"
                     className="px-3 py-2 text-sm text-gray-700 transition hover:text-gray-900 sm:px-6"
                   >
-                    Inloggen
+                    {t('pricing:nav.login')}
                   </Link>
                   <Link
                     to="/register"
                     className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white transition hover:bg-blue-700 sm:px-6"
                   >
-                    Gratis starten
+                    {t('pricing:nav.startFree')}
                   </Link>
                 </>
               )}
@@ -76,10 +79,10 @@ export default function PricingPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         <div className="text-center mb-12">
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Kies wat bij jou past
+            {t('pricing:hero.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Start gratis met de basisfeatures. Upgrade naar Pro wanneer je meer nodig hebt.
+            {t('pricing:hero.subtitle')}
           </p>
         </div>
 
@@ -88,24 +91,24 @@ export default function PricingPage() {
           {/* Free Plan */}
           <div className="relative rounded-2xl border-2 border-gray-200 p-6 sm:p-8">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Free</h2>
-              <p className="text-gray-600 mb-4">Perfect om te starten</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('pricing:plans.free.name')}</h2>
+              <p className="text-gray-600 mb-4">{t('pricing:plans.free.description')}</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-bold text-gray-900">€0</span>
-                <span className="text-gray-600">/maand</span>
+                <span className="text-4xl font-bold text-gray-900">{t('pricing:plans.free.price')}</span>
+                <span className="text-gray-600">{t('pricing:plans.free.perMonth')}</span>
               </div>
-              <p className="text-sm text-gray-600 mt-2">Geen creditcard nodig</p>
+              <p className="text-sm text-gray-600 mt-2">{t('pricing:plans.free.noCard')}</p>
             </div>
 
             <Link
               to="/register"
               className="w-full py-3 px-6 bg-gray-100 text-gray-900 font-semibold rounded-lg hover:bg-gray-200 transition text-center mb-8 block"
             >
-              Gratis aan de slag
+              {t('pricing:plans.free.cta')}
             </Link>
 
             <div className="space-y-4">
-              <p className="text-sm font-semibold text-gray-900 mb-4">Inclusief:</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">{t('pricing:plans.free.includes')}</p>
               {features.map((feature) => (
                 <div key={feature.name} className="flex items-center gap-3">
                   {feature.free ? (
@@ -144,30 +147,30 @@ export default function PricingPage() {
           {/* Pro Plan */}
           <div className="relative rounded-2xl border-2 border-blue-600 bg-blue-50 p-6 ring-2 ring-inset ring-blue-100 sm:p-8">
             <div className="absolute top-0 left-8 -translate-y-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-              Populair
+              {t('pricing:plans.pro.badge')}
             </div>
 
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Pro</h2>
-              <p className="text-gray-600 mb-4">Voor groeiende ondernemers</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('pricing:plans.pro.name')}</h2>
+              <p className="text-gray-600 mb-4">{t('pricing:plans.pro.description')}</p>
               <div className="mb-4 flex flex-wrap gap-4 sm:gap-6">
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Maandelijks</div>
+                  <div className="text-sm text-gray-600 mb-1">{t('pricing:plans.pro.monthly')}</div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold text-gray-900">€4,99</span>
-                    <span className="text-gray-600">/maand</span>
+                    <span className="text-gray-600">{t('pricing:plans.pro.perMonth')}</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">Jaarlijks</div>
+                  <div className="text-sm text-gray-600 mb-1">{t('pricing:plans.pro.yearly')}</div>
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold text-gray-900">€39,99</span>
-                    <span className="text-gray-600">/jaar</span>
+                    <span className="text-gray-600">{t('pricing:plans.pro.perYear')}</span>
                   </div>
-                  <div className="text-xs text-green-600 font-semibold">Bespaar 33%</div>
+                  <div className="text-xs text-green-600 font-semibold">{t('pricing:plans.pro.save')}</div>
                 </div>
               </div>
-              <p className="text-sm text-gray-600">Altijd opzegbaar</p>
+              <p className="text-sm text-gray-600">{t('pricing:plans.pro.cancelAnytime')}</p>
             </div>
 
             <div className="space-y-3 mb-8">
@@ -175,13 +178,13 @@ export default function PricingPage() {
                 to="/register"
                 className="w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition text-center block"
               >
-                Upgrade naar Pro
+                {t('pricing:plans.pro.cta')}
               </Link>
-              <p className="text-xs text-center text-gray-600">Geen creditcard nodig voor trial</p>
+              <p className="text-xs text-center text-gray-600">{t('pricing:plans.pro.trialNote')}</p>
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm font-semibold text-gray-900 mb-4">Alles in Free, plus:</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">{t('pricing:plans.pro.includes')}</p>
               {features.map((feature) => (
                 <div key={feature.name} className="flex items-center gap-3">
                   {feature.pro ? (
@@ -220,23 +223,23 @@ export default function PricingPage() {
 
         {/* Trust Badges */}
         <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-12">
-          <p className="text-center text-gray-600 mb-6">Vertrouwd door ondernemers</p>
+          <p className="text-center text-gray-600 mb-6">{t('pricing:trust.title')}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center justify-center">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600 mb-1">🇳🇱</div>
-              <p className="text-sm text-gray-600">100% Nederlands</p>
+              <p className="text-sm text-gray-600">{t('pricing:trust.dutch')}</p>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600 mb-1">🔒</div>
-              <p className="text-sm text-gray-600">GDPR Compliant</p>
+              <p className="text-sm text-gray-600">{t('pricing:trust.gdpr')}</p>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600 mb-1">⚡</div>
-              <p className="text-sm text-gray-600">Altijd Beschikbaar</p>
+              <p className="text-sm text-gray-600">{t('pricing:trust.available')}</p>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600 mb-1">💯</div>
-              <p className="text-sm text-gray-600">100% Gratis Starten</p>
+              <p className="text-sm text-gray-600">{t('pricing:trust.freeStart')}</p>
             </div>
           </div>
         </div>
@@ -244,60 +247,56 @@ export default function PricingPage() {
         {/* FAQ Section */}
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Veelgestelde vragen
+            {t('pricing:faq.title')}
           </h2>
           <div className="space-y-6">
             <details className="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer group">
               <summary className="text-lg font-semibold text-gray-900 flex justify-between items-center">
-                Kan ik later upgraden?
+                {t('pricing:faq.upgradeLater.question')}
                 <span className="text-blue-600 group-open:rotate-180 transition">▶</span>
               </summary>
               <p className="text-gray-600 mt-4">
-                Ja! Je kunt altijd van Free naar Pro upgraden. Je betaalt dan alles naar rato voor
-                het restant van de maand.
+                {t('pricing:faq.upgradeLater.answer')}
               </p>
             </details>
 
             <details className="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer group">
               <summary className="text-lg font-semibold text-gray-900 flex justify-between items-center">
-                Hoe zit het met contracten?
+                {t('pricing:faq.contracts.question')}
                 <span className="text-blue-600 group-open:rotate-180 transition">▶</span>
               </summary>
               <p className="text-gray-600 mt-4">
-                Er zijn geen contracten! Je kunt je abonnement op elk moment opzeggen. Geen gedoe,
-                geen verborgen kosten.
+                {t('pricing:faq.contracts.answer')}
               </p>
             </details>
 
             <details className="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer group">
               <summary className="text-lg font-semibold text-gray-900 flex justify-between items-center">
-                Wat gebeurt er met mijn gegevens als ik cancel?
+                {t('pricing:faq.dataOnCancel.question')}
                 <span className="text-blue-600 group-open:rotate-180 transition">▶</span>
               </summary>
               <p className="text-gray-600 mt-4">
-                Al je facturen en klanten blijven beschikbaar in je Free account. Je verliest niets!
+                {t('pricing:faq.dataOnCancel.answer')}
               </p>
             </details>
 
             <details className="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer group">
               <summary className="text-lg font-semibold text-gray-900 flex justify-between items-center">
-                Is de Free versie echt gratis?
+                {t('pricing:faq.reallyFree.question')}
                 <span className="text-blue-600 group-open:rotate-180 transition">▶</span>
               </summary>
               <p className="text-gray-600 mt-4">
-                Ja! Je kunt de Free versie voor onbeperkt lang gebruiken. Geen creditcard nodig, geen
-                trial-periode. Echt gratis.
+                {t('pricing:faq.reallyFree.answer')}
               </p>
             </details>
 
             <details className="bg-white p-6 rounded-lg border border-gray-200 cursor-pointer group">
               <summary className="text-lg font-semibold text-gray-900 flex justify-between items-center">
-                Hoe betaal ik?
+                {t('pricing:faq.payment.question')}
                 <span className="text-blue-600 group-open:rotate-180 transition">▶</span>
               </summary>
               <p className="text-gray-600 mt-4">
-                We gebruiken Stripe voor veilige betalingen. Wij accepteren alle major creditcards en
-                andere betaalmethoden.
+                {t('pricing:faq.payment.answer')}
               </p>
             </details>
           </div>
@@ -308,16 +307,16 @@ export default function PricingPage() {
       <section className="bg-blue-600 text-white py-16 mt-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Klaar om slimmer te factureren?
+            {t('pricing:cta.title')}
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Start gratis vandaag. Geen creditcard nodig.
+            {t('pricing:cta.subtitle')}
           </p>
           <Link
             to="/register"
             className="inline-block px-8 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-gray-100 transition text-lg"
           >
-            Gratis account maken
+            {t('pricing:cta.button')}
           </Link>
         </div>
       </section>

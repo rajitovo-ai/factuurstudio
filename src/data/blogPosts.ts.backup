@@ -1,0 +1,1358 @@
+export interface BlogPost {
+  id: string
+  slug: string
+  title: string
+  metaDescription: string
+  publishDate: string
+  readTime: number
+  category: string
+  tags: string[,
+  featured: boolean
+  content: string
+  faq: { question: string; answer: string }[,
+}
+
+export const blogPosts: BlogPost[] = [
+  {
+    id: '1',
+    slug: 'zzp-starten-2024-complete-checklist',
+    title: 'ZZP Starten in 2024: De Complete Checklist (Stap-voor-Stap)',
+    metaDescription: 'Wil je ZZP\'er worden in 2024? Ontdek de exacte stappen: van KVK inschrijving tot eerste factuur. Inclusief handige checklist en praktische tips.',
+    publishDate: '2024-01-08',
+    readTime: 8,
+    category: 'Starters',
+    tags: ['zzp', 'starten', 'kvk', 'checklist', '2024'],
+    featured: true,
+    content: `
+## Introductie
+
+De stap maken naar zelfstandig ondernemerschap voelt voor veel mensen als een sprong in het diepe. Je hebt een vak, een netwerk en de drive om voor jezelf te beginnen. Maar tussen dat idee en je eerste factuur ligt een flink aantal praktische stappen die je niet mag overslaan.
+
+In dit artikel neem ik je mee door het complete traject. Van de administratieve verplichtingen tot het opzetten van een professionele factuur flow.
+
+## Stap 1: Ondernemingsplan Maken
+
+Voor de KVK inschrijving heb je officieel geen ondernemingsplan nodig. Toch raad ik iedereen aan om hier wel tijd in te steken. Niet voor een dik boekwerk, maar voor een helder document waarin je beschrijft:
+
+- Welk probleem los je op voor je klanten
+- Wie je doelgroep precies is
+- Hoe je aan klanten komt
+- Wat je minimaal moet verdienen om rond te komen
+- Welke investeringen je nodig hebt
+
+## Stap 2: KVK Inschrijving
+
+De Kamer van Koophandel is het eerste officiële station. Je kunt je inschrijven via kvk.nl. Dit heb je nodig:
+
+- Geldig legitimatiebewijs
+- Burgerservicenummer
+- Vestigingsadres (mag je huisadres zijn)
+
+Er is geen inschrijfkost meer sinds 2023. Je betaalt wel jaarlijks een bijdrage voor het handelsregister.
+
+## Stap 3: BTW-Nummer Aanvragen
+
+Na je KVK-inschrijving stuurt de Belastingdienst automatisch je btw-nummer. Dit duurt 1-2 weken. Het btw-nummer bestaat uit je KVK-nummer met 'B01' erachter.
+
+Let op: vanaf dag één ben je btw-plichtig. Je moet direct btw aan klanten berekenen en aangifte doen.
+
+## Stap 4: Zakelijke Rekening Openen
+
+Scheiden van privé en zakelijk is verstandig. Het maakt je boekhouding overzichtelijk. Populaire opties zijn Knab, Bunq, ING en Rabobank.
+
+## Stap 5: Verzekeringen Afsluiten
+
+Sommige verzekeringen zijn verplicht afhankelijk van je branche. Aanbevolen voor alle ZZP'ers zijn AOV (arbeidsongeschiktheid) en rechtsbijstand. De AOV is het belangrijkst - zonder inkomen bij ziekte raak je in de problemen.
+
+**Branche-verplicht:**
+- Bouw: Aansprakelijkheidsverzekering verplicht
+- Transport: Goederenvervoer verzekering
+- Financieel adviseur: Beroepsaansprakelijkheid
+
+## Stap 6: Administratie Inrichten
+
+Je moet 7 jaar je administratie bewaren. Je hebt drie opties:
+
+1. Zelf doen met software (goedkoop, tijdrovend)
+2. Boekhouder inschakelen (duurder, maar zekerder)
+3. Hybride: zelf boeken, boekhouder controleert
+
+## Stap 7: Je Eerste Factuur Opstellen
+
+Een professionele factuur bevat:
+- Naam en adres van jou en je klant
+- KVK-nummer en btw-nummer
+- Factuurnummer en datum
+- Specificatie van diensten
+- Prijzen exclusief en inclusief btw
+- Betalingstermijn
+
+## Stap 8: Acquisitie en Netwerk Opbouwen
+
+De eerste klanten zijn vaak het moeilijkst. Begin met:
+- Je bestaande netwerk informeren
+- LinkedIn-profiel aanmaken
+- Brancheverenigingen joinen
+- Tevreden klanten vragen om referrals
+
+## Veelgemaakte Fouten
+
+1. Te laat starten met btw-aangifte - zet direct een herinnering in je agenda
+2. Geen buffer opbouwen - reserveer 20-30% voor belasting
+3. Te lage prijzen hanteren - bereken je kosten plus marge
+4. Alles zelf willen doen - outsourcen is geen zwakte
+
+## Conclusie
+
+Het starten als ZZP'er is een avontuur met veel losse eindjes. Neem de tijd om alles goed in te richten. Het bespaart je later veel kopzorgen.
+
+Succes met je onderneming!
+    `,
+    faq: [
+      {
+        question: 'Hoelang duurt het om ZZP\'er te worden?',
+        answer: 'De KVK-inschrijving regel je binnen een week. Je btw-nummer volgt 1-2 weken later. Qua administratie ben je dus binnen 3 weken operationeel.'
+      },
+      {
+        question: 'Wat kost het om te starten als ZZP\'er?',
+        answer: 'KVK-inschrijving is gratis. Een zakelijke rekening kost 0-10 euro per maand. Verwacht ook kosten voor verzekeringen (100-200 euro/maand) en boekhoudsoftware (10-30 euro/maand).'
+      },
+      {
+        question: 'Mag je je huisadres gebruiken voor je onderneming?',
+        answer: 'Ja, dat mag. Je adres wordt dan publiek zichtbaar in het handelsregister. Wil je dit niet? Virtuele kantoren zijn beschikbaar vanaf 25 euro per maand.'
+      },
+      {
+        question: 'Wanneer moet je btw-aangifte doen?',
+        answer: 'Per kwartaal, dus 4x per jaar. De deadline is de laatste dag van de maand volgend op het kwartaal. Voor het eerste kwartaal is dat 30 april.'
+      }
+    ,
+  },
+  {
+    id: '2',
+    slug: 'wat-moet-er-op-factuur-staan-wetgeving-2024',
+    title: 'Wat Moet Er op een Factuur Staan? Wetgeving 2024',
+    metaDescription: 'Welke gegevens zijn wettelijk verplicht op een factuur? Ontdek de complete lijst met voorbeelden en voorkom boetes.',
+    publishDate: '2024-01-22',
+    readTime: 6,
+    category: 'Facturatie',
+    tags: ['factuur', 'wetgeving', 'verplicht', '2024'],
+    featured: true,
+    content: `## Waarom de Juiste Factuur Belangrijk Is
+
+Een factuur is meer dan een betalingsverzoek. Het is een wettelijk document dat bewijst dat er een overeenkomst is. Bij geschillen is je factuur het eerste bewijsstuk.
+
+De Belastingdienst kijkt streng naar facturen. Ontbrekende gegevens kunnen leiden tot boetes of verlies van btw-aftrek voor je klant.
+
+## Wettelijke Verplichte Gegevens
+
+Artikel 35a van de Wet op de omzetbelasting bepaalt wat er op je factuur moet staan:
+
+### Gegevens van de leverancier (jij)
+- Volledige bedrijfsnaam zoals bij KVK
+- Bezoekadres
+- KVK-nummer (8 cijfers)
+- Btw-nummer (14 tekens: NL + 11 cijfers + B01)
+
+### Gegevens van de afnemer (je klant)
+- Bedrijfsnaam of naam contactpersoon
+- Bezoekadres
+
+### Factuurspecificaties
+- Factuurdatum
+- Uniek factuurnummer (opeenvolgend)
+- Vervaldatum
+
+### Specificatie van de levering
+- Omschrijving van producten of diensten
+- Aantal
+- Prijs per eenheid (exclusief btw)
+
+### Financiële details
+- Totaal bedrag exclusief btw
+- Btw-bedrag per tariefgroep
+- Btw-percentage (9%, 21% of 0%)
+- Totaalbedrag inclusief btw
+- Valuta
+
+## Foute vs Goede Factuur
+
+Een foute factuur mist bedrijfsnaam, adres, KVK, btw-nummer, factuurnummer, datum en btw-specificatie.
+
+Een goede factuur bevat alle verplichte elementen duidelijk vermeld. Dit beschermt zowel jou als je klant.
+
+## Bijzondere Situaties
+
+### Factuur naar een particulier
+Bij particulieren zijn niet alle gegevens verplicht. Je mag KVK-nummer en btw-nummer van de klant weglaten.
+
+### Btw-verlegde factuur (0% btw)
+Bij transacties naar het buitenland verleg je de btw. Vermeld dit expliciet met de juiste wettelijke verwijzing.
+
+### Korting op de factuur
+Geef korting altijd expliciet aan. De btw bereken je over het bedrag na korting.
+
+## Handige Tools
+
+Je hoeft geen factuur meer in Word te tikken. Factuursoftware zoals FactuurStudio biedt:
+- Automatisch opeenvolgende nummers
+- Btw-berekeningen zonder fouten
+- Herinneringen voor openstaande facturen
+- Koppeling met je boekhouding
+
+## Veelgestelde Vragen
+
+**Moet een factuur digitaal of op papier?**
+Digitaal is toegestaan en gebruikelijk. Zorg dat je de factuur kunt reproduceren als de Belastingdienst erom vraagt.
+
+**Wat als ik een fout maak op een factuur?**
+Stuur een creditfactuur met hetzelfde nummer plus 'C' erachter. Vermeld wat je corrigeert en stuur daarna een nieuwe factuur.
+
+**Mag ik een Engelse factuur sturen?**
+Ja, maar zorg dat alle verplichte Nederlandse gegevens erop staan.
+
+**Moet ik altijd een factuur sturen?**
+Nee, bij kleine bedragen (onder 100 euro) mag je soms een kwitantie gebruiken. Voor zakelijke transacties is een factuur altijd verstandig.
+
+## Conclusie
+
+Een correcte factuur beschermt zowel jou als je klant. Met de checklist uit dit artikel vergeet je niets. Het kost wat tijd om het goed in te richten, maar dat verdien je terug in snellere betalingen en minder rompslomp.`,
+    faq: [
+      {
+        question: 'Is een factuurnummer verplicht?',
+        answer: 'Ja, elke factuur moet een uniek, opeenvolgend nummer hebben. Dit mag alfanumeriek zijn. Het nummer moet logisch opeenvolgend zijn binnen een boekjaar.'
+      },
+      {
+        question: 'Moet ik mijn btw-nummer op de factuur zetten?',
+        answer: 'Ja, dit is verplicht. Je btw-nummer bestaat uit NL gevolgd door 11 cijfers en eindigt op B01. Zonder dit nummer kan je klant de btw mogelijk niet terugvragen.'
+      },
+      {
+        question: 'Wat is de maximale betalingstermijn?',
+        answer: 'Voor zakelijke facturen is er geen wettelijke maximum. Voor consumenten geldt maximaal 60 dagen. Als ondernemer bepaal je zelf je termijn, maar 14 of 30 dagen is gebruikelijk.'
+      }
+    ,
+  },
+  {
+    id: '3',
+    slug: 'btw-nummer-aanvragen-stappenplan',
+    title: 'BTW Nummer Aanvragen: Hoelang Duurt Het & Wat Heb Je Nodig?',
+    metaDescription: 'Alles over het aanvragen van je btw-nummer. Hoe lang duurt het, wat heb je nodig, en wat zijn de verplichtingen? Lees het complete stappenplan.',
+    publishDate: '2024-02-12',
+    readTime: 5,
+    category: 'Belasting',
+    tags: ['btw', 'belasting', 'aanvragen', 'omzetbelasting'],
+    featured: false,
+    content: `## Wat is een BTW-nummer?
+
+Je btw-nummer (ook wel omzetbelastingnummer genoemd) is je unieke identificatie bij de Belastingdienst. Het bestaat uit je KVK-nummer met de toevoeging B01. Bijvoorbeeld: NL123456789B01.
+
+Dit nummer moet op al je facturen staan en gebruik je voor alle communicatie met de Belastingdienst over omzetbelasting.
+
+## Hoe Vraag Je een BTW-nummer Aan?
+
+Het mooie is: je hoeft vaak helemaal niets te doen. Na je inschrijving bij de KVK stuurt de Belastingdienst automatisch je btw-nummer.
+
+### Het Proces Stap-voor-Stap
+
+**Stap 1: Inschrijven bij KVK**
+Je kunt pas een btw-nummer krijgen als je ingeschreven staat bij de Kamer van Koophandel. Dit is de trigger voor de Belastingdienst.
+
+**Stap 2: Wachten op de Belastingdienst**
+Na je KVK-inschrijving duurt het meestal 1 tot 2 weken voordat je post van de Belastingdienst ontvangt. In drukke periodes kan dit oplopen tot 3 weken.
+
+**Stap 3: Controleer je gegevens**
+In de brief staan:
+- Je btw-nummer (14 tekens)
+- Je loonheffingennummer (voor eventueel personeel)
+- Inloggegevens voor Mijn Belastingdienst Zakelijk
+
+### Wat als je Geen Brief Krijgt?
+
+Soms gaat er iets mis. Wat kun je dan doen?
+
+**Wacht eerst 3 weken**
+De Belastingdienst is soms wat traag. Heb geduld voordat je actie onderneemt.
+
+**Bel de Belastingdienst**
+Telefoonnummer: 0800 - 0543 (gratis)
+Zorg dat je je KVK-nummer bij de hand hebt.
+
+**Controleer je adres**
+Misschien is je post verstuurd naar een oud adres. Update je adres via MijnOverheid.
+
+## Direct na het Ontvangen: Je Verplichtingen
+
+Vanaf het moment dat je btw-nummer hebt, ben je btw-plichtig. Dit betekent:
+
+**Je MOET:**
+- Btw berekenen op al je omzet
+- Btw-aangifte doen per kwartaal
+- Btw betalen aan de Belastingdienst
+- Btw op je facturen vermelden
+
+**Je MAG:**
+- Btw terugvragen over je zakelijke kosten
+- Gebruik maken van de kleineondernemersregeling (als je onder de grens blijft)
+
+## Praktische Voorbeelden
+
+### Voorbeeld 1: Webdesigner
+Lisa start als webdesigner. Ze ontvangt haar btw-nummer 10 dagen na haar KVK-inschrijving. Direct daarna stuurt ze haar eerste factuur met 21% btw naar een klant.
+
+### Voorbeeld 2: Consultant
+Marco is consultant. Hij denkt onder de €20.000 grens te blijven en kiest voor de kleineondernemersregeling. Hij hoeft geen btw te berekenen, maar krijgt wel een btw-nummer voor als hij later over de grens komt.
+
+## Veelgestelde Vragen
+
+**Moet ik direct btw-aangifte doen na ontvangst?**
+Nee, je doet aangifte per kwartaal. Het eerste kwartaal na inschrijving begint meestal direct.
+
+**Kan ik facturen sturen zonder btw-nummer?**
+Nee, dit is niet toegestaan. Wacht tot je het nummer hebt ontvangen.
+
+**Wat als ik geen btw-plichtig werk doe?**
+Je krijgt toch een btw-nummer. Als je alleen vrijgestelde werk doet (zoals bepaalde onderwijsactiviteiten), geef je dit aan bij de Belastingdienst.
+
+**Is het nummer hetzelfde als mijn KVK-nummer?**
+Nee, het is een apart nummer dat wel gebaseerd is op je KVK-nummer.
+
+## Conclusie
+
+Het aanvragen van een btw-nummer is eenvoudig omdat het automatisch gaat. Het belangrijkste is dat je weet wat je verplichtingen zijn zodra je het nummer hebt. Zorg dat je je administratie op orde hebt en stel een btw-reservering in op een aparte rekening.
+
+Heb je vragen? Neem gerust contact op met de Belastingdienst of vraag advies aan een boekhouder.`,
+    faq: [
+      {
+        question: 'Hoelang duurt het voordat ik mijn btw-nummer krijg?',
+        answer: 'Meestal 1-2 weken na je KVK-inschrijving. In drukke periodes kan dit oplopen tot 3 weken.'
+      },
+      {
+        question: 'Moet ik zelf een btw-nummer aanvragen?',
+        answer: 'Nee, dit gebeurt automatisch na je KVK-inschrijving. De Belastingdienst stuurt je het nummer per post.'
+      },
+      {
+        question: 'Wat staat er allemaal in de brief van de Belastingdienst?',
+        answer: 'Je btw-nummer, loonheffingennummer (voor personeel), en inloggegevens voor Mijn Belastingdienst Zakelijk.'
+      },
+      {
+        question: 'Wanneer moet ik mijn eerste btw-aangifte doen?',
+        answer: 'Per kwartaal. De eerste aangifte is voor het kwartaal waarin je bent ingeschreven. Deadline is de laatste dag van de maand na afloop van het kwartaal.'
+      }
+    ,
+  },
+  {
+    id: '4',
+    slug: 'hobby-naar-onderneming-wanneer-ondernemer',
+    title: 'Van Hobby naar Onderneming: Wanneer Ben Je Wettelijk Ondernemer?',
+    metaDescription: 'Wanneer ben je wettelijk ondernemer? Ontdek de criteria van de Belastingdienst en wanneer je moet inschrijven bij de KVK.',
+    publishDate: '2024-02-26',
+    readTime: 7,
+    category: 'Starters',
+    tags: ['hobby', 'onderneming', 'kvk', 'belastingdienst', 'criteria'],
+    featured: false,
+    content: `## De Grens is Vaag
+
+Veel mensen beginnen met een hobby. Je maakt wat kaarsen, geeft yoga-lessen aan vrienden, of richt webshops in voor familieleden. Op den duur blijken er meer mensen interesse te hebben. En dan komt de vraag: ben ik nu ondernemer of niet?
+
+De grens tussen hobby en onderneming is niet altijd scherp. De Belastingdienst kijkt naar meerdere factoren. In dit artikel zet ik deze criteria op een rij.
+
+## De Criteria van de Belastingdienst
+
+De Belastingdienst hanteert de volgende punten om te beoordelen of je ondernemer bent:
+
+### 1. Opbrengstgerichtheid
+Je moet streven naar opbrengst. Dit betekent dat je meer wilt verdienen dan je alleen kostendecking. Je zoekt actief klanten en promoot je diensten.
+
+### 2. Continuiteit
+Het moet meer zijn dan een eenmalige opdracht. Je hebt de intentie om langere tijd deze activiteiten te blijven doen.
+
+### 3. Regelmatigheid
+Je besteedt regelmatig tijd aan je activiteit. Niet alleen incidenteel in het weekend, maar structureel.
+
+### 4. Externe verkoop
+Je levert niet alleen aan familie en vrienden, maar ook aan derden. Dit is een belangrijk onderscheid.
+
+### 5. Inschrijving en promotie
+Je hebt een bedrijfsnaam, visitekaartjes, of een website. Je presenteert jezelf als ondernemer.
+
+## Voorbeelden uit de Praktijk
+
+### Voorbeeld 1: Wel ondernemer
+Sarah maakt handgemaakte sieraden. Ze verkoopt via Etsy, heeft een eigen website, en doet regelmatig markten. Ze besteedt 15 uur per week aan haar sieraden en wil hiervan gaan leven. Dit is ondernemerschap.
+
+### Voorbeeld 2: Geen ondernemer
+Thomas verhuurt zijn oude camera af en toe aan vrienden voor een tientje. Dit is incidenteel, niet opbrengstgericht, en alleen binnen zijn netwerk. Dit is een hobby.
+
+### Voorbeeld 3: Grijs gebied
+Lisa geeft yoga-lessen. Ze begon met vriendinnen, maar nu vragen ook collega's les. Ze verdient ongeveer €3.000 per jaar. Is dit ondernemerschap? De Belastingdienst zou kunnen zeggen: ja, als ze zichzelf promoot en regelmatig lesgeeft.
+
+## Wat als Je Twijfelt?
+
+Twijfel je of je ondernemer bent? Overleg dan met:
+
+- De KVK (ze beoordelen of je je moet inschrijven)
+- Een boekhouder (fiscaal advies)
+- De Belastingdienst (via 0800-0543)
+
+Het is beter om te vragen dan achteraf problemen te krijgen.
+
+## Gevolgen van Inschrijven
+
+Als je inschrijft bij de KVK, betekent dit:
+
+**Je krijgt:**
+- Een KVK-nummer
+- Btw-nummer
+- Mogelijkheid tot aftrekposten
+- Zakelijk bankieren
+
+**Je moet:**
+- Btw-aangifte doen
+- Inkomstenbelasting betalen over winst
+- Administratie bijhouden
+- Jaarlijks cijfers aanleveren
+
+## Kleineondernemersregeling
+
+Als je omzet onder de €20.000 per jaar blijft, kun je gebruik maken van de kleineondernemersregeling (KOR). Je hoeft dan geen btw af te dragen. Je krijgt wel een btw-nummer, maar factureert zonder btw.
+
+Let op: dit verandert niets aan het feit of je wel of geen ondernemer bent. Het is alleen een btw-faciliteit.
+
+## Conclusie
+
+De grens tussen hobby en onderneming is subjectief. Kijk naar de vijf criteria en wees eerlijk tegen jezelf. Als je opbrengstgericht bezig bent, structureel tijd investeert, en aan derden levert, dan ben je waarschijnlijk ondernemer.
+
+Twijfel je? Vraag advies. De KVK en Belastingdienst helpen je graag. En onthoud: als je eenmaal ingeschreven staat, is het niet moeilijk om weer uit te schrijven als je erachter komt dat het toch niet voor je is.
+
+Succes met je keuze!`,
+    faq: [
+      {
+        question: 'Wanneer moet ik me inschrijven bij de KVK?',
+        answer: 'Als je voldoet aan de criteria (opbrengstgericht, continu, regelmatig, extern), moet je je inschrijven. Twijfel je? Neem contact op met de KVK voor advies.'
+      },
+      {
+        question: 'Kan ik eerst beginnen en later pas inschrijven?',
+        answer: 'Technisch wel, maar je loopt dan risico. Als de Belastingdienst ontdekt dat je onderschrijft, kun je boetes krijgen. Schrijf je liever direct in als je start.'
+      },
+      {
+        question: 'Wat als mijn hobby uitgroeit tot onderneming?',
+        answer: 'Dan schrijf je je in bij de KVK op het moment dat je aan de criteria voldoet. Je hoeft niet terugwerkend in te schrijven.'
+      },
+      {
+        question: 'Moet ik ook inschrijven als ik onder de 20.000 euro blijf?',
+        answer: 'Ja, de KOR (kleineondernemersregeling) is een btw-faciliteit, geen vrijstelling voor inschrijving. Je moet je nog steeds inschrijven bij de KVK.'
+      }
+    ,
+  },
+  {
+    id: '5',
+    slug: 'uurtarief-zzp-berekenen-formule',
+    title: 'Het Perfecte Uurtarief Berekenen als ZZP\'er: Formule + Voorbeelden',
+    metaDescription: 'Hoe bereken je je uurtarief als ZZP\'er? Ontdek de formule, voorbeelden en tips om een marktconform en winstgevend tarief te bepalen.',
+    publishDate: '2024-03-11',
+    readTime: 8,
+    category: 'Tarieven',
+    tags: ['uurtarief', 'tarief', 'berekenen', 'zzp', 'prijs'],
+    featured: false,
+    content: `## Waarom je Tarief Zo Belangrijk Is
+
+Je uurtarief bepaalt direct je inkomen. Te laag en je werkt jezelf uit en komt rondkomen niet rond. Te hoog en je krijgt geen klanten. Het juiste tarief vind je door een combinatie van rekenen en marktonderzoek.
+
+In dit artikel geef je een bewezen formule én praktische voorbeelden.
+
+## De Formule
+
+Je uurtarief = (Jaarlijkse kosten + Gewenst inkomen) / Beschikbare uren
+
+Laten we dit stap voor stap uitwerken.
+
+### Stap 1: Bepaal Je Kosten
+
+Welke kosten heb je als ZZP\'er?
+
+**Vaste kosten per maand:**
+- Zakelijke rekening: €10
+- Boekhoudsoftware: €25
+- Aansprakelijkheidsverzekering: €30
+- AOV-verzekering: €150
+- Administratiekosten: €50
+- Autokosten (zakelijke kilometers): €100
+- Telefoon en internet: €50
+- Pensioenopbouw: €300
+
+**Totaal maandelijks: €715**
+**Totaal jaarlijks: €8.580**
+
+**Variabele kosten:**
+- Opleidingen en cursussen: €1.000/jaar
+- Marketing en netwerken: €500/jaar
+- Verzekeringen en reserves: €1.000/jaar
+
+**Totaal jaarlijkse kosten: €11.080**
+
+### Stap 2: Bepaal Je Gewenste Inkomen
+
+Wat wil je netto overhouden? Reken ook de belasting mee.
+
+**Voorbeeld:**
+- Gewenst netto inkomen: €3.000 per maand
+- Bruto inkomen nodig: €4.200 (inclusief belasting en premies)
+- Jaarlijks gewenst: €50.400
+
+### Stap 3: Bereken Beschikbare Uren
+
+Je werkt niet elke dag 8 uur aan projecten. Er gaat veel tijd in acquisitie, administratie en scholing.
+
+**Per week:**
+- Totaal beschikbaar: 40 uur
+- Netto billable: 24 uur (60%)
+- Administratie: 8 uur
+- Acquisitie en netwerken: 8 uur
+
+**Per jaar:**
+- 46 werkweken (6 weken vakantie en vrije dagen)
+- 46 × 24 = 1.104 uren per jaar
+
+### Stap 4: Reken Het Tarief Uit
+
+(Totale kosten + Gewenst inkomen) / Beschikbare uren
+
+(€11.080 + €50.400) / 1.104 = €55,70
+
+**Afgerond: €56 per uur**
+
+## Marktconformiteit Checken
+
+De formule geeft een basis. Maar is dit marktconform?
+
+**Onderzoek je concurrentie:**
+- Vraag collega's wat ze vragen
+- Zoek op freelance platforms (hoop, Upwork)
+- Check tarieven van bureaus (en vraag 20% minder)
+
+**Verschillen per branche:**
+- Marketing/consultancy: €75-150/uur
+- ICT/programmeren: €65-120/uur
+- Creatief/ontwerp: €50-100/uur
+- Administratie: €40-65/uur
+- Bouw/techniek: €45-75/uur
+
+## Voorbeelden uit de Praktijk
+
+### Voorbeeld 1: Startende Marketing Consultant
+- Kosten: €12.000/jaar
+- Gewenst inkomen: €45.000/jaar
+- Beschikbare uren: 1.100
+- **Tarief: €52/uur**
+- Marktconform: Ja, gemiddeld voor starters
+
+### Voorbeeld 2: Ervaring Software Developer
+- Kosten: €15.000/jaar
+- Gewenst inkomen: €75.000/jaar
+- Beschikbare uren: 1.200
+- **Tarief: €75/uur**
+- Marktconform: Ja, goed voor ervaring
+
+### Voorbeeld 3: Grafisch Ontwerper Parttime
+- Kosten: €8.000/jaar
+- Gewenst inkomen: €25.000/jaar (parttime)
+- Beschikbare uren: 600
+- **Tarief: €55/uur**
+- Marktconform: Ja, standaard tarief
+
+## Tips voor Het Bepalen van Je Tarief
+
+**1. Start niet te laag**
+Te lage tarieven zijn moeilijk omhoog te krijgen. Klanten die op prijs kiezen, zijn vaak problematisch.
+
+**2. Werk met verschillende tarieven**
+- Standaard tarief voor regulier werk
+- Spoedtarief (30% hoger) voor rush klussen
+- Projecttarief voor grotere opdrachten
+
+**3. Verhoog jaarlijks**
+Jaarlijkse prijsstijging van 3-5% is normaal. Communiceer dit tijdig.
+
+**4. Wees flexibel**
+Vaste klanten of groot project? Een kleine korting is prima. Maar leg vast waarom.
+
+**5. Focus op waarde, niet op tijd**
+Een klant betaalt voor het resultaat, niet voor je tijd. Benader het zo in je communicatie.
+
+## Wat als het Tarief Te Hoog is?
+
+Als je merkt dat klanten afhaken op prijs:
+
+**Optie 1: Verlaag je kosten**
+- Goedkopere verzekeringen
+- Thuiswerken ipv kantoor
+- Meer zelf doen ipv uitbesteden
+
+**Optie 2: Vergroot je waarde**
+- Specialiseer je
+- Bouw een sterker portfolio
+- Vraag testimonials en referrals
+
+**Optie 3: Accepteer lagere bezetting**
+Werk minder uren voor hetzelfde geld. Dit geeft ruimte voor acquisitie en ontwikkeling.
+
+## Conclusie
+
+Het berekenen van je uurtarief is een combinatie van wiskunde en strategie. Gebruik de formule als basis, check de markt, en durf te vragen wat je waard bent.
+
+Onthoud: je tarief is geen statisch gegeven. Evalueer het jaarlijks en pas aan waar nodig.
+
+Heb je hulp nodig bij het berekenen? Gebruik onze gratis tariefcalculator of vraag advies aan een boekhouder.
+
+Succes met je tarief!`,
+    faq: [
+      {
+        question: 'Hoe weet ik of mijn tarief marktconform is?',
+        answer: 'Vraag collega\'s, check freelance platforms, en bekijk wat bureaus vragen. Je tarief ligt meestal 20-30% onder bureau-tarieven.'
+      },
+      {
+        question: 'Kan ik verschillende tarieven hanteren?',
+        answer: 'Ja, dit is verstandig. Hanteer een standaardtarief, spoedtarief (hoger), en evt. projecttarieven voor grotere opdrachten.'
+      },
+      {
+        question: 'Hoe vaak moet ik mijn tarief verhogen?',
+        answer: 'Jaarlijks met 3-5% is gebruikelijk. Communiceer dit vooraf met vaste klanten.'
+      },
+      {
+        question: 'Wat als klanten mijn tarief te hoog vinden?',
+        answer: 'Focus op waarde in plaats van prijs. Toon resultaten en testimonials. Overweeg pakketten met verschillende prijsniveaus.'
+      }
+    ,
+  },
+  {
+    id: '6',
+    slug: 'kleineondernemersregeling-kor-btw',
+    title: 'Kleineondernemersregeling (KOR): Past Dit Bij Jou of Niet?',
+    metaDescription: 'Alles over de kleineondernemersregeling (KOR). Wat zijn de voordelen, nadelen en voorwaarden? Lees of deze btw-regeling bij je past.',
+    publishDate: '2024-03-25',
+    readTime: 7,
+    category: 'Belasting',
+    tags: ['kor', 'kleineondernemersregeling', 'btw', 'vrijgesteld'],
+    featured: false,
+    content: `## Wat is de Kleineondernemersregeling?
+
+De kleineondernemersregeling (KOR) is een btw-faciliteit voor kleine ondernemers. Als je omzet onder de €20.000 per jaar blijft (of €50.000 voor aftrekposten), hoef je geen btw af te dragen aan de Belastingdienst.
+
+Je blijft wel btw-plichtig en krijgt een btw-nummer. Maar je hoeft geen btw op je facturen te zetten en je doet geen btw-aangifte.
+
+## De Voorwaarden
+
+Om gebruik te maken van de KOR moet je voldoen aan:
+
+### Omzetgrens
+- Jaaromzet onder €20.000 (exclusief btw)
+- Of onder €50.000 voor specifieke aftrekposten
+
+### Btw-plichtigheid
+- Je moet ingeschreven staan bij de KVK
+- Je hebt een btw-nummer
+- Je doet reguliere btw-aangifte (als je geen KOR hebt)
+
+### Melding
+- Je moet de KOR actief aanvragen bij de Belastingdienst
+- Doe dit voor 1 januari van het jaar waarin je de KOR wilt gebruiken
+
+## Voor- en Nadelen
+
+### Voordelen
+
+**Administratieve verlichting**
+Je hoeft geen btw-aangifte te doen. Dat scheelt 4x per jaar uren werk.
+
+**Lagere prijzen voor klanten**
+Zonder btw zijn je facturen lager. Dit kan een voordeel zijn bij particuliere klanten.
+
+**Geen btw-betalingen**
+Je hoeft geen btw te reserveren en door te sturen naar de Belastingdienst.
+
+### Nadelen
+
+**Geen btw-aftrek**
+Je kunt de btw op je zakelijke aankopen niet terugvragen. Dit kan duur zijn bij grote investeringen.
+
+**Imago**
+Sommige klanten vinden een factuur zonder btw minder professioneel overkomen.
+
+**Groei belemmeren**
+Als je over de grens komt, moet je alsnog btw gaan berekenen. Dit is een administratieve omschakeling.
+
+## Voorbeelden uit de Praktijk
+
+### Voorbeeld 1: Tekstschrijver
+Marieke schrijft teksten voor websites. Haar omzet is €18.000 per jaar. Zonder KOR zou ze €3.780 btw moeten afdragen. Met KOR houdt ze dit geld zelf. Ze heeft weinig zakelijke kosten met btw, dus de KOR is voordelig.
+
+### Voorbeeld 2: Fotograaf
+Jeroen is fotograaf. Hij verdient €35.000 per jaar, maar koopt veel duur materiaal (camera's, lenzen, verlichting). De btw op zijn aankopen loopt op tot €4.000 per jaar. Zonder KOR kan hij dit terugvragen. Met KOR is dit voordeel kwijt.
+
+### Voorbeeld 3: Consultant
+Peter geeft advies. Omzet €25.000. Zijn enige kosten zijn laptop en telefoon (weinig btw). De KOR scheelt hem administratie en hij betaalt geen btw. Dit is gunstig.
+
+## De Rekensom Maken
+
+Om te bepalen of de KOR bij jou past:
+
+**Stap 1:** Bereken je verwachte omzet
+**Stap 2:** Bereken de btw die je zou moeten afdragen (21% van omzet)
+**Stap 3:** Bereken de btw op je zakelijke aankopen
+**Stap 4:** Vergelijk beide bedragen
+
+**Voorbeeld:**
+- Omzet: €15.000
+- Btw-afdracht zonder KOR: €3.150
+- Btw op aankopen: €500
+- **Voordeel KOR: €3.150 - €500 = €2.650**
+
+De KOR is hier voordelig.
+
+## Aanvragen en Opzeggen
+
+### Aanvragen
+Vraag de KOR aan via Mijn Belastingdienst Zakelijk. Doe dit voor 1 januari van het jaar waarin je de KOR wilt gebruiken.
+
+### Opzeggen
+Je kunt de KOR op elk moment opzeggen. Dit doe je ook via Mijn Belastingdienst Zakelijk.
+
+**Automatisch einde**
+Als je over de €20.000 grens komt, vervalt de KOR automatisch. Je moet dan alsnog btw gaan berekenen vanaf het moment dat je over de grens komt.
+
+## Grensgevallen en Speciale Situaties
+
+### Net onder de grens
+Je omzet is €19.800. Wat als een klant nog een opdracht geeft van €500? Dan kom je over de grens. Weeg af of de extra omzet de administratieve last waard is.
+
+### Combinatie met andere werkzaamheden
+Heb je naast je onderneming ook loondienst? Alleen je omzet uit onderneming telt voor de KOR-grens.
+
+### Verhuizing naar het buitenland
+Ga je binnen de EU verhuizen? De KOR vervalt dan. Je moet opnieuw beoordelen of je in het nieuwe land onder een soortgelijke regeling valt.
+
+## Conclusie
+
+De KOR is gunstig als:
+- Je omzet onder €20.000 blijft
+- Je weinig zakelijke aankopen met btw doet
+- Je administratieve last wilt verminderen
+
+De KOR is ongunstig als:
+- Je veel investeringen doet met btw
+- Je snel wilt groeien
+- Je veel zakelijke klanten hebt (die de btw toch terugkrijgen)
+
+Bereken voor jezelf wat voordeliger is. En onthoud: je kunt altijd overstappen als je situatie verandert.
+
+Vragen? Neem contact op met de Belastingdienst of vraag advies aan een boekhouder.`,
+    faq: [
+      {
+        question: 'Wat is de omzetgrens voor de KOR?',
+        answer: 'Je omzet moet onder €20.000 per jaar blijven (exclusief btw). Er is ook een speciale regeling voor aftrekposten met een grens van €50.000.'
+      },
+      {
+        question: 'Kan ik tussentijds stoppen met de KOR?',
+        answer: 'Ja, je kunt de KOR op elk moment opzeggen via Mijn Belastingdienst Zakelijk. Je gaat dan direct over op reguliere btw.'
+      },
+      {
+        question: 'Wat gebeurt er als ik over de grens kom?',
+        answer: 'Als je omzet boven €20.000 komt, vervalt de KOR automatisch. Je moet dan direct btw gaan berekenen op nieuwe facturen.'
+      },
+      {
+        question: 'Moet ik de KOR aanvragen of gebeurt dit automatisch?',
+        answer: 'Je moet de KOR actief aanvragen bij de Belastingdienst. Dit doe je voor 1 januari van het jaar waarin je de KOR wilt gebruiken.'
+      }
+    ,
+  },
+  {
+    id: '7',
+    slug: 'btw-aangifte-doen-stappenplan-2024',
+    title: 'BTW Aangifte Doen: Het Complete Stappenplan voor ZZP\'ers',
+    metaDescription: 'Leer stap-voor-stap hoe je btw-aangifte doet als ZZP\'er. Met concrete voorbeelden, deadlines en praktische tips om fouten te voorkomen.',
+    publishDate: '2024-04-08',
+    readTime: 7,
+    category: 'Belasting',
+    tags: ['btw', 'aangifte', 'belastingdienst', 'kwartaal', 'zzp'],
+    featured: false,
+    content: `## Wanneer Moet Je Btw-Aangifte Doen?
+
+Als ZZP\'er doe je btw-aangifte per kwartaal. Dit betekent 4 keer per jaar. De deadlines zijn:
+
+- **Q1 (jan-mrt):** 30 april
+- **Q2 (apr-jun):** 31 juli
+- **Q3 (jul-sep):** 31 oktober
+- **Q4 (okt-dec):** 31 januari (volgend jaar)
+
+**Let op:** Bij een feestdag verschuift de deadline naar de eerstvolgende werkdag.
+
+## Stap 1: Btw-Overzicht Maken
+
+Verzamel alle facturen uit het kwartaal:
+
+**Verkochte facturen (omzet):**
+- Totaal excl. btw
+- Btw-bedrag per tarief (21%, 9%, 0%)
+
+**Inkoopfacturen (kosten):**
+- Btw die je betaald hebt
+- Bedrijfskosten voor aftrek
+
+**Voorbeeld:**
+In Q1 heb je €12.000 omzet gemaakt met 21% btw = €2.520 btw ontvangen.
+Je hebt €3.000 aan kosten gemaakt met €630 btw betaald.
+
+## Stap 2: Inloggen op Mijn Belastingdienst Zakelijk
+
+Ga naar belastingdienst.nl en log in met:
+- EHerkenning (meest gebruikt)
+- DigiD (ook mogelijk voor ZZP)
+
+Je vindt het btw-aangifteformulier onder "Aangiften" → "Omzetbelasting".
+
+## Stap 3: Het Formulier Invullen
+
+Het formulier heeft verschillende rubrieken:
+
+**Rubriek 1a: Hoog tarief (21%)**
+- Vermeld hier je omzet excl. 21% btw
+- Het systeem berekent automatisch de €2.520
+
+**Rubriek 1b: Laag tarief (9%)**
+- Voor specifieke goederen/diensten
+- Meestal niet relevant voor ZZP'ers
+
+**Rubriek 1e: Btw over inkoop**
+- Vermeld de €630 btw die jij hebt betaald
+- Dit wordt verrekend met je af te dragen btw
+
+**Rubriek 5d: Totaal te betalen**
+In ons voorbeeld: €2.520 - €630 = €1.890
+
+## Stap 4: Controleren en Verzenden
+
+**Checklist voor controle:**
+- Kloppen de bedragen met je boekhouding?
+- Zijn alle facturen meegenomen?
+- Is het rekeningnummer correct?
+
+**Na verzenden:**
+- Bewaar de bevestiging
+- Noteer het betalingsverzoek
+- Zet een herinnering voor de betaling
+
+## Betaling van de Btw
+
+Je hebt meestal 1 maand de tijd om te betalen na de aangifte. Het bedrag wordt automatisch afgeschreven als je dat hebt ingesteld.
+
+**Rekeningnummer:**
+NL82INGB0002445271 (Belastingdienst Apeldoorn)
+Vermeld altijd je btw-nummer als betalingskenmerk.
+
+## Veelvoorkomende Fouten
+
+**Fout 1:** Vergeten van kleine facturen
+Oplossing: Bewaar alle bonnetjes en facturen direct in een map.
+
+**Fout 2:** Btw over privé-gebruik vergeten
+Als je zakelijk iets koopt maar privé gebruikt, moet je hier alsnog btw over betalen.
+
+**Fout 3:** Te laat aangifte doen
+Boete: 5% van het verschuldigde bedrag, minimaal €50.
+
+**Fout 4:** Verkeerde tarieven hanteren
+Controleer altijd of je het juiste btw-tarief toepast.
+
+## Praktisch Voorbeeld
+
+**Situatie:** Webdesigner Marco in Q1 2024
+
+- 5 facturen verstuurd: €15.000 omzet
+- Btw ontvangen (21%): €3.150
+- Laptop gekocht: €1.200 + €252 btw
+- Software abonnementen: €500 + €105 btw
+- Totaal btw betaald: €357
+
+**Berekening:**
+- Btw af te dragen: €3.150
+- Btw terug te vragen: €357
+- Netto te betalen: €2.793
+
+## Tips voor Efficiëntie
+
+**1. Boekhoudsoftware gebruiken**
+Programma's als e-Boekhouden of Jortt genereren automatisch een vooraangifte.
+
+**2. Maandelijks bijhouden**
+Wacht niet tot het einde van het kwartaal. Noteer wekelijks je in- en verkoop.
+
+**3. Reserveer btw op een aparte rekening**
+Zet direct 21% van elke betaling apart zodat je nooit in de problemen komt.
+
+**4. Vraag hulp bij twijfel**
+Een boekhouder kost geld, maar een boete voor foutieve aangifte ook.
+
+## Conclusie
+
+Btw-aangifte is een terugkerende taak die je serieus moet nemen. Met een goed systeem en regelmatige bijhouding voorkom je stress en boetes. Start met het opzetten van een werkbare structuur vandaag nog.`,
+    faq: [
+      {
+        question: 'Wat gebeurt er als ik te laat aangifte doe?',
+        answer: 'De Belastingdienst legt een boete op van 5% van het verschuldigde bedrag, met een minimum van €50. Bij herhaald te laat indienen kan dit oplopen.'
+      },
+      {
+        question: 'Kan ik btw-aangifte doen zonder boekhouder?',
+        answer: 'Ja, dat kan. Bij een eenvoudige administratie is dit goed te doen. Gebruik wel boekhoudsoftware om fouten te voorkomen.'
+      },
+      {
+        question: 'Wat als ik geen omzet heb gehad?',
+        answer: 'Je moet dan een nihil-aangifte doen. Dit is een aangifte met alle velden op 0. Dit is verplicht om door te geven dat je niets hebt omgezet.'
+      },
+      {
+        question: 'Hoe lang moet ik mijn aangifte bewaren?',
+        answer: 'Bewaar je btw-aangifte en bijbehorende facturen 7 jaar. Dit is wettelijk verplicht voor de Belastingdienst.'
+      }
+    ,
+  },
+  {
+    id: '8',
+    slug: 'btw-verlegd-factureren-buitenland',
+    title: 'BTW Verlegd Factureren: Handleiding voor Zakelijke Klanten in het Buitenland',
+    metaDescription: 'Leer wanneer en hoe je btw verlegd factureert naar buitenlandse klanten. Met voorbeelden en wettelijke verplichte teksten.',
+    publishDate: '2024-04-22',
+    readTime: 6,
+    category: 'Facturatie',
+    tags: ['btw', 'verlegd', 'buitenland', 'eu', 'internationaal'],
+    featured: false,
+    content: `## Wat is Btw Verlegd?
+
+Btw verlegd betekent dat jij geen btw berekent, maar dat je klant de btw moet afdragen in zijn eigen land. Dit gebeurt bij bepaalde grensoverschrijdende transacties binnen de EU.
+
+**Voor wie:** Zakelijke klanten (met geldig btw-nummer) in andere EU-landen.
+
+## Wanneer Pas Je Btw Verlegd Toe?
+
+### Diensten (bijv. consultancy, IT, marketing)
+
+Voor de meeste diensten geldt: de btw verschuift naar het land van de klant. Jij factureert met 0% btw.
+
+**Voorwaarden:**
+- Klant is een bedrijf (geen consument)
+- Klant heeft een geldig EU-btw-nummer
+- Dienst valt onder de "algemene regel voor diensten"
+
+### Goederen
+
+Bij goederen is het ingewikkelder:
+- **Binnen EU:** Meestal 0% als klant het transport regelt
+- **Buiten EU:** 0% met douane-documenten
+
+## Hoe Factureer Je met Btw Verlegd?
+
+### Stap 1: Controleer het Btw-Nummer
+
+Valideer het btw-nummer van je klant via het VIES-systeem:
+https://ec.europa.eu/taxation_customs/vies/
+
+**Let op:** Een foutief btw-nummer kan leiden tot naheffing door de Belastingdienst.
+
+### Stap 2: Vermeld de Verplichte Tekst
+
+Op je factuur moet staan:
+
+> "Btw verlegd - de klant is de belastingplichtige voor de btw"
+
+Of in het Engels als je internationaal werkt:
+
+> "VAT reverse charged - customer is liable for VAT"
+
+### Stap 3: Vermeld Beide Btw-Nummers
+
+- Jouw NL-btw-nummer
+- Btw-nummer van de klant (inclusief landcode, bijv. BE0123456789)
+
+### Stap 4: Rapporteer in je Btw-Aangifte
+
+In rubriek 3b vermeld je:
+- Omzet naar EU-landen (diensten)
+- Btw-nummer van de klant
+- Bedrag van de factuur
+
+**Let op:** Je moet ook een ICP-aangifte (Intracommunautaire Prestaties) doen als je meer dan €10.000 per kwartaal aan EU-omzet hebt.
+
+## Praktijkvoorbeelden
+
+### Voorbeeld 1: IT-Consultant naar Duitsland
+
+Marco uit Amsterdam werkt voor een bedrijf in Berlijn.
+- Marco\'s btw-nummer: NL123456789B01
+- Klant btw-nummer: DE987654321
+- Factuur: €10.000 (0% btw)
+- Tekst: "Btw verlegd - de klant is de belastingplichtige"
+
+De Duitse klant rapporteert €10.000 in zijn eigen btw-aangifte en betaalt 19% Duitse btw.
+
+### Voorbeeld 2: Marketingbureau naar België
+
+Een Nederlands marketingbureau factureert €5.000 aan een Belgisch bedrijf.
+- Zij factureren met 0% btw
+- Het Belgische bedrijf betaalt 21% btw in België
+
+## Veelgemaakte Fouten
+
+**Fout 1:** Consumenten btw-verlegd factureren
+- Consumenten betaalt altijd gewoon Nederlandse btw (21%)
+- Alleen zakelijke klanten met geldig btw-nummer kunnen verlegd
+
+**Fout 2:** Verplichte tekst vergeten
+- Zonder deze tekst wordt de factuur niet geaccepteerd
+- Klant kan dan de btw niet verrekenen
+
+**Fout 3:** Btw-nummer niet valideren
+- Check altijd via VIES voor je factureert
+- Soms zijn nummers inactief of onjuist
+
+**Fout 4:** ICP-aangifte vergeten
+- Bij meer dan €10.000 EU-omzet per kwartaal verplicht
+- Deadline is dezelfde als btw-aangifte
+
+## Checklist voor Btw Verlegd Facturen
+
+- [ ] Klant heeft geldig EU-btw-nummer
+- [ ] Btw-nummer gevalideerd via VIES
+- [ ] Verplichte tekst op factuur
+- [ ] Jouw en klant btw-nummer vermeld
+- [ ] Omzet correct gerapporteerd in aangifte
+- [ ] ICP-aangifte gedaan (indien van toepassing)
+
+## Conclusie
+
+Btw verlegd factureren bespaart je klant geld en maakt internationale zaken eenvoudiger. Zorg wel dat je het correct toepast om boetes te voorkomen. Bij twijfel: vraag advies van een boekhouder met internationale ervaring.`,
+    faq: [
+      {
+        question: 'Moet ik btw verlegd factureren naar een particulier in het buitenland?',
+        answer: 'Nee, particulieren betaalt altijd het btw-tarief van het land waar de dienst wordt verricht. Voor diensten vanuit Nederland is dat meestal 21% Nederlandse btw.'
+      },
+      {
+        question: 'Hoe controleer ik of een btw-nummer geldig is?',
+        answer: 'Gebruik de gratis VIES-checker van de Europese Commissie: ec.europa.eu/taxation_customs/vies. Dit is verplicht om te doen voor btw-verlegde facturen.'
+      },
+      {
+        question: 'Wat is een ICP-aangifte?',
+        answer: 'ICP (Intracommunautaire Prestaties) is een extra aangifte als je meer dan €10.000 per kwartaal aan EU-klanten factureert. Je geeft dan aan welke omzet je naar welk EU-land hebt geëxporteerd.'
+      },
+      {
+        question: 'Werkt btw verlegd ook voor klanten buiten de EU?',
+        answer: 'Nee, voor klanten buiten de EU (bijv. Verenigd Koninkrijk, VS, Zwitserland) gelden andere regels. Meestal is dit 0% btw met exportdocumenten.'
+      }
+    ,
+  }
+,
+  {
+    id: '9',
+    slug: 'betalingsherinneringen-incasso-facturen',
+    title: 'Betalingsherinneringen en Incasso: Hoe Krijg Je Facturen Betaald?',
+    metaDescription: 'Praktische tips voor het opstellen van betalingsherinneringen en incasso. Wettelijke termijnen, kosten en beste praktijken voor ondernemers.',
+    publishDate: '2024-05-06',
+    readTime: 7,
+    category: 'Facturatie',
+    tags: ['betalen', 'herinnering', 'incasso', 'termijn', 'achterstand'],
+    featured: false,
+    content: `## Betalingstermijn Op Je Factuur\n\nDe betalingstermijn bepaalt wanneer een factuur betaald moet zijn. Je bepaalt deze zelf, maar er zijn wettelijke maximums.\n\n**Voor zakelijke klanten:** Geen wettelijk maximum, maar 30 dagen is standaard.\n\n**Voor consumenten:** Maximaal 60 dagen na factuurdatum.\n\n**Gangbare termijnen:**\n- 14 dagen (snel, courant bij kleine facturen)\n- 30 dagen (meest gebruikt)\n- 60 dagen (bij grotere projecten)\n\n## De Eerste Herinnering\n\n**Wanneer sturen:** 1-5 dagen na vervaldatum\n\n**Toon:** Vriendelijk en zakelijk. Ga ervan uit dat het een vergissing is.\n\n**Inhoud:**\n- Vervolg op de oorspronkelijke factuur\n- Vriendelijke reminder dat de betaling nog niet is ontvangen\n- Vraag om bevestiging van ontvangst\n\n**Voorbeeld tekst:**\n> "Betreft factuur 2024-045 van €2.500, vervaldatum 15 april. Mogelijk is deze betaling over het hoofd gezien. Wilt u bevestigen wanneer ik de betaling kan verwachten?"\n\n## Tweede Herinnering (Aanmaning)\n\n**Wanneer sturen:** 7-14 dagen na de eerste herinnering\n\n**Toon:** Formeler, maar nog steeds professioneel\n\n**Inhoud:**\n- Melding dat dit de tweede herinnering is\n- Nieuwe betalingstermijn (bijvoorbeeld 7 dagen)\n- Melding van mogelijke rente/kosten bij niet-betalen\n\n**Wettelijke rente:**\n- Consumenten: 4% boven ECB-rente (circa 10-11%)\n- Zakelijk: 8% boven ECB-rente (circa 14-15%)\n\n## Derde Herinnering (Laatste Waarschuwing)\n\n**Wanneer sturen:** Na 2-3 weken zonder reactie\n\n**Toon:** Duidelijk over gevolgen\n\n**Inhoud:**\n- Melding van incasso of deurwaarder\n- Totale openstaande bedrag inclusief rente/kosten\n- Laatste termijn voor betaling\n\n## Incasso via Je Bank\n\nBij een incasso machtigt de klant jou om geld van zijn rekening af te schrijven. Dit moet schriftelijk (of digitaal met bevestiging).\n\n**Voordelen:**\n- Betaling is gegarandeerd (tenzij klant storneert)\n- Lagere kosten dan bij een incassobureau\n- Je bepaalt zelf het moment van afschrijven\n\n**Nadelen:**\n- Klant kan binnen 8 weken zonder opgaaf van reden storneren\n- Je hebt vooraf toestemming nodig\n\n**Kosten:**\n- €0,05 - €0,25 per incasso (afhankelijk van bank)\n\n## Incassobureau Inschakelen\n\nAls een klant niet betaalt, kun je een incassobureau inschakelen.\n\n**Wanneer:** Na 2-3 herinneringen zonder resultaat\n\n**Kosten:**\n- No cure, no pay: 5-15% van het geïncasseerde bedrag\n- Of vaste kosten per fase\n\n**Proces:**\n1. Bureau verstuurt aanmaning namens jou\n2. Bij geen reactie: telefonisch benaderen\n3. Laatste stap: dreiging met gerechtelijke incasso\n\n## Gerechtelijke Incasso (Deurwaarder)\n\nDe laatste stap bij niet-betalen.\n\n**Kosten (2024):**\n- dagvaardingskosten: €99,11 (bedragen tot €500)\n- Deurwaarderskosten: variërend\n- Totale kosten komen vaak op €300-500\n\n**Let op:** Deze kosten mag je (deels) doorberekenen aan de klant als dit in je algemene voorwaarden staat.\n\n## Tips om Betalingsproblemen te Voorkomen\n\n**1. Duidelijke voorwaarden**\nZet je betalingstermijn en consequenties duidelijk op je factuur en website.\n\n**2. Vooruitbetaald werken**\nVraag bij nieuwe klanten een deel vooraf (25-50%). Dit toont commitment.\n\n**3. Termijnbetalingen bij grote projecten**\nSplits grote bedragen in meerdere facturen met tussentijdse milestones.\n\n**4. Automatische herinneringen**\nGebruik software die automatisch herinneringen verstuurt. Dit bespaart tijd en voorkomt dat je vergeet.\n\n**5. Blijf communiceren**\nBij betalingsproblemen: bel de klant. Soms is er een legitieme reden en kun je een regeling treffen.\n\n## Praktisch Voorbeeld\n\n**Situatie:** Lisa heeft €3.000 factuur openstaan bij een klant.\n\n**Dag 1:** Factuur verstuurd met 14 dagen betalingstermijn\n**Dag 15:** Eerste vriendelijke herinnering\n**Dag 22:** Tweede herinnering met melding van rente\n**Dag 30:** Telefoongesprek - klant heeft cashflowproblemen\n**Dag 32:** Betalingsregeling: 3 termijnen van €1.000\n\nResultaat: volledige betaling binnen 6 weken, relatie behouden.\n\n## Conclusie\n\nSnelheid en consistentie zijn belangrijk bij niet-betalende klanten. Begin vriendelijk, maar wees duidelijk over gevolgen. En soms is een betalingsregeling beter dan een procedure - je houdt de klant en krijgt alsnog je geld.`,
+    faq: [
+      {
+        question: 'Mag ik rente in rekening brengen bij laattijdige betaling?',
+        answer: 'Ja, wettelijke rente is toegestaan. Voor consumenten is dit 4% boven de ECB-rente, voor zakelijk 8% boven de ECB-rente. Dit moet wel van tevoren zijn afgesproken in je algemene voorwaarden.'
+      },
+      {
+        question: 'Wat kost een incassobureau gemiddeld?',
+        answer: 'De meeste bureaus werken op no cure, no pay basis met 5-15% provisie. Er zijn ook bureaus met vaste kosten per aanmaning (€15-25) en telefonische actie (€35-50).'
+      },
+      {
+        question: 'Kan een klant een incasso storneren?',
+        answer: 'Ja, bij een gewone incasso kan een klant binnen 8 weken zonder reden storneren. Bij een geautoriseerde incasso (met handtekening) is dit beperkter. Controleer je bankafschriften regelmatig.'
+      },
+      {
+        question: 'Hoe lang duurt een gerechtelijke incasso?',
+        answer: 'Van dagvaarding tot vonnis duurt 6-12 weken. Na het vonnis kan de deurwaarder overgaan tot beslaglegging. Het totale proces kan 3-6 maanden duren.'
+      }
+    ,
+  }
+,
+  {
+    id: '10',
+    slug: 'korting-factuur-berekenen-btw',
+    title: 'Korting op de Factuur: Hoe Bereken Je de BTW Correct?',
+    metaDescription: 'Leer hoe je korting verwerkt op facturen en hoe de btw-berekening werkt. Met praktische voorbeelden en valkuilen.',
+    publishDate: '2024-05-13',
+    readTime: 6,
+    category: 'Facturatie',
+    tags: ['korting', 'btw', 'berekenen', 'factuur', 'discount'],
+    featured: false,
+    content: `## Waarom Korting Geven?\n\nKorting op facturen is een veelgebruikt instrument:\n- **Vroegtijdige betaling** (betalingskorting)\n- **Grote afname** (staffelkorting)\n- **Lange klantrelatie** (loyaliteitskorting)\n- **Seizoensacties** (promotiekorting)\n\nBelangrijk: je moet de btw altijd berekenen over het bedrag ná korting.\n\n## Soorten Korting op Facturen\n\n### 1. Betalingskorting (Vroegtijdig betalen)\n\n**Voorbeeld:** 2% korting bij betaling binnen 7 dagen\n\n**Hoe werkt het:**\n- Factuur: €1.000 excl. btw\n- Btw (21%): €210\n- Totaal: €1.210\n- Met 2% korting: €1.210 × 0,98 = €1.185,80\n\n**Op de factuur:**\n> "Bij betaling binnen 7 dagen: €1.185,80 (2% korting)\n> Bij betaling na 7 dagen: €1.210,00"\n\n### 2. Staffelkorting (Hoeveelheidskorting)\n\n**Voorbeeld:**\n- 1-10 stuks: €50 per stuk\n- 11-25 stuks: €45 per stuk (10% korting)\n- 26+ stuks: €40 per stuk (20% korting)\n\n**Berekening bij 15 stuks:**\n- Subtotaal: 15 × €45 = €675\n- Btw 21%: €141,75\n- Totaal: €816,75\n\n### 3. Korting op totaalbedrag\n\nSoms geef je korting op de hele factuur.\n\n**Voorbeeld:**\n- Subtotaal diensten: €5.000\n- Korting 10%: -€500\n- Totaal excl. btw: €4.500\n- Btw 21%: €945\n- **Totaal te betalen: €5.445**\n\n## Hoe Vermeld Je Korting op de Factuur?\n\nDe btw-wetgeving vereist duidelijkheid. Zo doe je het correct:\n\n### Voorbeeld Factuur met Korting:\n\n\`\`\`\nDiensten                          €10.000,00\nSubtotaal                         €10.000,00\nKorting (loyaliteit 10%)         -€ 1.000,00\n                                  ───────────\nTotaal exclusief btw              € 9.000,00\nBtw 21%                          € 1.890,00\n                                  ───────────\nTotaal te betalen               €10.890,00\n\`\`\`\n\n### Betalingsvoorwaarden:\n\n\`\`\`\nBetalingskorting:\n• Bij betaling binnen 7 dagen: 2% korting (€217,80)\n• Totaal bij vroegtijdige betaling: €10.672,20\n\nStandaard betaling:\n• Totaal: €10.890,00\n• Vervaldatum: 30 dagen na factuurdatum\n\`\`\`\n\n## Fouten die Je Moet Vermijden\n\n**Fout 1:** Btw berekenen over het bedrag vóór korting\n- ❌ €1.000 + €210 btw = €1.210, dan pas 2% korting = €1.185,80\n- ✅ €1.000 - 2% = €980 + €205,80 btw = €1.185,80\n\n**Fout 2:** Korting niet duidelijk vermelden\n- Altijd aparte regel voor korting\n- Vermeld de reden (loyaliteit, staffel, etc.)\n\n**Fout 3:** Betalingskorting te kort laten staan\n- Klanten moeten tijd hebben om te betalen\n- 7-14 dagen is gebruikelijk voor betalingskorting\n\n**Fout 4:** Negeren dat korting je marge raakt\n- 2% korting klinkt weinig, maar is 10% van je winst\n- Reken uit of de korting haalbaar is\n\n## Praktijkvoorbeelden\n\n### Voorbeeld 1: Consultant met Standaardkorting\n\nPeter is consultant. Vaste klanten krijgen 10% loyaliteitskorting.\n\n**Factuur zonder korting:**\n- Consultancy 40 uur × €100 = €4.000\n- Btw 21% = €840\n- Totaal = €4.840\n\n**Factuur mét korting:**\n- Consultancy 40 uur × €100 = €4.000\n- Loyaliteitskorting 10% = -€400\n- Subtotaal = €3.600\n- Btw 21% = €756\n- **Totaal = €4.356**\n\nPeter bespaart de klant €484.\n\n### Voorbeeld 2: Webshop met Staffelkorting\n\nEen webshop verkoopt producten met staffelprijzen:\n\n**Bestelling 50 stuks:**\n- Normale prijs: €25 × 50 = €1.250\n- Staffelprijs (50+): €22 × 50 = €1.100\n- Korting: €150\n- Btw 21% over €1.100 = €231\n- **Totaal = €1.331**\n\n### Voorbeeld 3: Betalingskorting Gebruiken\n\nMarco stuurt een factuur van €5.000.\n\n**Optie A:** Standaard 30 dagen\n- Totaal: €6.050 (incl. btw)\n- Vervaldatum: 30 dagen\n\n**Optie B:** 2% korting bij betaling binnen 7 dagen\n- Totaal standaard: €6.050\n- Korting: €121\n- Totaal bij snelle betaling: €5.929\n\nMarco krijgt €121 minder, maar heeft het geld 23 dagen eerder.\n\n## Korting in Je Administratie\n\nIn je boekhouding verwerk je korting als:\n- **Kortingsopbrengst** (negatieve omzet)\n- Aparte post zodat je inzicht hebt in hoeveel korting je geeft\n\n**Tip:** Monitor hoeveel korting je per jaar geeft. Te veel korting kan je winstgevendheid ernstig aantasten.\n\n## Conclusie\n\nKorting is een krachtig middel, maar moet correct worden toegepast. Btw bereken je altijd over het nettobedrag na korting. Wees duidelijk op je factuur en houd bij in je administratie.`,
+    faq: [
+      {
+        question: 'Over welk bedrag bereken ik de btw bij korting?',
+        answer: 'Altijd over het bedrag NA korting. Geef je 10% korting op €1.000, dan is het btw-bedrag 21% over €900 = €189, niet over €1.000.'
+      },
+      {
+        question: 'Moet ik de korting vermelden op de factuur?',
+        answer: 'Ja, dit is verplicht voor transparantie. Zet korting als aparte regel op de factuur, met vermelding van het type korting (bijv. "loyaliteitskorting 10%").'
+      },
+      {
+        question: 'Kan ik meerdere kortingen combineren?',
+        answer: 'Ja, dat kan. Bereken ze sequentieel. Bijvoorbeeld: eerst 10% staffelkorting, dan 2% betalingskorting over het reeds verlaagde bedrag.'
+      },
+      {
+        question: 'Hoe verwerk ik korting in mijn btw-aangifte?',
+        answer: 'Je geeft de werkelijke omzet op (na korting). De korting is geen aparte post in de btw-aangifte, maar zit verwerkt in je lagere omzetbedrag.'
+      }
+    ,
+  },
+  {
+    id: '11',
+    slug: 'geldigheidsduur-factuur-wettelijk',
+    title: 'Hoe Lang is een Factuur Geldig? Wettelijke Termijnen en Verval',
+    metaDescription: 'Ontdek hoe lang een factuur geldig is. Wettelijke vervaltermijnen, verjaring en wat je moet weten over betalingstermijnen en incasso.',
+    publishDate: '2024-05-20',
+    readTime: 6,
+    category: 'Facturatie',
+    tags: ['geldigheid', 'verjaring', 'termijn', 'factuur', 'wettelijk'],
+    featured: false,
+    content: `## Wat is de Geldigheidsduur van een Factuur?\n\nEen factuur op zichzelf "vervalt" niet. Maar je recht om betaling te eisen, verjaart wel na een bepaalde tijd. Dit noemen we de verjaringstermijn.\n\n**Belangrijk onderscheid:**\n- **Betalingstermijn:** De tijd die de klant heeft om te betalen\n- **Verjaringstermijn:** De tijd waarbinnen je juridisch betaling kunt afdwingen\n\n## Verjaringstermijnen in Nederland\n\n### Voor Zakelijke Facturen\n\nDe verjaringstermijn is **5 jaar** vanaf de vervaldatum van de factuur.\n\n**Voorbeeld:**\n- Factuur verstuurd: 1 januari 2024\n- Betalingstermijn: 30 dagen\n- Vervaldatum: 30 januari 2024\n- Verjaard op: 30 januari 2029\n\n### Voor Facturen aan Consumenten\n\nOok 5 jaar verjaringstermijn, maar met extra bescherming voor de consument.\n\n## Wat Gebeurt er Na Verjaring?\n\nNa 5 jaar verjaart je vordering. Dit betekent:\n\n**Juridisch:**\n- Je kunt geen gerechtelijke incasso meer starten\n- De schuldenaar kan zich beroepen op verjaring\n- De rechter zal je vordering afwijzen\n\n**Praktisch:**\n- De schuld bestaat nog wel\n- De klant kan alsnog betalen (vrijwillig)\n- Je kunt blijven vragen, maar niet afdwingen\n\n## Onderbreking van Verjaring\n\nDe verjaringstermijn wordt opnieuw 5 jaar als:\n\n### 1. De Klant Erkent de Schuld\n\nDoor:\n- Deelbetaling te doen\n- Schriftelijk te bevestigen dat er een schuld is\n- Een betalingsregeling voor te stellen\n\n**Let op:** Een loutere toezegging ("Ik ga betalen") is geen erkenning. Er moet een concreet handelen zijn.\n\n### 2. Je Start een Procedure\n\nDoor:\n- Dagvaarding te laten uitbrengen\n- Een verzoek tot betaling bij de rechtbank in te dienen\n- Incassobureau te laten dreigen met gerechtelijke stappen\n\n**Belangrijk:** De procedure moet ook daadwerkelijk doorgezet worden. Alleen dreigen is niet voldoende.\n\n### 3. Je Laat een Deurwaarder Betekenen\n\nEen deurwaarder kan een verzoek tot betaling betekenen. Dit onderbreekt de verjaring ook.\n\n## Praktische Voorbeelden\n\n### Voorbeeld 1: Correcte Onderbreking\n\n**Tijdlijn:**\n- Februari 2024: Factuur verstuurd (vervalt maart 2024)\n- Augustus 2024: Klant betaalt €500 (deelbetaling)\n- **Verjaringstermijn start opnieuw vanaf augustus 2024**\n- Augustus 2029: Nieuwe verjaring\n\n### Voorbeeld 2: Verjaring Gemist\n\n**Tijdlijn:**\n- Januari 2019: Factuur verstuurd\n- 2019-2024: Herinneringen gestuurd, maar geen juridische stappen\n- Februari 2024: Deurwaarder inschakelen\n- **Resultaat:** Vordering is verjaard, deurwaarder kan niets doen\n\n## Tips om Verjaring te Voorkomen\n\n**1. Houd een Aged Debtors List Bij**\n\nMaak maandelijks een overzicht van openstaande facturen ouder dan 90 dagen.\n\n**2. Zet Herinneringen in Je Agenda**\n\n- 30 dagen na vervaldatum: eerste herinnering\n- 60 dagen: tweede herinnering\n- 90 dagen: telefonisch contact\n- 120 dagen: overweeg incassobureau\n\n**3. Documenteer Alle Communicatie**\n\nBewaar:\n- Verzonden herinneringen\n- E-mailwisselingen\n- Telefoongesprekken (notities)\n- Deelbetalingen\n\n**4. Vraag een Erkenning van de Schuld**\n\nAls een klant een betalingsregeling wil:\n- Laat schriftelijk bevestigen dat de schuld bestaat\n- Laat ondertekenen door een gemachtigde\n- Dit onderbreekt de verjaring\n\n**5. Aarzel Niet te Lang**\n\nWacht niet tot jaar 4 om actie te ondernemen. Hoe ouder de vordering, hoe moeilijker innen.\n\n## Gerechtelijke Procedures en Kosten\n\nAls je binnen de 5 jaar een procedure start:\n\n**Kantonrechter (tot €25.000):**\n- Dagvaardingskosten: €99,11\n- Griffsrecht: €106\n- Totale kosten: circa €205\n\n**Rechtbank (boven €25.000):**\n- Hogere griffierechten\n- Mogelijk advocaat nodig\n\n**Terugvordering:**\nAls je wint, moet de klant meestal ook de proceskosten betalen (deurwaarder, gerechtelijke kosten).\n\n## Conclusie\n\nEen factuur verjaart na 5 jaar, maar intussen kun je wel alle middelen gebruiken om te innen. Het belangrijkste is dat je tijdig actie onderneemt. Wacht niet te lang, want hoe verser de vordering, hoe makkelijker te innen.`,
+    faq: [
+      {
+        question: 'Kan een klant na 5 jaar alsnog vrijwillig betalen?',
+        answer: 'Ja, de schuld bestaat nog wel na verjaring. De klant kan alsnog vrijwillig betalen. Alleen jij kunt geen rechtsmiddelen meer gebruiken om het af te dwingen.'
+      },
+      {
+        question: 'Hoe kan ik zien wanneer een factuur verjaart?',
+        answer: 'Tel 5 jaar op bij de vervaldatum van de factuur. Dus factuur vervalt 15 maart 2024, dan verjaart deze op 15 maart 2029.'
+      },
+      {
+        question: 'Onderbreekt een herinnering de verjaring?',
+        answer: 'Nee, een herinnering alleen onderbreekt niet de verjaring. Wel als de klant reageert en de schuld erkent, of als je een deurwaarder/dagvaarding inschakelt.'
+      },
+      {
+        question: 'Wat kost het om een factuur aan de rechter voor te leggen?',
+        answer: 'Voor bedragen tot €25.000 zijn de kosten circa €200-250 (dagvaarding + griffierecht). Voor hogere bedragen worden de kosten meer, en heb je mogelijk een advocaat nodig.'
+      }
+    ,
+  },
+  {
+    id: '12',
+    slug: 'verplichte-vermeldingen-factuur-uitgebreid',
+    title: 'Verplichte Vermeldingen op de Factuur: De Complete Gids',
+    metaDescription: 'Alle verplichte gegevens die op een factuur moeten staan volgens de wet. Met checklist en voorbeelden voor correcte facturen.',
+    publishDate: '2024-05-27',
+    readTime: 8,
+    category: 'Facturatie',
+    tags: ['verplicht', 'factuur', 'wetgeving', 'gegevens', 'checklist'],
+    featured: false,
+    content: `## Waarom Verplichte Vermeldingen Belangrijk Zijn\n\nEen factuur is een officieel belastingdocument. Ontbrekende gegevens kunnen leiden tot:\n\n- Afwijzing van btw-aftrek door je klant\n- Boetes van de Belastingdienst\n- Problemen bij belastingcontrole\n- Geschillen over betaling\n\n## De Wettelijke Basis\n\nArtikel 35a van de Wet op de omzetbelasting (Wet OB) bepaalt welke gegevens verplicht zijn.\n\n## De Complete Checklist\n\n### 1. Gegevens van de Leverancier (Jij)\n\n**Verplicht:**\n- [ ] Volledige bedrijfsnaam (zoals bij KVK)\n- [ ] Bezoekadres (straat, huisnummer, postcode, plaats)\n- [ ] KVK-nummer (8 cijfers)\n- [ ] Btw-nummer (NL123456789B01)\n\n**Aanbevolen:**\n- [ ] Telefoonnummer\n- [ ] E-mailadres\n- [ ] Website\n- [ ] Logo (voor herkenbaarheid)\n\n### 2. Gegevens van de Afnemer (Klant)\n\n**Verplicht:**\n- [ ] Bedrijfsnaam of naam contactpersoon\n- [ ] Bezoekadres\n\n**Voor zakelijke klanten ook:**\n- [ ] KVK-nummer (voor zekerheid)\n- [ ] Btw-nummer (vereist voor btw-aftrek)\n- [ ] Referentie/po-nummer van klant\n\n### 3. Factuurspecificaties\n\n**Verplicht:**\n- [ ] Factuurdatum\n- [ ] Uniek factuurnummer (opeenvolgend)\n- [ ] Vervaldatum (betalingstermijn)\n\n**Let op:** Factuurnummers moeten logisch opeenvolgend zijn binnen een boekjaar. Gaten zijn niet toegestaan.\n\n### 4. Product/Dienst Specificatie\n\n**Verplicht:**\n- [ ] Omschrijving van producten of diensten\n- [ ] Aantal/hoeveelheid\n- [ ] Prijs per eenheid (exclusief btw)\n- [ ] Korting vermelden (indien van toepassing)\n\n**Aanbevolen:**\n- [ ] Datum van levering/dienstverlening\n- [ ] Projectnaam of referentie\n- [ ] Bestelnummer van klant\n\n### 5. Financiële Details\n\n**Verplicht:**\n- [ ] Totaal bedrag exclusief btw\n- [ ] Btw-bedrag per tariefgroep\n- [ ] Btw-percentage (21%, 9%, of 0%)\n- [ ] Totaalbedrag inclusief btw\n- [ ] Valuta (EUR voor Nederland)\n\n**Aanbevolen:**\n- [ ] Subtotaal per productregel\n- [ ] Eventuele korting apart vermelden\n- [ ] Verzendkosten apart specificeren\n\n### 6. Betalingsinformatie\n\n**Verplicht:**\n- [ ] Betalingstermijn (bijv. "Betaling binnen 30 dagen")\n- [ ] Bankrekeningnummer (IBAN)\n- [ ] Ten name van (bedrijfsnaam)\n\n**Aanbevolen:**\n- [ ] BIC/SWIFT-code (voor buitenlandse betalingen)\n- [ ] Onder vermelding van: factuurnummer\n- [ ] Betalingskorting (bijv. "2% korting bij betaling binnen 7 dagen")\n\n### 7. Btw-Specifieke Vermeldingen\n\n**Bij 0% btw (verlegd naar klant):**\n- [ ] "Btw verlegd - de klant is de belastingplichtige"\n- [ ] Btw-nummer van de klant\n- [ ] Verwijzing naar wettelijke bepaling\n\n**Bij vrijgestelde diensten:**\n- [ ] "Vrijgesteld van btw"\n- [ ] Verwijzing naar wettelijke basis\n\n## Voorbeeld van een Correcte Factuur\n\n\`\`\`\n[LOGO BEDRIJF]\n\nWEBDESIGN BUREAU AMSTERDAM\nKeizersgracht 123\n1015 CJ Amsterdam\nKVK: 12345678\nBTW: NL001234567B01\nTel: 020-1234567\ninfo@webdesignamsterdam.nl\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nFACTUUR\n\nFactuurnummer: 2024-056\nFactuurdatum: 15 mei 2024\nVervaldatum: 14 juni 2024\n\nAan:\nDe Bouwmaatschappij BV\nIndustrieweg 12\n1114 AA Rotterdam\nKVK: 87654321\nBTW: NL008765432B01\nUw referentie: Project Website 2024\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nOmschrijving                    Aantal  Prijs      Totaal\n─────────────────────────────────────────────────────────\nOntwerp homepage                   1    €2.500,00  €2.500,00\nOntwerp contactpagina              1    €1.000,00  €1.000,00\nResponsive implementatie           1    €1.500,00  €1.500,00\n\nSubtotaal                                  €5.000,00\nKorting (vaste klant 10%)                 -€  500,00\n\nTotaal exclusief btw                      €4.500,00\nBtw 21%                                    €  945,00\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTOTAAL TE BETALEN                         €5.445,00\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nBetaling:\nIBAN: NL91 ABNA 0417 1643 00\nTen name van: Webdesign Bureau Amsterdam\nOnder vermelding van: Factuurnummer 2024-056\n\nBetalingstermijn: 30 dagen na factuurdatum\n\nBij betaling binnen 7 dagen: 2% korting (€108,90)\n\n\`\`\`\n\n## Speciale Situaties\n\n### 1. Creditfactuur\n\nEen creditfactuur corrigeert een eerdere factuur.\n\n**Verplichte extra vermeldingen:**\n- Verwijzing naar originele factuur (nummer + datum)\n- Reden van credit (bijv. "Retour goederen", "Prijsaanpassing")\n- Factuurnummer met "C" erachter (bijv. 2024-056C)\n\n### 2. Gedeeltelijke Levering\n\nLever je in delen, vermeld dan:\n- "Deellevering 1 van 3"\n- Totale orderwaarde\n- Al betaald bedrag (bij aanbetaling)\n\n### 3. Aanbetaling/Factuur voor Voorschot\n\nBij aanbetalingen:\n- Vermeld dat het een aanbetaling betreft\n- Geef aan welk percentage dit is van het totaal\n- Geef verwachte leverdatum\n\n## Veelgemaakte Fouten\n\n**Fout 1:** Factuurnummers niet opeenvolgend\n\n❌ Factuur 001, dan 005, dan 003\n✅ Factuur 001, 002, 003, 004\n\nGaten in nummering zijn niet toegestaan.\n\n**Fout 2:** Btw-nummer verkeerd of incompleet\n\n❌ 123456789B01 (zonder NL)\n✅ NL001234567B01 (14 tekens)\n\n**Fout 3:** Adresgegevens incompleet\n\n❌ Alleen "De Bouwmaatschappij, Rotterdam"\n✅ Volledige bedrijfsnaam + straat + huisnummer + postcode + plaats\n\n**Fout 4:** Btw over verkeerd bedrag berekenen\n\n❌ Btw berekenen over bruto bedrag vóór korting\n✅ Btw berekenen over netto bedrag ná korting\n\n## Digitaal Factureren\n\nFacturen digitaal versturen is toegestaan en gangbaar.\n\n**Eisen:**\n- Klant moet toestemming hebben gegeven\n- PDF moet onveranderbaar zijn\n- Je moet de factuur kunnen reproduceren\n- Bewaar de verzendbevestiging\n\n**Aanbevolen:**\n- Gebruik PDF/A formaat (archiefstandaard)\n- Vermeld "Dit is een digitale factuur, geen origineel exemplaar nodig"\n\n## Conclusie\n\nEen correcte factuur voorkomt problemen met klanten en de Belastingdienst. Gebruik de checklist hierboven voor elke factuur die je verstuurt. Het kost even tijd, maar bespaart je later veel gedoe.`,
+    faq: [
+      {
+        question: 'Is een handtekening verplicht op een factuur?',
+        answer: 'Nee, een handtekening is niet verplicht op facturen. Wel moet het duidelijk zijn dat het een factuur betreft en van wie deze afkomstig is.'
+      },
+      {
+        question: 'Mag ik facturen in het Engels sturen?',
+        answer: 'Ja, facturen in het Engels zijn toegestaan. Zorg wel dat alle verplichte Nederlandse gegevens erop staan, vooral als je aan Nederlandse klanten levert.'
+      },
+      {
+        question: 'Wat als een klant geen btw-nummer heeft?',
+        answer: 'Particulieren hebben geen btw-nummer. Bij zakelijke klanten is het verstandig om het btw-nummer te vragen, vooral als ze de btw willen terugvragen.'
+      },
+      {
+        question: 'Moet ik een factuur altijd op papier sturen?',
+        answer: 'Nee, digitale facturen zijn toegestaan en gebruikelijk. Zorg dat je de toestemming van de klant hebt en dat de factuur als PDF wordt verstuurd.'
+      }
+    ,
+  }
+,
+  {
+    id: '13',
+    slug: 'administratie-bewaren-7-jaar-wettelijk',
+    title: 'Administratie Bewaren: Wat, Hoe Lang en Waarom 7 Jaar?',
+    metaDescription: 'Hoe lang moet je administratie bewaren als ondernemer? Ontdek de wettelijke termijnen, uitzonderingen en praktische tips voor digitale archivering.',
+    publishDate: '2024-06-10',
+    readTime: 6,
+    category: 'Administratie',
+    tags: ['bewaren', 'administratie', '7-jaar', 'archief', 'wettelijk'],
+    featured: false,
+    content: `## De Wettelijke Bewaartermijn\n\nAls ondernemer ben je wettelijk verplicht om je administratie 7 jaar te bewaren. Dit staat in de Algemene Wet inzake Rijksbelastingen (AWR).\n\n**Waarom 7 jaar?**\nDe Belastingdienst kan tot 5 jaar na het einde van het boekjaar aanslag inkomstenbelasting of vennootschapsbelasting opleggen. Met 7 jaar bewaarplicht is er altijd nog marge voor controles en geschillen.\n\n## Wat Moet Je Allemaal Bewaren?\n\n### Verplichte Documenten\n\n**Alle bedrijfsadministratie:**\n- Inkoopfacturen en bonnetjes\n- Verkoopfacturen en offertes\n- Bankafschriften en betaalbewijzen\n- Kasboek (als je contante betalingen doet)\n- Loonadministratie (als je personeel hebt)\n- Btw-aangiften en jaarrekeningen\n\n**Aanvullende documenten:**\n- Afschriften zakelijke rekeningen\n- Leasecontracten en huurovereenkomsten\n- Verzekeringspolissen\n- Correspondentie met Belastingdienst\n\n### Digitale Documenten\n\nFacturen die je per e-mail ontvangt, moet je ook bewaren. Printen is niet verplicht, digitaal archiveren mag.\n\n**Eisen digitale archivering:**\n- Onveranderbaar (PDF, niet Word)\n- Toegankelijk en leesbaar\n- Back-up beschikbaar\n- Chronologisch geordend\n\n## Vanaf Wanneer Tel Je de 7 Jaar?\n\nDe termijn loopt vanaf 1 januari van het jaar ná het boekjaar.\n\n**Voorbeeld:**\n- Boekjaar 2024 loopt tot 31 december 2024\n- Bewaartermijn start: 1 januari 2025\n- Bewaartermijn eindigt: 31 december 2031\n\n## Uitzonderingen op de 7 Jaar Regel\n\n### Btw-Administratie\n\nVoor btw-gelden soms andere termijnen:\n- Btw-aangiften: 7 jaar\n- Btw-bonnen en facturen: 7 jaar\n\n### Bouw en Vastgoed\n\nIn de bouw geldt soms een langere termijn vanwege aansprakelijkheid. Bewaar technische documentatie en garantiebewijzen minstens 10 jaar.\n\n### Elektronische Data\n\nDe Belastingdienst accepteert digitale administratie als je kunt aantonen dat deze:\n- Compleet is\n- Niet is gewijzigd\n- Altijd toegankelijk is geweest\n\n## Praktische Tips voor Archivering\n\n### 1. Gebruik een Duidelijke Mapstructuur\n\n\`\`\`\n📁 Administratie 2024/\n  📁 01 Inkoopfacturen/\n    📁 01-Jan\n    📁 02-Feb\n    ...\n  📁 02 Verkoopfacturen/\n    📁 01-Jan\n    ...\n  📁 03 Bankafschriften/\n  📁 04 Btw-aangiften/\n  📁 05 Jaarrekening/\n\`\`\`\n\n### 2. Geef Bestanden Duidelijke Namen\n\n❌ Factuur.pdf\n✅ 2024-01-15-Factuur-Orde-BV-2450-euro.pdf\n\n### 3. Maak Back-ups\n\n- 3-2-1 regel: 3 kopieën, 2 verschillende media, 1 off-site\n- Cloud (Google Drive, Dropbox) + externe harde schijf\n- Test jaarlijks of je back-ups terug kunt halen\n\n### 4. Bewaar Ook Geweigerde Documenten\n\nFoutieve facturen die je hebt gecorrigeerd, moet je ook bewaren. Dit toont de correcte verwerking.\n\n### 5. Gebruik Boekhoudsoftware\n\nProgrammas als e-Boekhouden, Jortt of FactuurStudio (ja, wij!) archiveren automatisch:\n- Facturen\n- Betalingen\n- Btw-aangiften\n\n## Wat Gebeurt er Bij Geen Bewaring?\n\n### Boetes\n\nDe Belastingdienst kan een boete opleggen voor onvolledige administratie:\n- €5.000 voor nalatigheid\n- Tot €25.000 bij opzet\n- In extreme gevallen: strafrechtelijke vervolging\n\n### Aanslag Naar Schatting\n\nZonder administratie kan de Belastingdienst een aanslag opleggen naar schatting. Dit is meestal ongunstiger dan de werkelijke situatie.\n\n### Vervolging\n\nBij vermoeden van fraude kan het Openbaar Ministerie strafrechtelijk vervolgen. Bewaring van administratie is dan extra belangrijk als bewijs.\n\n## Einde van de Bewaartermijn\n\nNa 7 jaar mag je de administratie vernietigen.\n\n**Let op bij persoonsgegevens:**\n- Beweegreden: AVG (privacywet)\n- Vernietig veilig (papierversnipperaar, digitale wissing)\n- Houd een verklaring bij van wat je hebt vernietigd\n\n## Praktisch Voorbeeld\n\nMarco is webdesigner. Hij ontvangt facturen en betaalt via zijn zakelijke rekening.\n\n**Zijn systeem:**\n1. Inkomende factuur direct scannen naar PDF\n2. Opslaan in map 01-Inkoop per maand\n3. Bankafschrift maandelijks downloaden\n4. Btw-aangifte PDF bewaren\n5. Jaarlijks externe back-up maken\n\nResultaat: altijd 7 jaar compleet archief, direct vindbaar.\n\n## Conclusie\n\nDe 7-jaarsbewaarplicht is strikt, maar goed te regelen met een systematische aanpak. Investeer in een werkbare structuur en boekhoudsoftware die het werk voor je doet.`,
+    faq: [
+      {
+        question: 'Moet ik papieren facturen bewaren of mag het digitaal?',
+        answer: 'Digitaal bewaren is toegestaan. Zorg dat de PDF onveranderbaar is en je een goede back-up hebt. De originele papieren versie mag je dan vernietigen.'
+      },
+      {
+        question: 'Wat als ik een factuur kwijt ben?',
+        answer: 'Vraag een kopie bij de leverancier. Bij verlies van je eigen verkoopfacturen: bewaar kopieën die je hebt verstuurd (e-mail, PDF). Probeer altijd dubbel op te slaan.'
+      },
+      {
+        question: 'Hoe lang moet ik een creditfactuur bewaren?',
+        answer: 'Ook creditfacturen moet je 7 jaar bewaren. Deze horen bij je complete administratie en tonen dat je correcties hebt doorgevoerd.'
+      },
+      {
+        question: 'Mag ik na 7 jaar alles meteen weggooien?',
+        answer: 'Ja, je mag na 7 jaar de administratie vernietigen. Zorg wel voor veilige vernietiging (versnipperen/wissen) en houd rekening met de AVG bij persoonsgegevens.'
+      }
+    ,
+  },
+  {
+    id: '14',
+    slug: 'zakelijke-rekening-kiezen-vergelijken',
+    title: 'Zakelijke Rekening Kiezen: De Complete Vergelijking 2024',
+    metaDescription: 'Welke zakelijke rekening past bij jou? Vergelijk de beste banken voor ZZP\'ers en ondernemers op kosten, functies en service.',
+    publishDate: '2024-06-24',
+    readTime: 7,
+    category: 'Starters',
+    tags: ['zakelijke-rekening', 'bank', 'vergelijken', 'zzp', 'kosten'],
+    featured: false,
+    content: `## Waarom een Zakelijke Rekening?\n\nEen zakelijke rekening is niet wettelijk verplicht, maar wel sterk aanbevolen:\n\n- **Overzicht:** Scheiding privé en zakelijk maakt boekhouding eenvoudig\n- **Professionaliteit:** Klanten betalen op een bedrijfsrekening\n- **Btw-aftrek:** Zakelijke kosten zijn duidelijk zichtbaar\n- **Fiscaal:** Voorkomt problemen bij controle Belastingdienst\n\n## Wat Kost een Zakelijke Rekening?\n\nKosten variëren per bank en pakket:\n\n**Maandelijkse kosten (2024):**\n- Knab ZZP: €0 (basis) / €10 (plus)\n- Bunq Business: €0 (easy) / €8 (pro) / €18 (elite)\n- ING Zakelijk: €6,25 (start) / €12,50 (basis)\n- Rabobank Direct: €7,50 / €15 (compleet)\n- ABN AMRO: €7,50 (basis) / €17,50 (meer)\n\n**Let op:** Prijswijzigingen komen elk jaar. Check altijd de actuele tarieven op de bankwebsites.\n\n## Populaire Banken voor ZZP'ers\n\n### 1. Knab (Online Bank)\n\n**Voordelen:**\n- Gratis basisrekening\n- Goede app met btw-tracking\n- Gratis incasso's\n- Automaat cheque storten\n\n**Nadelen:**\n- Geen fysieke kantoren\n- Beperkte extra diensten\n\n**Beste voor:** Starters en kleine ZZP'ers die online werken\n\n### 2. Bunq (Online Bank)\n\n**Voordelen:**\n- Moderne app\n- Automatische btw-berekening\n- Milieuvriendelijk (geen papier)\n- 25 IBAN's bij Elite pakket\n\n**Nadelen:**\n- Limiet op aantal gratis transacties bij goedkoopste pakket\n- Geen persoonlijk advies\n\n**Beste voor:** Tech-savvy ondernemers en internationale zaken\n\n### 3. ING (Traditionele Bank)\n\n**Voordelen:**\n- Veel fysieke kantoren\n- Uitgebreide service\n- Integratie met boekhoudsoftware\n- Betrouwbaar imago\n\n**Nadelen:**\n- Hogere kosten dan online banken\n- Minder innovatieve app\n\n**Beste voor:** Ondernemers die persoonlijk contact waarderen\n\n### 4. Rabobank (Coöperatief)\n\n**Voordelen:**\n- Lokale betrokkenheid\n- Goede service voor agrarisch/bouw\n- Uitgebreid netwerk\n- Specialistische adviseurs\n\n**Nadelen:**\n- Prijzig voor kleine ondernemers\n- Sommige services alleen via kantoor\n\n**Beste voor:** Regionale ondernemers en specifieke sectoren\n\n## Waar Let Je Op Bij Kiezen?\n\n### 1. Transactiekosten\n\nVraag naar:\n- Overschrijvingen binnen EU (SEPA)\n- Overschrijvingen buiten EU\n- Contante stortingen\n- Aantal betaalpassen\n\n### 2. Functionaliteiten\n\nBelangrijke features:\n- Mobiele app kwaliteit\n- Incasso's mogelijk?\n- Internationale betalingen\n- Automatische categorisering\n- Koppeling boekhouding\n\n### 3. Service en Bereikbaarheid\n\nOverweeg:\n- Telefonische bereikbaarheid\n- Fysieke kantoren (belangrijk?)\n- Specialistische adviseurs\n- Reactietijd bij problemen\n\n## Vergelijkingstabel 2024\n\n| Bank | Maandkosten | App | Kantoren | Btw-features |\n|------|-------------|-----|----------|--------------|\n| Knab | €0-10 | ⭐⭐⭐⭐⭐ | ❌ | ✅ |\n| Bunq | €0-18 | ⭐⭐⭐⭐⭐ | ❌ | ✅ |\n| ING | €6-13 | ⭐⭐⭐⭐ | ✅ | ⚠️ |\n| Rabo | €8-15 | ⭐⭐⭐ | ✅ | ⚠️ |\n| ABN | €8-18 | ⭐⭐⭐ | ✅ | ⚠️ |\n\n*⚠️ = beperkte features, moet via boekhoudsoftware*\n\n## Overstappen naar een Andere Bank\n\n**Stappenplan:**\n1. Open nieuwe rekening zonder oude op te zeggen\n2. Laat lopende incasso's en automatische betalingen overzetten\n3. Informeer belangrijkste klanten en leveranciers\n4. Wacht 2-3 maanden tot alles soepel loopt\n5. Zeg oude rekening pas dan op\n\n**Tip:** De nieuwe bank helpt vaak met het overzetten van automatische incasso's.\n\n## Praktisch Voorbeeld\n\n**Situatie:** Lisa start als freelancer. Ze verwacht 20 transacties per maand, voornamelijk binnen NL.\n\n**Keuze:** Knab ZZP (gratis)\n\n**Waarom:**\n- Geen vaste kosten\n- Btw-tracking in app\n- Genoeg voor haar volume\n- Goede reviews\n\n**Resultaat na 1 jaar:** Tevreden, blijft bij Knab. Alles werkt soepel, app is fijn.\n\n## Conclusie\n\nDe beste zakelijke rekening hangt af van je situatie. Online banken (Knab, Bunq) zijn goedkoop en modern. Traditionele banken (ING, Rabo) bieden meer service en kantoren. Vergelijk niet alleen de prijs, maar ook de functionaliteiten die jij nodig hebt.`,
+    faq: [
+      {
+        question: 'Mag ik mijn privérekening voor zakelijk gebruik gebruiken?',
+        answer: 'Wettelijk mag dit, maar het wordt sterk afgeraden. Het maakt je boekhouding onoverzichtelijk en bij een controle moet je alles kunnen uitzoeken. Een zakelijke rekening is professioneler en praktischer.'
+      },
+      {
+        question: 'Hoe lang duurt het openen van een zakelijke rekening?',
+        answer: 'Online banken: meestal binnen 1 werkdag na goedkeuring. Traditionele banken: 3-5 werkdagen, soms met een intakegesprek.'
+      },
+      {
+        question: 'Kan ik meerdere zakelijke rekeningen hebben?',
+        answer: 'Ja, dat mag. Sommige ondernemers hebben aparte rekeningen voor btw-reservering, spaardoeleinden of verschillende bedrijfstakken. Wel bijhouden voor de boekhouding.'
+      },
+      {
+        question: 'Wat heb ik nodig om een zakelijke rekening te openen?',
+        answer: 'KVK-uittreksel, geldig ID, burgerservicenummer, en soms je businessplan. Online banken hebben meestal minder documentatie nodig dan traditionele banken.'
+      }
+    ,
+  }
+  {
+    id: '15',
+    slug: 'btw-nummer-valideren-vies-check',
+    title: 'BTW Nummer Valideren: Zo Controleer Je of een Nummer Geldig is',
+    metaDescription: 'Leer hoe je een btw-nummer kunt valideren met de VIES-checker. Waarom dit belangrijk is en hoe je ongeldige nummers voorkomt.',
+    publishDate: '2024-07-01',
+    readTime: 5,
+    category: 'Facturatie',
+    tags: ['btw-nummer', 'valideren', 'VIES', 'geldig', 'controle'],
+    featured: false,
+    content: `## Waarom een BTW-Nummer Valideren?\n\nHet valideren van btw-nummers is essentieel bij:\n\n- **Btw-verlegd factureren:** Verplicht voor 0% btw naar EU-klanten\n- **Nieuwe klanten:** Voorkom oplichting en foutieve facturen\n- **Compliance:** De Belastingdienst controleert dit\n\nEen foutief btw-nummer kan leiden tot:\n- Afwijzing van btw-aftrek bij je klant\n- Naheffing door Belastingdienst\n- Problemen bij belastingcontrole\n\n## Wat is VIES?\n\nVIES (VAT Information Exchange System) is het Europese systeem voor btw-nummer validatie. Het wordt beheerd door de Europese Commissie en is gratis te gebruiken.\n\n**Website:** ec.europa.eu/taxation_customs/vies\n\n## Hoe Werkt de VIES-Check?\n\n### Stap 1: Ga naar de VIES-Website\n\nOpen ec.europa.eu/taxation_customs/vies in je browser.\n\n### Stap 2: Voer het Btw-Nummer In\n\n**Opmaak is belangrijk:**\n- Gebruik het volledige nummer inclusief landcode\n- Geen spaties of streepjes\n- Voorbeeld: NL123456789B01\n\n### Stap 3: Interpretatie Resultaat\n\n**Geldig:**\n> "Yes, valid VAT number"\n\nHet nummer is actief en geregistreerd bij het lokale btw-register.\n\n**Ongeldig:**\n> "No, invalid VAT number"\n\nHet nummer bestaat niet of is niet (meer) geldig.\n\n**Service niet beschikbaar:**\nSoms is het systeem van een specifiek land tijdelijk offline. Probeer later opnieuw.\n\n## Wanneer Moet Je Valideren?\n\n### Altijd bij Btw-Verlegd Factureren\n\nVoor elke factuur naar een EU-bedrijf met 0% btw:\n- Valideer vóór je factureert\n- Bewaar een screenshot of print van de validatie\n- Doe dit bij elk nieuw nummer\n\n### Bij Twijfel over een Nummer\n\nAls een klant een btw-nummer geeft dat er "vreemd" uitziet:\n- Check altijd met VIES\n- Vraag bij twijfel om een kopie KVK-inschrijving\n\n### Periodiek Controleren\n\nBtw-nummers kunnen vervallen:\n- Bedrijf stopt\n- Btw-registratie wordt ingetrokken\n- Bedrijf verhuist naar ander land\n\nVoor vaste klanten: check jaarlijks of het nummer nog geldig is.\n\n## Veelvoorkomende Problemen\n\n### Probleem 1: Nummer Formaat Verkeerd\n\n❌ 123456789B01\n✅ NL123456789B01\n\nHet landcode (NL, BE, DE, etc.) is verplicht.\n\n### Probleem 2: Systeem van Land is Offline\n\nSoms is het nationale btw-register niet bereikbaar.\n\n**Oplossing:**\n- Probeer later opnieuw\n- Bel het bedrijf om bevestiging\n- Vraag een pro-forma factuur van hun kant\n\n### Probleem 3: Nummer is Wél Geldig maar Bedrijf Bestaat Niet\n\nZeldzaam, maar mogelijk:\n- Nummer is geldig maar bedrijf is frauduleus\n- Extra check: zoek het bedrijf op in het handelsregister van het land\n\n## Alternatieve Validatie Methoden\n\n### Via Je Boekhoudsoftware\n\nVeel programmas (e-Boekhouden, Jortt, etc.) hebben ingebouwde VIES-check:\n- Automatisch bij invoeren klant\n- Waarschuwing bij ongeldig nummer\n\n### Via de Kamer van Koophandel\n\nVoor Nederlandse bedrijven:\n- Kvk.nl heeft eigen check\n- Toont ook bedrijfsnaam en vestigingsadres\n\n### Telefonisch bij Belastingdienst\n\n0800-0543 (gratis)\nZij kunnen controleren of een nummer geldig is.\n\n## Documentatie en Bewijs\n\n### Bewaar de Validatie\n\nBij een controle moet je kunnen aantonen dat je hebt gecontroleerd:\n\n- Screenshot van VIES-resultaat\n- Datum van controle\n- Wie heeft gecontroleerd\n\n### In Je Administratie\n\nVoeg toe aan klantdossier:\n- Btw-nummer\n- Datum validatie\n- Resultaat (geldig/ongeldig)\n- Bewijs (screenshot)\n\n## Praktijkvoorbeelden\n\n### Voorbeeld 1: Nieuwe Duitse Klant\n\nMarco krijgt een aanvraag van een bedrijf in Berlijn.\n\n**Stappen:**\n1. Ontvangt btw-nummer: DE123456789\n2. Checkt VIES: geldig\n3. Maakt screenshot\n4. Factureert met 0% btw\n5. Bewaart validatie bij klantdossier\n\n### Voorbeeld 2: Ongeldig Nummer Ontdekt\n\nLisa wil factureren aan een Belgisch bedrijf.\n\n**Situatie:**\n- Btw-nummer BE987654321 geeft "invalid"\n- Belt klant: blijkt typefout te zijn\n- Correct nummer: BE0987654321\n- Opnieuw valideren: geldig\n\nResultaat: fout voorkomen, correcte factuur verstuurd.\n\n## Automatische Validatie\n\nVoor veel internationale klanten:\n- Gebruik boekhoudsoftware met API-koppeling\n- Automatische check bij nieuwe klanten\n- Periodieke hercontrole vaste klanten\n\nDit bespaart tijd en voorkomt fouten.\n\n## Conclusie\n\nVIES-validatie is eenvoudig, gratis en verplicht bij btw-verlegd factureren. Maak er een standaardonderdeel van in je factuurproces. Het voorkomt problemen voor zowel jou als je klanten.`,
+    faq: [
+      {
+        question: 'Is VIES-check verplicht bij btw-verlegd factureren?',
+        answer: 'Ja, je moet kunnen bewijzen dat je het btw-nummer hebt gecontroleerd. Een screenshot van VIES is het beste bewijs bij een controle van de Belastingdienst.'
+      },
+      {
+        question: 'Hoe vaak moet ik een btw-nummer valideren?',
+        answer: 'Bij elke nieuwe klant en periodiek (bijvoorbeeld jaarlijks) bij bestaande klanten. Btw-nummers kunnen vervallen als een bedrijf stopt of verhuist.'
+      },
+      {
+        question: 'Wat als VIES aangeeft dat het nummer ongeldig is, maar de klant zegt van wel?',
+        answer: 'Vraag de klant om een kopie van zijn btw-registratie of KVK-uittreksel. Soms zijn er typefouten of is het nummer nog niet actief in het systeem. Laat het nummer corrigeren.'
+      },
+      {
+        question: 'Kan ik een btw-nummer valideren buiten de EU?',
+        answer: 'VIES werkt alleen voor EU-landen. Voor het Verenigd Koninkrijk, Zwitserland, Noorwegen etc. moet je andere methoden gebruiken, zoals het lokale handelsregister.'
+      }
+    ,
+  },
+  {
+    id: '16',
+    slug: 'boekhoudsoftware-kiezen-zzp-vergelijken',
+    title: 'Boekhoudsoftware Kiezen: De Beste Opties voor ZZP\'ers in 2024',
+    metaDescription: 'Welke boekhoudsoftware past bij jou? Vergelijk de beste opties voor ZZP\'ers op prijs, gebruiksgemak en functionaliteit.',
+    publishDate: '2024-07-08',
+    readTime: 8,
+    category: 'Administratie',
+    tags: ['boekhoudsoftware', 'boekhouding', 'vergelijken', 'zzp', 'administratie'],
+    featured: false,
+    content: `## Waarom Boekhoudsoftware Gebruiken?\n\nAls ZZP'er moet je administratie bijhouden. Je hebt drie opties:\n\n**1. Zelf in Excel:**\n- Goedkoop (gratis)\n- Tijdrovend\n- Foutgevoelig\n- Geen automatische btw-berekeningen\n\n**2. Boekhouder:**\n- Professioneel\n- Duur (€100-200/maand)\n- Je bent afhankelijk\n\n**3. Boekhoudsoftware:**\n- Goedkoop (€10-30/maand)\n- Automatisch\n- Overzichtelijk\n- Direct inzicht in cijfers\n\nVoor de meeste ZZP'ers is optie 3 de beste balans.\n\n## Populaire Boekhoudsoftware voor ZZP'ers\n\n### 1. e-Boekhouden.nl\n\n**Prijs:** €10-20/maand\n\n**Sterke punten:**\n- Zeer gebruiksvriendelijk\n- Goede btw-module\n- Automatische bankkoppeling\n- Gratis app\n- Goede klantenservice\n\n**Geschikt voor:** Starters en kleine ZZP'ers\n\n**Minder geschikt:** Complexe bedrijven met veel internationale transacties\n\n### 2. Jortt\n\n**Prijs:** €15-25/maand\n\n**Sterke punten:**\n- Moderne interface\n- Uitstekende factuurmodule\n- Snelle bankkoppeling\n- Goede integratie met andere tools\n\n**Geschikt voor:** Creatieve ondernemers en tech-savvy gebruikers\n\n**Minder geschikt:** Wie heel veel bonnetjes heeft (scannen kan beter)\n\n### 3. Moneybird\n\n**Prijs:** €15-30/maand\n\n**Sterke punten:**\n- Compleet pakket\n- Uitstekende facturatie\n- Goede tijdregistratie\n- Mooi design\n\n**Geschikt voor:** ZZP'ers die ook uren willen registreren\n\n**Minder geschikt:** Budgetbewuste starters (iets duurder)\n\n### 4. Twinfield (van Visma)\n\n**Prijs:** €25-50/maand\n\n**Sterke punten:**\n- Zeer uitgebreid\n- Geschikt voor groei\n- Veel rapportages\n- Professioneel\n\n**Geschikt voor:** Grotere ZZP'ers en snelgroeiende bedrijven\n\n**Minder geschikt:** Starters die iets simpels zoeken\n\n### 5. Informer\n\n**Prijs:** €12-22/maand\n\n**Sterke punten:**\n- Goede prijs-kwaliteit\n- Automatische btw-aangifte\n- Uitgebreide bankkoppelingen\n- Gratis factuurscan-app\n\n**Geschikt voor:** Ondernemers die bonnetjes makkelijk willen inboeken\n\n## Vergelijkingstabel 2024\n\n| Software | Prijs | Gebruiksgemak | Btw | App | Support |\n|----------|-------|---------------|-----|-----|---------|\n| e-Boekhouden | € | ⭐⭐⭐⭐⭐ | ✅ | ✅ | ⭐⭐⭐⭐⭐ |\n| Jortt | €€ | ⭐⭐⭐⭐⭐ | ✅ | ✅ | ⭐⭐⭐⭐ |\n| Moneybird | €€ | ⭐⭐⭐⭐ | ✅ | ✅ | ⭐⭐⭐⭐ |\n| Twinfield | €€€ | ⭐⭐⭐ | ✅ | ✅ | ⭐⭐⭐⭐⭐ |\n| Informer | €€ | ⭐⭐⭐⭐ | ✅ | ✅ | ⭐⭐⭐⭐ |\n\n## Waar Let Je Op Bij Kiezen?\n\n### 1. Prijs vs Functionaliteit\n\n**Basis pakket (€10-15):**\n- Factureren\n- Inkoopfacturen\n- Btw-aangifte\n- Bankkoppeling\n\n**Uitgebreid pakket (€20+):**\n- Meerdere gebruikers\n- Urenregistratie\n- Projectadministratie\n- Uitgebreide rapportages\n\nVraag jezelf af: welke functies gebruik je écht?\n\n### 2. Gebruiksgemak\n\n**Belangrijke aspecten:**\n- Intuïtieve interface\n- Goede zoekfunctie\n- Snelle inboeking\n- Mobiele app\n\n**Testen:**\n- Vraag een gratis proefperiode aan\n- Boek 10 facturen in\n- Kijk hoe snel je eruit komt\n\n### 3. Bankkoppeling\n\nDit bespaart enorm veel tijd:\n- Transacties komen automatisch binnen\n- Matchen met facturen\n- Controle wordt eenvoudiger\n\n**Check:** Welke banken worden ondersteund?\n\n### 4. Btw-Aangifte\n\nGoede software:\n- Genereert vooraangifte\n- Waarschuwt voor fouten\n- Exporteert naar Belastingdienst\n- Houdt deadline in de gaten\n\n### 5. Support en Hulp\n\n**Belangrijk als je vragen hebt:**\n- Telefonische helpdesk\n- Chat support\n- Kennisbank en video's\n- Community/forums\n\n## Gratis vs Betaald\n\n### Gratis Opties\n\n**Voorbeelden:**\n- Knab (bij bankrekening)\n- Bunq (beperkt)\n- Excel-sjablonen online\n\n**Nadelen gratis:**\n- Beperkte functies\n- Geen support\n- Veiligheid/backup\n- Updates\n\n### Betaald is Vaak de Moeite Waard\n\nVoor €15-20/maand heb je:\n- Professionele oplossing\n- Tijdsbesparing (uren werk)\n- Ondersteuning bij vragen\n- Zekerheid over compliance\n\n## Overstappen van Systeem\n\n**Stappenplan:**\n1. Exporteer alle data uit oude systeem\n2. Importeer in nieuwe systeem (meestal mogelijk)\n3. Dubbel bijhouden 1-2 maanden\n4. Check of alles klopt\n5. Oude systeem opzeggen\n\n**Tip:** Doe dit begin van een nieuw boekjaar (januari).\n\n## Praktisch Voorbeeld\n\n**Situatie:** Lisa is grafisch ontwerper.\n\n**Haar keuze:** e-Boekhouden (€12/maand)\n\n**Waarom:**\n- Simpel en duidelijk\n- Goede app\n- Fijne klantenservice\n- Genoeg voor haar situatie\n\n**Resultaat:**\n- Btw-aangifte in 30 minuten\n- Overzichtelijk dashboard\n- Fijne werkwijze\n\n## Conclusie\n\nDe beste boekhoudsoftware hangt af van je situatie:\n- **Starter:** e-Boekhouden of Informer\n- **Tech-savvy:** Jortt\n- **Met uren:** Moneybird\n- **Snelgroeiend:** Twinfield\n\nInvesteer tijd in het kiezen. Een goede keuze bespaart je uren per maand en voorkomt hoofdpijn bij de btw-aangifte.`,
+    faq: [
+      {
+        question: 'Kan ik boekhoudsoftware gratis proberen?',
+        answer: 'Ja, de meeste aanbieders hebben een proefperiode van 14-30 dagen. Gebruik deze om te testen of het systeem bij je past voordat je gaat betalen.'
+      },
+      {
+        question: 'Kan ik overstappen van boekhoudsoftware zonder data kwijt te raken?',
+        answer: 'Meestal wel. Je kunt data exporteren (CSV, Excel) en importeren in het nieuwe systeem. Sommige programmas bieden specifieke migratietools.'
+      },
+      {
+        question: 'Hoeveel tijd bespaart boekhoudsoftware?',
+        answer: 'Vergelijk met Excel bespaar je 2-4 uur per maand. Bij de btw-aangifte bespaar je zelfs meer: wat handmatig een halve dag kost, doet software in 30 minuten.'
+      },
+      {
+        question: 'Kan ik later van pakket upgraden?',
+        answer: 'Ja, bij alle grote aanbieders kun je later upgraden naar een uitgebreider pakket. Je betaalt dan het prijsverschil.'
+      }
+    ]
+  },
+  {
+    id: '17',
+    slug: 'eenmanszaak-besloten-vennootschap-ondernemingsvorm',
+    title: 'Eenmanszaak of BV Kiezen: Welke Ondernemingsvorm Past Bij Jou?',
+    metaDescription: 'Eenmanszaak (ez) of besloten vennootschap (bv)? Ontdek de verschillen in aansprakelijkheid, belasting en kosten om de juiste keuze te maken.',
+    publishDate: '2024-07-15',
+    readTime: 8,
+    category: 'Starters',
+    tags: ['eenmanszaak', 'bv', 'ondernemingsvorm', 'aansprakelijkheid', 'keuze'],
+    featured: false,
+    content: `## De Twee Meestgekozen Vormen\n\nAls je wilt ondernemen, kies je meestal uit:\n\n**Eenmanszaak (EZ):**\n- Jij bent het bedrijf\n- Eenvoudig op te zetten\n- Persoonlijke aansprakelijkheid\n\n**Besloten Vennootschap (BV):**\n- Aparte rechtspersoon\n- Complexer op te zetten\n- Beperkte aansprakelijkheid\n\n## Aansprakelijkheid: Het Grote Verschil\n\n### Eenmanszaak: Persoonlijk Aansprakelijk\n\nJij en je bedrijf zijn één. Als het bedrijf schulden maakt, ben jij persoonlijk aansprakelijk.\n\n**Voorbeeld:**\nJe eenmanszaak gaat failliet met €50.000 schuld. Jij moet dit persoonlijk betalen, ook met je privévermogen (huis, spaargeld).\n\n**Uitzondering:**\n- Je hebt een beroepsaansprakelijkheidsverzekering\n- Je hebt goede algemene voorwaarden\n- Je werkt met een vof/maatschap (dan delen jullie de aansprakelijkheid)\n\n### BV: Beperkte Aansprakelijkheid\n\nDe BV is een aparte "persoon". Als de BV failliet gaat, ben jij als aandeelhouder meestal niet aansprakelijk.\n\n**Voorbeeld:**\nJe BV gaat failliet met €50.000 schuld. De BV betaalt wat mogelijk is uit de boedel. Jij als aandeelhouder bent in principe niet aansprakelijk.\n\n**Let op:** Er zijn uitzonderingen waarbij je toch aansprakelijk kunt zijn:\n- Wanbeleid (frauduleus handelen)\n- Verkrijgingsrecht (belastingdienst kan bij je aankloppen)\n- Privéleningen zonder terugbetaling\n- Verzuim jaarrekening deponeren\n\n## Belastingen: Verschillen en Overeenkomsten\n\n### Eenmanszaak\n\n- **Winstbelasting:** Inkomstenbelasting (box 1)\n- **Tarief:** Progressief tot 49,5% (2024)\n- **Zelfstandigenaftrek:** €3.750 (2024)\n- **MKB-winstvrijstelling:** 13,31% van winst\n\n**Voordeel:**\nJe kunt alle ondernemersaftrekken gebruiken (zelfstandigenaftrek, startersaftrek, etc.)\n\n### BV\n\n- **Winstbelasting:** Vennootschapsbelasting (vpb)\n- **Tarief:** 19% tot €200.000, 25,8% daarboven (2024)\n- **Salaris:** Jij krijgt loon, betaalt loonheffing\n- **Dividend:** 15% dividendbelasting bij uitkering\n\n**Voordeel:**\nBij hogere winsten (€100.000+) is de BV vaak voordeliger door lagere tarieven.\n\n## Kosten en Administratieve Last\n\n### Eenmanszaak\n\n**Opstart:**\n- Inschrijving KVK: €0 (gratis sinds 2023)\n- Boekhouder: €75-150/maand\n- Administratie: Relatief eenvoudig\n\n**Jaarlijks:**\n- Aangifte inkomstenbelasting\n- Eventueel btw-aangifte\n- Geen jaarrekening nodig\n\n**Totaal jaarlijks:** €1.000-2.000 (boekhouding)\n\n### BV\n\n**Opstart (eenmalig):**\n- Notariskosten: €500-1.500\n- Inschrijving KVK: €0\n- Kapitaal: €0,01 (sinds 2012)\n\n**Jaarlijks:**\n- Aangifte vennootschapsbelasting\n- Jaarrekening opstellen\n- Jaarrekening deponeren KVK\n- Salarisadministratie (jij als DGA)\n- Boekhouder: €150-300/maand\n\n**Totaal jaarlijks:** €2.500-5.000 (inclusief jaarrekening)\n\n## Wanneer Kies Je Welke Vorm?\n\n### Kies een Eenmanszaak als:\n\n- Je net start en de omzet is nog onzeker\n- Je werkzaamheden weinig risico hebben\n- Je onder €75.000 winst blijft\n- Je eenvoudig wilt beginnen\n- Je geen zakelijke partners zoekt\n\n**Voorbeelden:** Consultant, tekstschrijver, webdesigner, coach\n\n### Kies een BV als:\n\n- Je werkzaamheden risicovol zijn\n- Je boven €75.000 winst verwacht\n- Je zakelijke partners zoekt\n- Je het bedrijf later wilt verkopen\n- Je aansprakelijkheid wilt beperken\n\n**Voorbeelden:** Bouw, productie, techniek, horeca, internationaal\n\n## Van Eenmanszaak naar BV\n\nHet is mogelijk om later over te stappen:\n\n**Mogelijkheden:**\n1. **Bedrijf verkopen aan BV:** Je verkoopt activa (klanten, apparatuur) aan nieuwe BV\n2. **Bedrijf omzetten:** Zeldzaam en complex\n3. **Nieuwe start:** BV oprichten, eenmanszaak beëindigen\n\n**Let op bij overgang:**\n- Overdrachtsbelasting bij verkoop activa\n- Fiscale gevolgen (winst wordt belast)\n- Kosten van oprichting\n- Administratieve rompslomp\n\n**Tip:** Overweeg bij start direct of je binnen 1-2 jaar naar een BV wilt. Dan kun je meteen die route kiezen.\n\n## Praktische Voorbeelden\n\n### Voorbeeld 1: Consultant €60.000 omzet\n\n**Situatie:**\n- Omzet: €60.000\n- Kosten: €10.000\n- Winst: €50.000\n\n**Eenmanszaak:**\n- Belasting: circa €12.000\n- Netto: €38.000\n\n**BV:**\n- Vpb: €9.500 (19%)\n- Loon DGA: €40.500\n- Loonheffing: circa €10.000\n- Netto: €30.500\n\n**Conclusie:** Eenmanszaak is voordeliger\n\n### Voorbeeld 2: Productiebedrijf €150.000 omzet\n\n**Situatie:**\n- Omzet: €150.000\n- Kosten: €50.000\n- Winst: €100.000\n\n**Eenmanszaak:**\n- Belasting: circa €37.000\n- Netto: €63.000\n\n**BV:**\n- Vpb: €19.000 (tot €200k is 19%)\n- Loon DGA: €81.000\n- Loonheffing: circa €22.000\n- Netto: €59.000\n\n**Conclusie:** Verschil is kleiner, maar aansprakelijkheid is belangrijker argument\n\n## Conclusie\n\nDe keuze tussen eenmanszaak en BV hangt af van:\n\n1. **Aansprakelijkheidsrisico** (hoog = BV)\n2. **Omhoogte winst** (hoog = vaak BV fiscaal voordeliger)\n3. **Ambitie** (partners, verkoop = BV)\n4. **Kostenbereidheid** (laag = eenmanszaak)\n\nVoor de meeste starters is een eenmanszaak de beste keuze. Je kunt altijd later overstappen naar een BV als je bedrijf groeit.`,
+    faq: [
+      {
+        question: 'Kan ik later makkelijk van eenmanszaak overstappen naar BV?',
+        answer: 'Ja, maar het is wel een administratieve stap. Je verkoopt je bedrijfsactiva aan de nieuwe BV of start de BV naast je eenmanszaak. Er zijn fiscale en administratieve consequenties, dus vraag advies van een boekhouder.'
+      },
+      {
+        question: 'Hoeveel kost het oprichten van een BV?',
+        answer: 'Notariskosten zijn €500-1.500 afhankelijk van de notaris. Daarnaast heb je jaarlijkse kosten voor de jaarrekening (€1.000-2.000) en hogere boekhoudkosten dan bij een eenmanszaak.'
+      },
+      {
+        question: 'Bij welk winstbedrag wordt een BV voordeliger?',
+        answer: 'Meestal rond €75.000-€100.000 winst per jaar. Onder dit bedrag is een eenmanszaak meestal voordeliger door de ondernemersaftrek. Laat dit altijd berekenen door een boekhouder.'
+      },
+      {
+        question: 'Ben ik als DGA van een BV ook verzekerd?',
+        answer: 'Ja, als DGA (Directeur-Grootaandeelhouder) ben je in principe werknemer. Je hebt recht op WW, ZW en bouwt AOW-premie op. Wel moet je een marktconform salaris betalen aan jezelf.'
+      }
+    ]
+  },
+  {
+    id: '18',
+    slug: 'zzp-pensioen-opbouwen-aov-verzekering',
+    title: 'ZZP Pensioen Opbouwen: AOV en Pensioenregelingen voor Ondernemers',
+    metaDescription: 'Hoe bouw je pensioen op als ZZP\'er? Ontdek alles over AOV, pensioenpremies en regelingen om later financieel zeker te zijn.',
+    publishDate: '2024-07-22',
+    readTime: 7,
+    category: 'Starters',
+    tags: ['pensioen', 'aov', 'arbeidsongeschiktheid', 'zzp', 'verzekering'],
+    featured: false,
+    content: `## Het Pensioenprobleem voor ZZP'ers\n\nAls werknemer bouw je automatisch pensioen op via je werkgever. Als ZZP'er moet je dit zelf regelen.\n\n**Het probleem:**\n- Geen automatische pensioenopbouw\n- Geen verplichting om pensioen te regelen\n- Velen bouwen niets of te weinig op\n- Op 67-jarige leeftijd mogelijk te weinig inkomen\n\n**De oplossing:** Zelf actie ondernemen voor je pensioen.\n\n## De Arbeidsongeschiktheidsverzekering (AOV)\n\nDe AOV is het allerbelangrijkst voor ZZP'ers. Zonder AOV heb je geen inkomen als je ziek wordt.\n\n### Waarom een AOV Essentieel Is\n\n**Zonder AOV:**\n- Bij ziekte: geen inkomen\n- Bij langdurige arbeidsongeschiktheid: bijstandsniveau\n- Huur/hypotheek lastig te betalen\n- Geen buffer voor levensonderhoud\n\n**Met AOV:**\n- Bij (deeltijd) arbeidsongeschiktheid: uitkering\n- Continuïteit van inkomen\n- Rust om te herstellen\n\n### Hoe Werkt een AOV?\n\n**Premiebepaling:**\n- Leeftijd (hoe ouder, hoe duurder)\n- Beroep (risicoklasse)\n- Gekozen uitkeringspercentage\n- Eigen risicoperiode\n\n**Voorbeeld premie 2024:**\n- 30-jarige consultant: €100-150/maand\n- 45-jarige bouwer: €200-400/maand\n\n**Uitkeringsduur:**\nMeestal tot je 67ste (pensioenleeftijd). Je kunt ook kiezen voor korter (bijv. 5 of 10 jaar), wat de premie verlaagt.\n\n### De Werkende AOV (WIA voor ZZP'ers)\n\nSinds 2024 is er een publieke verzekering beschikbaar via het UWV.\n\n**Kenmerken:**\n- Verplicht voor nieuwe ZZP'ers (vanaf 2024)\n- Premie afhankelijk van inkomen\n- Ongeveer 5-8% van je omzet\n- Uitkering bij arbeidsongeschiktheid\n\n**Let op:** De werkende AOV is basisdekking. Aanvullende verzekering is vaak nodig voor voldoende inkomensbescherming.\n\n## Pensioen Opbouwen als ZZP'er\n\n### Mogelijkheid 1: Oudedagsreserve (FOR)\n\nDe FOR is een fiscale faciliteit voor eenmanszaken.\n\n**Hoe werkt het:**\n- Je mag jaarlijks maximaal 12,4% van je winst reserveren (2024)\n- Dit is aftrekbaar van je winst (lagere belasting nu)\n- Je legt het geld zelf apart (op een spaarrekening of beleggingsrekening)\n- Bij pensionering voeg je de reservering toe aan je vermogen\n\n**Voorbeeld:**\n- Winst: €50.000\n- FOR: 12,4% = €6.200\n- Belastingvoordeel (37%): €2.294\n\n**Let op:** Je moet de FOR apart houden en kunt er niet zomaar bij. Het is bedoeld voor je pensioen.\n\n### Mogelijkheid 2: Lijfrente\n\nEen lijfrente is een pensioenproduct bij een verzekeraar of bank.\n\n**Soorten:**\n- **Banksparen:** Sparen of beleggen met belastingvoordeel\n- **Lijfrenteverzekering:** Product bij verzekeraar\n- **Lijfrentekapitaal:** Uitkopen bij pensionering\n\n**Fiscaal voordeel:**\n- Premie is aftrekbaar (net als FOR)\n- Uitkering later belast als inkomen\n- Verschuiving van belasting naar later (hopelijk lager tarief)\n\n### Mogelijkheid 3: Gewoon Sparen en Beleggen\n\nJe kunt ook zelf sparen zonder fiscale regelingen.\n\n**Voordelen:**\n- Volledige vrijheid\n- Geen restricties\n- Geld altijd beschikbaar\n\n**Nadelen:**\n- Geen direct belastingvoordeel\n- Je moet discipline hebben\n- Rendement onzeker\n\n**Tips:**\n- Maak een automatische overboeking per maand\n- Sparen én beleggen (spreiding)\n- Begin zo vroeg mogelijk (rente-op-rente effect)\n\n### Mogelijkheid 4: Pensioenrekening bij een Anbi\n\nSommige brancheorganisaties bieden collectieve pensioenregelingen.\n\n**Voorbeelden:**\n- ZZP Pensioen (via verschillende partijen)\n- Branchepensioenfondsen (voor specifieke sectoren)\n\n**Voordeel:**\n- Collectieve regeling (soms lagere kosten)\n- Standaardoplossing\n\n## Rekenvoorbeeld Pensioenopbouw\n\n**Situatie:**\n- Leeftijd: 35 jaar\n- Winst: €60.000 per jaar\n- Pensioen over: 32 jaar (doel: 67 jaar)\n- Gewenst pensioen: €25.000 per jaar (naast AOW)\n\n**Berekening:**\n- AOW (volledig): circa €15.000/jaar\n- Gewenst extra: €25.000/jaar\n- Totaal pensioeninkomen nodig: €40.000/jaar\n- Benodigd pensioenkapitaal: circa €400.000-500.000\n\n**Hoe kom je daar:**\n\n| Methode | Maandelijks | Rendement | Totaal na 32 jaar |
+|---------|-------------|-----------|-----------------|
+| Sparen 5% | €250 | 0% | €96.000 |
+| FOR 12% | €600 | 4% | €360.000 |
+| Beleggen 10% | €500 | 6% | €570.000 |
+| Combinatie | €500 mix | 5% | €460.000 |
+\n**Conclusie:** Een combinatie van methoden is meestal het beste.\n\n## Praktische Tips\n\n### 1. Begin Vroeg\n\nHoe eerder je start, hoe meer rente-op-rente effect.\n\n**Voorbeeld:**\n- Start op 30: €300/maand = comfortabel pensioen\n- Start op 50: €800/maand = zelfde resultaat\n\n### 2. Automatiseren\n\nZet automatische overboekingen in:\n- FOR reservering naar aparte rekening\n- Maandelijkse inleg pensioen\n- AOV premie\n\n### 3. Diversificatie\n\nSpreid je pensioengeld:\n- Deel sparen (zekerheid)\n- Deel beleggen (groei)\n- Deel lijfrente (fiscaal voordeel)\n\n### 4. Jaarlijks Evalueren\n\nCheck elk jaar:\n- Is de AOV nog passend bij je inkomen?\n- Bouw je genoeg pensioen op?\n- Zijn er nieuwe regelingen?\n\n### 5. Professioneel Advies\n\nVraag hulp bij:\n- Keuze AOV (onafhankelijk adviseur)\n- Pensioenplanning (financial planner)\n- Fiscale optimalisatie (belastingadviseur)\n\n## Conclusie\n\nAls ZZP'er moet je zelf je financiële toekomst regelen. De AOV is het belangrijkst: zonder inkomen kun je niet sparen voor pensioen. Begin met een AOV en bouw daarnaast pensioen op via FOR, lijfrente of eigen spaarplan. Hoe eerder je start, hoe comfortabeler je later leeft.`,
+    faq: [
+      {
+        question: 'Is een AOV verplicht voor ZZP\'ers?',
+        answer: 'Sinds 2024 is er een basis AOV verplicht voor nieuwe ZZP\'ers via het UWV (werkende AOV). Deze biedt basisdekking. Aanvullende verzekering is vaak nodig voor voldoende inkomensbescherming.'
+      },
+      {
+        question: 'Hoeveel pensioen moet ik als ZZP\'er opbouwen?',
+        answer: 'Dit hangt af van je gewenste levensstandaard. De AOW is circa €15.000/jaar. Wil je €30.000-40.000 in totaal hebben, dan moet je zelf €15.000-25.000/jaar aan pensioeninkomen opbouwen. Reken dit door met een pensioenadviseur.'
+      },
+      {
+        question: 'Kan ik mijn FOR ook gebruiken voor andere doeleinden?',
+        answer: 'Nee, de Oudedagsreserve (FOR) is strikt voor je pensioen. Je mag er niet zomaar bij. Alleen bij uitzonderlijke omstandigheden (bijvoorbeeld faillissement) kan de Belastingdienst toestemming geven voor opheffing.'
+      },
+      {
+        question: 'Is een lijfrente beter dan zelf sparen?',
+        answer: 'Een lijfrente heeft fiscaal voordeel (aftrek premie), maar minder flexibiliteit. Zelf sparen is flexibeler maar zonder belastingvoordeel. De beste strategie is vaak een combinatie van beide.'
+      }
+    ]
+  }
+]

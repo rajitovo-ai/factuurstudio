@@ -1,0 +1,63 @@
+{
+  "title": "Import PDF invoices",
+  "subtitle": "Upload multiple existing PDF invoices at once. Check the detected data and choose per file what you want to import.",
+  "upload": {
+    "label": "Upload 1 or more PDF files",
+    "placeholder": "Phase 2: Deep scan for scan-PDFs. This takes a bit longer but recognizes more data.",
+    "deepScan": "Enable deep scan for scanned documents"
+  },
+  "buttons": {
+    "toInvoices": "To invoices",
+    "importSelected": "Import selected data",
+    "importing": "Importing...",
+    "remove": "Remove",
+    "parsing": "Analyzing PDFs..."
+  },
+  "empty": "No PDFs loaded yet.",
+  "labels": {
+    "importCustomer": "Import customer data",
+    "importInvoice": "Import invoice data",
+    "status": "Status",
+    "invoiceNumber": "Invoice number",
+    "companyName": "Company name on invoice",
+    "clientName": "Customer name",
+    "clientEmail": "Customer email",
+    "clientAddress": "Customer address",
+    "street": "Street",
+    "houseNumber": "House number",
+    "postalCode": "Postal code",
+    "city": "City",
+    "kvk": "Chamber of Commerce",
+    "vatNumber": "VAT number",
+    "iban": "Bank account (IBAN)",
+    "currency": "Currency",
+    "issueDate": "Invoice date",
+    "dueDate": "Due date",
+    "useDueDate": "Use due date",
+    "subtotal": "Subtotal",
+    "vatTotal": "VAT total",
+    "vatRate": "VAT %",
+    "total": "Total amount",
+    "description": "Description",
+    "ocrUsed": "OCR used for this PDF.",
+    "warnings": "Warnings"
+  },
+  "status": {
+    "draft": "draft",
+    "sent": "sent",
+    "paid": "paid"
+  },
+  "errors": {
+    "noUser": "No active user found. Please log in again.",
+    "selectOne": "Select at least 1 row to import.",
+    "parseError": "Unknown error reading PDF.",
+    "importFailed": "Import failed for {{fileName}}",
+    "generic": "An error occurred during import."
+  },
+  "summary": "Import completed. Customers: {{customers}}, invoices: {{invoices}}, errors: {{errors}}.",
+  "notes": {
+    "importedFromPdf": "Imported from existing PDF invoice.",
+    "unknownClient": "Unknown customer",
+    "importedInvoice": "Imported invoice"
+  }
+}

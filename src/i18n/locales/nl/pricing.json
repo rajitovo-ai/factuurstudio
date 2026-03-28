@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "title": "Factuur Studio – Prijzen en abonnementen | Gratis of Pro vanaf €4,99/maand",
+    "description": "Bekijk de Factuur Studio abonnementen. Gratis voor starters (5 facturen/maand) of Pro vanaf €4,99/maand met onbeperkte facturen, OCR, sjablonen en meer."
+  },
+  "nav": {
+    "blog": "Blog",
+    "login": "Inloggen",
+    "startFree": "Gratis starten",
+    "dashboard": "Dashboard"
+  },
+  "hero": {
+    "title": "Kies wat bij jou past",
+    "subtitle": "Start gratis met de basisfeatures. Upgrade naar Pro wanneer je meer nodig hebt."
+  },
+  "plans": {
+    "free": {
+      "name": "Free",
+      "description": "Perfect om te starten",
+      "price": "€0",
+      "perMonth": "/maand",
+      "noCard": "Geen creditcard nodig",
+      "cta": "Gratis aan de slag",
+      "includes": "Inclusief:"
+    },
+    "pro": {
+      "name": "Pro",
+      "badge": "Populair",
+      "description": "Voor groeiende ondernemers",
+      "monthly": "Maandelijks",
+      "yearly": "Jaarlijks",
+      "perMonth": "/maand",
+      "perYear": "/jaar",
+      "save": "Bespaar 33%",
+      "cancelAnytime": "Altijd opzegbaar",
+      "cta": "Upgrade naar Pro",
+      "trialNote": "Geen creditcard nodig voor trial",
+      "includes": "Alles in Free, plus:"
+    }
+  },
+  "features": {
+    "professionalInvoices": "Professionele facturen",
+    "customerManagement": "Klantenbeheer",
+    "dashboard": "Dashboard inzicht",
+    "invoicesPerMonth": "Facturen per maand",
+    "fiveInvoices": "5 facturen",
+    "unlimited": "Onbeperkt",
+    "pdfExport": "PDF export",
+    "invoiceImport": "Factuur import (PDF)",
+    "deepScan": "Diepe scan (OCR)",
+    "templates": "Factuur sjablonen",
+    "paymentAdvice": "Betaaladvies via email",
+    "reminders": "Automatische herinneringen",
+    "api": "API toegang",
+    "prioritySupport": "Prioriteitsupport"
+  },
+  "trust": {
+    "title": "Vertrouwd door ondernemers",
+    "dutch": "100% Nederlands",
+    "gdpr": "GDPR Compliant",
+    "available": "Altijd Beschikbaar",
+    "freeStart": "100% Gratis Starten"
+  },
+  "faq": {
+    "title": "Veelgestelde vragen",
+    "upgradeLater": {
+      "question": "Kan ik later upgraden?",
+      "answer": "Ja! Je kunt altijd van Free naar Pro upgraden. Je betaalt dan alles naar rato voor het restant van de maand."
+    },
+    "contracts": {
+      "question": "Hoe zit het met contracten?",
+      "answer": "Er zijn geen contracten! Je kunt je abonnement op elk moment opzeggen. Geen gedoe, geen verborgen kosten."
+    },
+    "dataOnCancel": {
+      "question": "Wat gebeurt er met mijn gegevens als ik cancel?",
+      "answer": "Al je facturen en klanten blijven beschikbaar in je Free account. Je verliest niets!"
+    },
+    "reallyFree": {
+      "question": "Is de Free versie echt gratis?",
+      "answer": "Ja! Je kunt de Free versie voor onbeperkt lang gebruiken. Geen creditcard nodig, geen trial-periode. Echt gratis."
+    },
+    "payment": {
+      "question": "Hoe betaal ik?",
+      "answer": "We gebruiken Stripe voor veilige betalingen. Wij accepteren alle major creditcards en andere betaalmethoden."
+    }
+  },
+  "cta": {
+    "title": "Klaar om slimmer te factureren?",
+    "subtitle": "Start gratis vandaag. Geen creditcard nodig.",
+    "button": "Gratis account maken"
+  }
+}

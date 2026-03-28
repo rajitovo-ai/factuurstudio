@@ -3,13 +3,13 @@
 ## 1. Short Social Media Posts (Twitter/X, Instagram Stories)
 
 ### Variant A - Direct & Practical
-"💼 Factura's maken in 2 minuten? Ja, het kan! Factuur Studio = minder administratie, meer tijd voor je business. Probeer gratis nu! 🚀"
+"💼 Facturen maken in 2 minuten? Ja, het kan! Factuur Studio = minder administratie, meer tijd voor je business. Probeer gratis nu! 🚀" www.factuurstudio.nl
 
 ### Variant B - Problem-Focused
-"Beu van handmatige facturen? ⏰ Factuur Studio genereert professionele factura's in seconden. Een no-brainer voor ZZP'ers en ondernemers!"
+"Beu van handmatige facturen? ⏰ Factuur Studio genereert professionele factura's in seconden. Een no-brainer voor ZZP'ers en ondernemers!"www.factuurstudio.nl
 
 ### Variant C - Light & Friendly
-"Geen accountant. Geen gedoe. Gewoon factura's maken. 📄✨ Factuur Studio = simpel, snel en betrouwbaar. Kom eens kijken!"
+"Geen accountant. Geen gedoe. Gewoon facturen maken. 📄✨ Factuur Studio = simpel, snel en betrouwbaar. Kom eens kijken!" www.factuurstudio.nl
 
 ---
 
@@ -69,10 +69,7 @@ Ik help graag met administratieve problemen. Daarvoor heb ik **Factuur Studio** 
 - 💰 Geen abonnementskosten
 - 🛡️ Veilige opslag, altijd beschikbaar
 
-Wil je 2 minuten voelen hoe snel het gaat? [link]
-
-Groeten,
-[Naam]
+Wil je 2 minuten voelen hoe snel het gaat? www.factuurstudio.nl
 
 ---
 
@@ -85,13 +82,10 @@ Hoe veel tijd spendeer je elke maand aan facturen maken? Voor veel ondernemers l
 
 **Factuur Studio:** Professionele facturen in 60 seconden. Plus realtime inzicht in je omzet en openstaande facturen. Geen gedoe.
 
-Gratis proberen → www.factuurstudio.nlten
+Gratis proberen → www.factuurstudio.nl
 - 🛡️ Veilige opslag, altijd beschikbaar
 
-Wil je 2 minuten voelen hoe snel het gaat? [link]
-
-Groeten,
-[Naam]
+Wil je 2 minuten voelen hoe snel het gaat? www.factuurstudio.nl
 
 ---
 
@@ -104,7 +98,7 @@ Hoe veel tijd spendeer je elke maand aan facturen maken? Voor veel ondernemers l
 
 **FactuurGenerator:** Professionele facturen in 60 seconden. Meer niet. Minder gedoe.
 
-Gratis proberen → [link]
+Gratis proberen → www.factuurstudio.nl
 
 ---
 
@@ -184,7 +178,7 @@ Ik wil je graag op iets attent maken dat ik recent heb gelanceerd: **FactuurGene
 
 Je kan het gratis proberen, geen creditcard nodig.
 
-Interessant? → [link]
+Interessant? →  www.factuurstudio.nl
 
 Graag je feedback! 😊"
 

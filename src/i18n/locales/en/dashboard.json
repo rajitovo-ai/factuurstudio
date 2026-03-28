@@ -1,0 +1,88 @@
+{
+  "title": "Dashboard",
+  "hero": {
+    "description": "Outstanding invoices, attention points and recent activity are now in a clear order so you can take action faster."
+  },
+  "stats": {
+    "outstanding": "Outstanding",
+    "overdue": "Overdue",
+    "thisMonth": "This month",
+    "thisYear": "This year",
+    "overdueDescription": "Invoices with expired terms",
+    "paidThisMonth": "paid this month"
+  },
+  "quickActions": {
+    "title": "Quick actions"
+  },
+  "actions": {
+    "newInvoice": "New invoice",
+    "viewInvoices": "View invoices",
+    "manageCustomers": "Manage customers",
+    "addCustomer": "Add customer",
+    "importInvoice": "Import invoice"
+  },
+  "gettingStarted": {
+    "title": "Getting started",
+    "subtitle": "Start in 3 steps",
+    "step1": "Complete your company profile in",
+    "step2": "Create your first customer via",
+    "step3": "Send your first invoice via"
+  },
+  "today": {
+    "title": "Important today",
+    "priorities": "Priorities",
+    "draftsDescription": "Not yet sent invoices",
+    "followUp": "Follow up",
+    "followUpDescription": "Outstanding invoices",
+    "growth": "Growth"
+  },
+  "attention": {
+    "title": "Attention needed",
+    "overdueTitle": "Overdue invoices",
+    "overdueDescription": "invoices have expired and require immediate follow-up.",
+    "followUpNow": "Follow up now",
+    "draftsTitle": "Drafts ready to send",
+    "draftsDescription": "draft invoices have not been sent yet.",
+    "send": "Send",
+    "quotaTitle": "Monthly limit in sight",
+    "quotaDescription": "You have used {used} of {limit} invoices this month.",
+    "viewPlan": "View plan",
+    "allGood": "Everything looks good. There are no immediate action items."
+  },
+  "invoices": {
+    "title": "Recent invoices",
+    "viewAll": "View all",
+    "noInvoices": "No invoices available yet.",
+    "createFirst": "Create your first invoice"
+  },
+  "activities": {
+    "title": "Recent activity",
+    "noActivity": "No recent activity",
+    "invoiceCreated": "Invoice created",
+    "invoiceSent": "Invoice sent",
+    "invoicePaid": "Invoice paid",
+    "customerAdded": "Customer added",
+    "customerUpdated": "Customer updated"
+  },
+  "chart": {
+    "title": "Trend",
+    "subtitle": "Paid last 6 months",
+    "revenue": "Revenue",
+    "invoices": "Invoices",
+    "thisMonth": "This month",
+    "lastMonth": "Last month"
+  },
+  "subscription": {
+    "title": "Subscription",
+    "free": "Starter",
+    "active": "Active",
+    "unlimited": "Unlimited invoices per month.",
+    "used": "invoices used this month.",
+    "upgrade": "Upgrade to",
+    "pro": "Pro",
+    "upgradeDescription": "for unlimited invoices and extra features."
+  },
+  "search": {
+    "placeholder": "Search dashboard..."
+  }
+}

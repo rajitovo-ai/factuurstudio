@@ -1,0 +1,162 @@
+{
+  "meta": {
+    "title": "Invoice Studio – Online invoicing for freelancers and small businesses",
+    "description": "Create professional invoices in seconds. Invoice Studio is the simple invoicing app for freelancers and small businesses. Start free, no subscription required."
+  },
+  "og": {
+    "title": "Invoice Studio – Online invoicing for freelancers and small businesses",
+    "description": "Create professional invoices in seconds. Start free, no subscription required."
+  },
+  "badge": "Smart invoicing for entrepreneurs",
+  "hero": {
+    "title": "Professional invoices. Less administration.",
+    "description": "Invoice Studio helps you create invoices faster, follow up on payments, and track your revenue. All in a sleek platform that's immediately clear for you and your customers.",
+    "ctaStartFree": "Start free",
+    "ctaViewDashboard": "View dashboard"
+  },
+  "benefits": {
+    "lessWork": "Less manual work and fewer errors",
+    "fasterPaid": "Get paid faster with clear, professional invoices",
+    "overview": "Clear dashboard with immediate action points",
+    "easyToUse": "Easy for beginners, powerful enough for growth"
+  },
+  "features": {
+    "title": "What you can do with the platform",
+    "subtitle": "All core features you need to organize invoicing professionally and clearly.",
+    "items": {
+      "invoicesInMinutes": {
+        "title": "Invoices in minutes",
+        "description": "Create professional invoices with automatic totals, VAT calculations, and clear formatting for your customers."
+      },
+      "smartCustomerManagement": {
+        "title": "Smart customer management",
+        "description": "Store customer data centrally and reuse it directly for every new invoice without duplicate work."
+      },
+      "realtimeInsight": {
+        "title": "Always realtime insight",
+        "description": "See at a glance which invoices are outstanding, paid, and where your revenue is coming from today."
+      },
+      "quickImport": {
+        "title": "Quick import and editing",
+        "description": "Import existing invoices, quickly update details, and keep your administration neat and consistent."
+      },
+      "fasterPayment": {
+        "title": "Get paid faster",
+        "description": "Send clear invoices with transparent payment information so customers understand and pay faster."
+      },
+      "growthReady": {
+        "title": "Growth-ready platform",
+        "description": "From starter to growing business: your workflows stay fast, clear, and scalable."
+      }
+    }
+  },
+  "useCases": {
+    "title": "Use cases in view",
+    "subtitle": "Clear, clean previews of how your team uses Invoice Studio daily.",
+    "ctaTry": "Try it yourself",
+    "items": {
+      "newInvoice": {
+        "title": "Create new invoice",
+        "description": "From customer selection to send-ready invoice in just a few steps."
+      },
+      "dashboard": {
+        "title": "Dashboard and follow-up",
+        "description": "See immediately which invoices need action and where revenue is growing."
+      },
+      "import": {
+        "title": "Import and check",
+        "description": "Import existing invoices and correct data where needed."
+      }
+    }
+  },
+  "trust": {
+    "title": "Trusted by entrepreneurs",
+    "subtitle": "Made for freelancers and small businesses who want to invoice quickly.",
+    "ctaPricing": "Try for free",
+    "items": {
+      "dutchPlatform": {
+        "title": "International platform",
+        "description": "Built for global invoicing needs."
+      },
+      "secureStorage": {
+        "title": "Secure storage",
+        "description": "Data stays protected and encrypted."
+      },
+      "quickStart": {
+        "title": "Quick to start",
+        "description": "Send your first invoice within minutes."
+      },
+      "growsWithYou": {
+        "title": "Grows with you",
+        "description": "Start free and upgrade only when you want."
+      }
+    }
+  },
+  "blog": {
+    "badge": "Practical insights",
+    "title": "Smart tips for entrepreneurs who want to spend less time on administration",
+    "description": "Not just software, but also useful knowledge. Read how entrepreneurs organize their invoicing tighter, better monitor cashflow, and get paid faster without extra hassle.",
+    "ctaRead": "View article",
+    "article": {
+      "badge": "New blogpost",
+      "readTime": "8-10 min read",
+      "date": "March 26, 2026",
+      "title": "How entrepreneurs really save hours on administration while maintaining control over their cashflow",
+      "description": "A practical article for freelancers and small businesses about invoicing faster, better following up on outstanding invoices, and working smarter without making your administration heavier.",
+      "bullet1": "Less manual work with recurring invoices.",
+      "bullet2": "More overview of outstanding amounts and payment moments.",
+      "bullet3": "Better foundation for stable cashflow and less stress.",
+      "ctaFullArticle": "Read the full article"
+    }
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Short answers to the questions we get most from starters and freelancers.",
+    "questions": {
+      "free": {
+        "question": "Is Invoice Studio really free to use?",
+        "answer": "Yes. You can start with the Free plan without credit card. You only pay when you choose Pro."
+      },
+      "upgrade": {
+        "question": "Can I upgrade or downgrade later?",
+        "answer": "Certainly. You can upgrade to Pro at any time or later switch back to Free."
+      },
+      "firstInvoice": {
+        "question": "How quickly can I send my first invoice?",
+        "answer": "Usually within minutes. Fill in your profile, add a customer, and create your first invoice right away."
+      },
+      "security": {
+        "question": "Are my invoices and customer data safe?",
+        "answer": "Yes. Data is securely stored and only used for your invoicing process."
+      },
+      "mobile": {
+        "question": "Does this work on mobile?",
+        "answer": "Yes, the interface is responsive and works on desktop, tablet, and mobile."
+      }
+    }
+  },
+  "cta": {
+    "title": "Ready to invoice smarter?",
+    "description": "Start free, immediately experience the difference in speed and overview, and scale along as your business grows.",
+    "ctaCreateAccount": "Create free account",
+    "ctaHaveAccount": "I already have an account"
+  },
+  "dashboardPreview": {
+    "label": "Dashboard overview",
+    "badge": "Realtime",
+    "outstanding": "Outstanding",
+    "thisMonth": "This month",
+    "recentActivity": "Recent activity",
+    "activities": {
+      "invoiceSent": "Invoice #2026-014 sent",
+      "invoicePaid": "Invoice #2026-013 paid",
+      "newCustomer": "New customer added"
+    }
+  },
+  "referralTest": {
+    "title": "Test referral (dev)",
+    "description": "1) Login with account A 2) open referral page and copy/open your link 3) register account B via that link.",
+    "ctaReferral": "Go to referral page",
+    "ctaLogin": "Login"
+  }
+}

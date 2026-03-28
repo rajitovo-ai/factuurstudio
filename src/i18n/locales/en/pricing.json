@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "title": "Factuur Studio – Pricing and Plans | Free or Pro from $4.99/month",
+    "description": "Explore Factuur Studio plans. Free for starters (5 invoices/month) or Pro from $4.99/month with unlimited invoices, OCR, templates, and more."
+  },
+  "nav": {
+    "blog": "Blog",
+    "login": "Log in",
+    "startFree": "Start free",
+    "dashboard": "Dashboard"
+  },
+  "hero": {
+    "title": "Choose what fits you",
+    "subtitle": "Start free with basic features. Upgrade to Pro when you need more."
+  },
+  "plans": {
+    "free": {
+      "name": "Free",
+      "description": "Perfect to get started",
+      "price": "$0",
+      "perMonth": "/month",
+      "noCard": "No credit card required",
+      "cta": "Get started free",
+      "includes": "Includes:"
+    },
+    "pro": {
+      "name": "Pro",
+      "badge": "Popular",
+      "description": "For growing entrepreneurs",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "perMonth": "/month",
+      "perYear": "/year",
+      "save": "Save 33%",
+      "cancelAnytime": "Cancel anytime",
+      "cta": "Upgrade to Pro",
+      "trialNote": "No credit card needed for trial",
+      "includes": "Everything in Free, plus:"
+    }
+  },
+  "features": {
+    "professionalInvoices": "Professional invoices",
+    "customerManagement": "Customer management",
+    "dashboard": "Dashboard insights",
+    "invoicesPerMonth": "Invoices per month",
+    "fiveInvoices": "5 invoices",
+    "unlimited": "Unlimited",
+    "pdfExport": "PDF export",
+    "invoiceImport": "Invoice import (PDF)",
+    "deepScan": "Deep scan (OCR)",
+    "templates": "Invoice templates",
+    "paymentAdvice": "Payment advice via email",
+    "reminders": "Automatic reminders",
+    "api": "API access",
+    "prioritySupport": "Priority support"
+  },
+  "trust": {
+    "title": "Trusted by entrepreneurs",
+    "dutch": "100% Dutch",
+    "gdpr": "GDPR Compliant",
+    "available": "Always Available",
+    "freeStart": "100% Free to Start"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "upgradeLater": {
+      "question": "Can I upgrade later?",
+      "answer": "Yes! You can upgrade from Free to Pro anytime. You'll pay prorated for the remainder of the month."
+    },
+    "contracts": {
+      "question": "What about contracts?",
+      "answer": "No contracts! You can cancel your subscription anytime. No hassle, no hidden fees."
+    },
+    "dataOnCancel": {
+      "question": "What happens to my data if I cancel?",
+      "answer": "All your invoices and customers remain available in your Free account. You won't lose anything!"
+    },
+    "reallyFree": {
+      "question": "Is the Free version really free?",
+      "answer": "Yes! You can use the Free version for unlimited time. No credit card needed, no trial period. Really free."
+    },
+    "payment": {
+      "question": "How do I pay?",
+      "answer": "We use Stripe for secure payments. We accept all major credit cards and other payment methods."
+    }
+  },
+  "cta": {
+    "title": "Ready to invoice smarter?",
+    "subtitle": "Start free today. No credit card required.",
+    "button": "Create free account"
+  }
+}

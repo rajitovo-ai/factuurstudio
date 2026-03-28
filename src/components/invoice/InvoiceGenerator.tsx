@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { canCreateInvoiceThisMonth, PLAN_CONFIGS } from '../../lib/billing'
 import { downloadInvoicePdf } from '../../lib/pdf'
 import { getNextInvoiceNumber } from '../../lib/invoiceNumber'
@@ -13,10 +14,17 @@ import { useInvoiceStore } from '../../stores/invoiceStore'
 import { defaultCompanyProfile, useProfileStore } from '../../stores/profileStore'
 
 const GUEST_DL_KEY = 'factuurstudio.guest.hasDownloaded'
-const hasUsedGuestDownload = () => Boolean(localStorage.getItem(GUEST_DL_KEY))
-const markGuestDownloadUsed = () => localStorage.setItem(GUEST_DL_KEY, '1')
+const hasUsedGuestDownload = (): boolean => {
+  if (typeof window === 'undefined') return false
+  return Boolean(localStorage.getItem(GUEST_DL_KEY))
+}
+const markGuestDownloadUsed = (): void => {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(GUEST_DL_KEY, '1')
+}
 const EMPTY_CUSTOMERS: CustomerProfile[] = []
 
+// Types
 type InvoiceLine = {
   id: number
   description: string
@@ -25,25 +33,26 @@ type InvoiceLine = {
   vatRate: 0 | 9 | 21
 }
 
-const formatCurrency = (amount: number, currencyCode = 'EUR') =>
+// Utility functions
+const formatCurrency = (amount: number, currencyCode = 'EUR'): string =>
   new Intl.NumberFormat('nl-NL', {
     style: 'currency',
     currency: currencyCode,
   }).format(amount)
 
-const formatDate = (isoDate: string) => {
+const formatDate = (isoDate: string): string => {
   if (!isoDate) return '-'
   const [year, month, day] = isoDate.split('-')
   return `${day}-${month}-${year}`
 }
 
-const createDefaultDueDate = () => {
+const createDefaultDueDate = (): string => {
   const date = new Date()
   date.setDate(date.getDate() + 14)
   return date.toISOString().slice(0, 10)
 }
 
-const createDueDateFromIssueDate = (issueDate: string, termDays: number) => {
+const createDueDateFromIssueDate = (issueDate: string, termDays: number): string => {
   const base = issueDate ? new Date(`${issueDate}T00:00:00`) : new Date()
   const safeDays = Math.max(0, Math.round(termDays))
   base.setDate(base.getDate() + safeDays)
@@ -58,6 +67,7 @@ type Props = {
 }
 
 export default function InvoiceGenerator({ editInvoice, guestMode = false }: Props = {}) {
+  const { t } = useTranslation(['invoiceGenerator', 'common', 'invoices'])
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const userId = useAuthStore((state) => state.userId)
@@ -125,7 +135,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const [lines, setLines] = useState<InvoiceLine[]>(
     editInvoice
       ? editInvoice.lines
-      : [{ id: 1, description: 'Mijn eerste opdracht', quantity: 1, unitPrice: 750, vatRate: 21 }],
+      : [{ id: 1, description: t('invoiceGenerator:defaultLine'), quantity: 1, unitPrice: 750, vatRate: 21 }],
   )
 
   const draftStorageKey = useMemo(() => {
@@ -449,18 +459,18 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         return
       }
       if (!clientName.trim()) {
-        setSaveError('Vul eerst een klantnaam in.')
+        setSaveError(t('invoiceGenerator:errors.noClientName'))
         return
       }
       const hasValidLine = lines.some((line) => line.description.trim() && line.quantity > 0)
       if (!hasValidLine) {
-        setSaveError('Voeg minimaal een geldige factuurregel toe.')
+        setSaveError(t('invoiceGenerator:errors.noValidLine'))
         return
       }
 
       const resolvedDueDate = hasDueDate ? dueDate : issueDate
       if (!resolvedDueDate) {
-        setSaveError('Vul een geldige factuurdatum in.')
+        setSaveError(t('invoiceGenerator:errors.noIssueDate'))
         return
       }
 
@@ -505,29 +515,29 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     }
 
     if (!userId) {
-      setSaveError('Geen actieve gebruiker gevonden. Log opnieuw in.')
+      setSaveError(t('invoiceGenerator:errors.noUser'))
       return
     }
 
     if (!clientName.trim()) {
-      setSaveError('Vul eerst een klantnaam in.')
+      setSaveError(t('invoiceGenerator:errors.noClientName'))
       return
     }
 
     const hasValidLine = lines.some((line) => line.description.trim() && line.quantity > 0)
     if (!hasValidLine) {
-      setSaveError('Voeg minimaal een geldige factuurregel toe.')
+      setSaveError(t('invoiceGenerator:errors.noValidLine'))
       return
     }
 
     if (!issueDate) {
-      setSaveError('Vul een factuurdatum in.')
+      setSaveError(t('invoiceGenerator:errors.noIssueDate'))
       return
     }
 
     const resolvedDueDate = hasDueDate ? dueDate : issueDate
     if (!resolvedDueDate) {
-      setSaveError('Vul een geldige vervaldatum in of kies geen vervaldatum.')
+      setSaveError(t('invoiceGenerator:errors.noDueDate'))
       return
     }
 
@@ -565,7 +575,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       })
 
       if (!ok) {
-        setSaveError('Opslaan van wijzigingen is mislukt. Probeer opnieuw.')
+        setSaveError(t('invoiceGenerator:errors.updateFailed'))
         return
       }
     } else {
@@ -577,7 +587,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       const quota = canCreateInvoiceThisMonth(planId, invoices, userId)
       if (!quota.allowed) {
         setSaveError(
-          `Je ${PLAN_CONFIGS[planId].name}-plan heeft een limiet van ${quota.limit} facturen per maand. Upgrade naar Pro voor onbeperkt.`,
+          t('invoiceGenerator:errors.quotaExceeded', { plan: PLAN_CONFIGS[planId].name, limit: quota.limit }),
         )
         return
       }
@@ -615,7 +625,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       })
 
       if (!ok) {
-        setSaveError('Factuur opslaan is mislukt. Probeer opnieuw.')
+        setSaveError(t('invoiceGenerator:errors.saveFailed'))
         return
       }
 
@@ -651,23 +661,23 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     setCustomerProfileMessage(null)
 
     if (!userId) {
-      setCustomerProfileError('Geen actieve gebruiker gevonden. Log opnieuw in.')
+      setCustomerProfileError(t('invoiceGenerator:errors.customerNoUser'))
       return
     }
 
     if (!clientName.trim() && !clientContactName.trim()) {
-      setCustomerProfileError('Vul minimaal klantnaam of contactpersoon in.')
+      setCustomerProfileError(t('invoiceGenerator:errors.customerNoName'))
       return
     }
 
     const created = await createCustomer(userId, buildCustomerProfileInput())
     if (!created) {
-      setCustomerProfileError('Klantprofiel opslaan is mislukt. Probeer opnieuw.')
+      setCustomerProfileError(t('invoiceGenerator:errors.customerSaveFailed'))
       return
     }
 
     setSelectedCustomerId(created.id)
-    setCustomerProfileMessage('Nieuw klantprofiel opgeslagen.')
+    setCustomerProfileMessage(t('invoiceGenerator:customerProfile.saveNew'))
   }
 
   const updateSelectedCustomerProfile = async () => {
@@ -675,17 +685,17 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     setCustomerProfileMessage(null)
 
     if (!userId || !selectedCustomerId) {
-      setCustomerProfileError('Selecteer eerst een bestaand klantprofiel.')
+      setCustomerProfileError(t('invoiceGenerator:errors.selectCustomer'))
       return
     }
 
     const updated = await updateCustomer(selectedCustomerId, userId, buildCustomerProfileInput())
     if (!updated) {
-      setCustomerProfileError('Klantprofiel bijwerken is mislukt. Probeer opnieuw.')
+      setCustomerProfileError(t('invoiceGenerator:errors.customerUpdateFailed'))
       return
     }
 
-    setCustomerProfileMessage('Klantprofiel bijgewerkt.')
+    setCustomerProfileMessage(t('invoiceGenerator:customerProfile.updateSelected'))
   }
 
   const onCustomerSelectionChange = useCallback((customerId: string) => {
@@ -734,37 +744,36 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
         <header className="rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-sm backdrop-blur">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-cyan-700">
-            {guestMode ? 'Gratis proberen' : editInvoice ? 'Factuur bewerken' : 'Nieuwe factuur'}
+            {guestMode ? t('invoiceGenerator:header.guestTitle') : editInvoice ? t('invoiceGenerator:header.editTitle') : t('invoiceGenerator:header.newTitle')}
           </p>
           <h1 className="mt-2 text-3xl font-extrabold leading-tight sm:text-4xl">
-            {editInvoice ? `Factuur ${editInvoice.invoiceNumber}` : 'Factuur Studio Generator'}
+            {editInvoice ? t('invoiceGenerator:header.editInvoice', { number: editInvoice.invoiceNumber }) : t('invoiceGenerator:header.generator')}
           </h1>
           <p className="mt-3 max-w-3xl text-sm text-slate-600 sm:text-base">
             {guestMode
-              ? 'Vul je factuurgegevens in en download hem 1\u00d7 gratis als PDF. Geen account vereist.'
+              ? t('invoiceGenerator:header.guestSubtitle')
               : editInvoice
-                ? 'Pas de gegevens aan en sla op. Alleen conceptfacturen kunnen worden bewerkt.'
-                : 'Vul hier je factuurgegevens in en controleer direct de preview.'}
+                ? t('invoiceGenerator:header.editSubtitle')
+                : t('invoiceGenerator:header.newSubtitle')}
           </p>
           {showUpsell && guestMode ? (
             <div className="mt-4 rounded-xl border border-cyan-200 bg-cyan-50 p-4">
-              <p className="font-bold text-cyan-900">Je gratis PDF is gedownload! ✅</p>
+              <p className="font-bold text-cyan-900">{t('invoiceGenerator:upsell.title')}</p>
               <p className="mt-1 text-sm text-cyan-800">
-                Maak een gratis account aan om onbeperkt facturen aan te maken, op te slaan en te
-                downloaden — inclusief statusbeheer en klantoverzicht.
+                {t('invoiceGenerator:upsell.description')}
               </p>
               <div className="mt-3 flex flex-wrap gap-3">
                 <Link
                   to="/register"
                   className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
                 >
-                  Account aanmaken →
+                  {t('invoiceGenerator:upsell.createAccount')}
                 </Link>
                 <Link
                   to="/login"
                   className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                 >
-                  Al een account? Inloggen
+                  {t('invoiceGenerator:upsell.haveAccount')}
                 </Link>
               </div>
             </div>
@@ -777,7 +786,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   }}
                 className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
               >
-                {guestMode ? 'PDF downloaden (1× gratis)' : editInvoice ? 'Wijzigingen opslaan' : 'Factuur opslaan'}
+                {guestMode ? t('invoiceGenerator:buttons.downloadPdf') : editInvoice ? t('invoiceGenerator:buttons.saveChanges') : t('invoiceGenerator:buttons.saveInvoice')}
               </button>
               {!guestMode ? (
                 <button
@@ -785,14 +794,14 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   onClick={() => navigate('/facturen')}
                   className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                 >
-                  Naar overzicht
+                  {t('invoiceGenerator:buttons.toOverview')}
                 </button>
               ) : (
                 <Link
                   to="/register"
                   className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                 >
-                  Account aanmaken
+                  {t('invoiceGenerator:buttons.createAccount')}
                 </Link>
               )}
             </div>
@@ -801,11 +810,11 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
             <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
               <p className="text-slate-500">
                 {lastAutoSavedAt
-                  ? `Laatst opgeslagen om ${new Date(lastAutoSavedAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })}`
-                  : 'Autosave actief'}
+                  ? t('invoiceGenerator:autosave.savedAt', { time: new Date(lastAutoSavedAt).toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) })
+                  : t('invoiceGenerator:autosave.active')}
               </p>
               <Link to="/support" className="font-semibold text-cyan-700 hover:underline">
-                Hulp bij BTW, status of betaaltermijn
+                {t('invoiceGenerator:supportLink')}
               </Link>
             </div>
           ) : null}
@@ -819,11 +828,11 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
 
         <section className="grid gap-6 lg:grid-cols-2">
           <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <h2 className="text-xl font-bold">Factuur invoer</h2>
+            <h2 className="text-xl font-bold">{t('invoiceGenerator:invoiceInput.title')}</h2>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-700">Factuurnummer</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.invoiceNumber')}</span>
                 <input
                   value={invoiceNumber}
                   onChange={(event) => setInvoiceNumber(event.target.value)}
@@ -831,7 +840,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-700">Bedrijfsnaam</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.companyName')}</span>
                 <input
                   value={companyName}
                   onChange={(event) => setCompanyName(event.target.value)}
@@ -839,7 +848,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-700">Factuurdatum</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.issueDate')}</span>
                 <input
                   type="date"
                   value={issueDate}
@@ -848,7 +857,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-700">Vervaldatum</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.dueDate')}</span>
                 <input
                   type="date"
                   value={dueDate}
@@ -865,18 +874,18 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-600"
                 />
                 <span className="text-sm font-medium text-slate-700">
-                  Geen vervaldatum tonen of gebruiken
+                  {t('invoiceGenerator:invoiceInput.noDueDate')}
                 </span>
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-700">Prijsmodus</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.pricingMode')}</span>
                 <select
                   value={pricingMode}
                   onChange={(event) => setPricingMode(event.target.value as 'excl' | 'incl')}
                   className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                 >
-                  <option value="excl">Prijzen exclusief BTW</option>
-                  <option value="incl">Prijzen inclusief BTW</option>
+                  <option value="excl">{t('invoiceGenerator:invoiceInput.pricingExcl')}</option>
+                  <option value="incl">{t('invoiceGenerator:invoiceInput.pricingIncl')}</option>
                 </select>
               </label>
               <label className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 sm:col-span-2">
@@ -886,23 +895,23 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   onChange={(event) => setNoVat(event.target.checked)}
                   className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-600"
                 />
-                <span className="text-sm font-medium text-slate-700">Geen BTW toepassen op deze factuur</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.noVat')}</span>
               </label>
               {noVat ? (
                 <label className="flex flex-col gap-1 sm:col-span-2">
                   <span className="text-sm font-medium text-slate-700">
-                    Reden vrijstelling (optioneel)
+                    {t('invoiceGenerator:invoiceInput.vatExemptionReason')}
                   </span>
                   <input
                     value={vatExemptionReason}
                     onChange={(event) => setVatExemptionReason(event.target.value)}
-                    placeholder="Bijv. BTW verlegd of vrijstelling artikel 25"
+                    placeholder={t('invoiceGenerator:invoiceInput.vatPlaceholder')}
                     className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                   />
                 </label>
               ) : null}
               <label className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-slate-700">Valuta</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.currency')}</span>
                 <select
                   value={currencyCode}
                   onChange={(event) => setCurrencyCode(event.target.value)}
@@ -916,31 +925,31 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 </select>
               </label>
               <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-sm font-medium text-slate-700">Klantnaam</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.clientName')}</span>
                 <input
                   value={clientName}
                   onChange={(event) => setClientName(event.target.value)}
-                  placeholder="Bijv. Studio Noord"
+                  placeholder={t('invoiceGenerator:invoiceInput.clientNamePlaceholder')}
                   className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                 />
               </label>
               <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-sm font-medium text-slate-700">Klant e-mail</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.clientEmail')}</span>
                 <input
                   type="email"
                   value={clientEmail}
                   onChange={(event) => setClientEmail(event.target.value)}
-                  placeholder="contact@bedrijf.nl"
+                  placeholder={t('invoiceGenerator:invoiceInput.emailPlaceholder')}
                   className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                 />
               </label>
               <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-sm font-medium text-slate-700">Factuurbeschrijving (optioneel)</span>
+                <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:invoiceInput.description')}</span>
                 <textarea
                   value={invoiceDescription}
                   onChange={(event) => setInvoiceDescription(event.target.value)}
                   rows={3}
-                  placeholder="Bijv. Projectomschrijving of extra toelichting voor deze factuur"
+                  placeholder={t('invoiceGenerator:invoiceInput.descriptionPlaceholder')}
                   className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                 />
               </label>
@@ -948,13 +957,13 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 sm:col-span-2">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <label className="flex flex-col gap-1 sm:col-span-2">
-                      <span className="text-sm font-medium text-slate-700">Klantprofiel kiezen</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.title')}</span>
                       <select
                         value={selectedCustomerId}
                         onChange={(event) => onCustomerSelectionChange(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
                       >
-                        <option value="">Handmatige invoer</option>
+                        <option value="">{t('invoiceGenerator:customerProfile.manualEntry')}</option>
                         {customers.map((customer) => (
                           <option key={customer.id} value={customer.id}>
                             {customer.companyName || customer.name}
@@ -963,88 +972,88 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                       </select>
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">Contactpersoon</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.contactName')}</span>
                       <input
                         value={clientContactName}
                         onChange={(event) => setClientContactName(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="Bijv. Lisa Jansen"
+                        placeholder={t('invoiceGenerator:customerProfile.contactPlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">Telefoon</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.phone')}</span>
                       <input
                         value={clientPhone}
                         onChange={(event) => setClientPhone(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="Bijv. +31 6 12345678"
+                        placeholder={t('invoiceGenerator:customerProfile.phonePlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1 sm:col-span-2">
-                      <span className="text-sm font-medium text-slate-700">Adres</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.address')}</span>
                       <input
                         value={clientAddress}
                         onChange={(event) => setClientAddress(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="Straatnaam 12"
+                        placeholder={t('invoiceGenerator:customerProfile.addressPlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">Postcode</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.postalCode')}</span>
                       <input
                         value={clientPostalCode}
                         onChange={(event) => setClientPostalCode(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="1234 AB"
+                        placeholder={t('invoiceGenerator:customerProfile.postalPlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">Plaats</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.city')}</span>
                       <input
                         value={clientCity}
                         onChange={(event) => setClientCity(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="Amsterdam"
+                        placeholder={t('invoiceGenerator:customerProfile.cityPlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">Land</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.country')}</span>
                       <input
                         value={clientCountry}
                         onChange={(event) => setClientCountry(event.target.value.toUpperCase())}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 uppercase outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="NL"
+                        placeholder={t('invoiceGenerator:customerProfile.countryPlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">IBAN klant</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.iban')}</span>
                       <input
                         value={clientIban}
                         onChange={(event) => setClientIban(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="NL00BANK0123456789"
+                        placeholder={t('invoiceGenerator:customerProfile.ibanPlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">KvK klant</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.kvk')}</span>
                       <input
                         value={clientKvkNumber}
                         onChange={(event) => setClientKvkNumber(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="12345678"
+                        placeholder={t('invoiceGenerator:customerProfile.kvkPlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">BTW klant</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.vat')}</span>
                       <input
                         value={clientBtwNumber}
                         onChange={(event) => setClientBtwNumber(event.target.value)}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="NL123456789B01"
+                        placeholder={t('invoiceGenerator:customerProfile.vatPlaceholder')}
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-sm font-medium text-slate-700">Betaaltermijn (dagen)</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.paymentTerm')}</span>
                       <input
                         type="number"
                         min={0}
@@ -1069,16 +1078,16 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                         }}
                         className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-600"
                       />
-                      <span className="text-sm font-medium text-slate-700">Betaaltermijn niet van toepassing</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.paymentTermNA')}</span>
                     </label>
                     <label className="flex flex-col gap-1 sm:col-span-2">
-                      <span className="text-sm font-medium text-slate-700">Notities klantprofiel</span>
+                      <span className="text-sm font-medium text-slate-700">{t('invoiceGenerator:customerProfile.notes')}</span>
                       <textarea
                         value={clientNotes}
                         onChange={(event) => setClientNotes(event.target.value)}
                         rows={2}
                         className="rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
-                        placeholder="Interne notitie, referentie of extra betaalafspraak"
+                        placeholder={t('invoiceGenerator:customerProfile.notesPlaceholder')}
                       />
                     </label>
                   </div>
@@ -1090,7 +1099,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                       }}
                       className="rounded-lg border border-cyan-300 bg-cyan-50 px-3 py-2 text-xs font-semibold text-cyan-800 transition hover:bg-cyan-100"
                     >
-                      Opslaan als nieuw profiel
+                      {t('invoiceGenerator:customerProfile.saveNew')}
                     </button>
                     <button
                       type="button"
@@ -1100,7 +1109,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                       }}
                       className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      Geselecteerd profiel bijwerken
+                      {t('invoiceGenerator:customerProfile.updateSelected')}
                     </button>
                   </div>
                   {customerProfileError ? (
@@ -1115,13 +1124,13 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
 
             <div className="mt-6">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-lg font-bold">Factuurregels</h3>
+                <h3 className="text-lg font-bold">{t('invoiceGenerator:invoiceLines.title')}</h3>
                 <button
                   type="button"
                   onClick={addLine}
                   className="rounded-lg bg-cyan-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
                 >
-                  Regel toevoegen
+                  {t('invoiceGenerator:invoiceLines.addLine')}
                 </button>
               </div>
 
@@ -1131,12 +1140,12 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                     <input
                       value={line.description}
                       onChange={(event) => updateLine(line.id, 'description', event.target.value)}
-                      placeholder="Omschrijving"
+                      placeholder={t('invoiceGenerator:invoiceLines.description')}
                       className="w-full rounded-lg border border-slate-300 px-2 py-2 text-sm"
                     />
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                       <label className="flex flex-col gap-0.5">
-                        <span className="text-xs text-slate-500">Aantal</span>
+                        <span className="text-xs text-slate-500">{t('invoiceGenerator:invoiceLines.quantity')}</span>
                         <input
                           type="number"
                           min="0"
@@ -1147,7 +1156,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                         />
                       </label>
                       <label className="flex flex-col gap-0.5">
-                        <span className="text-xs text-slate-500">Prijs</span>
+                        <span className="text-xs text-slate-500">{t('invoiceGenerator:invoiceLines.price')}</span>
                         <input
                           type="number"
                           min="0"
@@ -1158,16 +1167,16 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                         />
                       </label>
                       <label className="flex flex-col gap-0.5">
-                        <span className="text-xs text-slate-500">BTW</span>
+                        <span className="text-xs text-slate-500">{t('invoiceGenerator:invoiceLines.vat')}</span>
                         <select
                           value={noVat ? 0 : line.vatRate}
                           onChange={(event) => updateLine(line.id, 'vatRate', event.target.value)}
                           disabled={noVat}
                           className="rounded-lg border border-slate-300 px-2 py-2 text-sm"
                         >
-                          <option value={21}>21%</option>
-                          <option value={9}>9%</option>
-                          <option value={0}>0%</option>
+                          <option value={21}>{t('invoiceGenerator:invoiceLines.vat21')}</option>
+                          <option value={9}>{t('invoiceGenerator:invoiceLines.vat9')}</option>
+                          <option value={0}>{t('invoiceGenerator:invoiceLines.vat0')}</option>
                         </select>
                       </label>
                       <div className="flex flex-col justify-end">
@@ -1176,7 +1185,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                           onClick={() => removeLine(line.id)}
                           className="rounded-lg border border-rose-200 px-2 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
                         >
-                          Verwijder
+                          {t('invoiceGenerator:invoiceLines.remove')}
                         </button>
                       </div>
                     </div>
@@ -1187,45 +1196,45 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
           </article>
 
           <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <h2 className="text-xl font-bold">Live Preview</h2>
+            <h2 className="text-xl font-bold">{t('invoiceGenerator:preview.title')}</h2>
             <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-6">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Van</p>
-                  <p className="mt-1 text-lg font-bold">{companyName || 'Jouw bedrijf'}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('invoiceGenerator:preview.from')}</p>
+                  <p className="mt-1 text-lg font-bold">{companyName || t('invoiceGenerator:preview.yourCompany')}</p>
                   {companyLogoDataUrl ? (
                     <img
                       src={companyLogoDataUrl}
-                      alt="Bedrijfslogo"
+                      alt={t('invoiceGenerator:preview.logoAlt')}
                       className="mt-2 max-h-14 w-auto rounded border border-slate-200 bg-white p-1"
                     />
                   ) : null}
                 </div>
                 <div className="text-sm text-slate-600 sm:text-right">
                   <p>
-                    Factuurnr: <span className="font-semibold text-slate-900">{invoiceNumber}</span>
+                    {t('invoiceGenerator:preview.invoiceNumber')}: <span className="font-semibold text-slate-900">{invoiceNumber}</span>
                   </p>
-                  <p>Datum: {formatDate(issueDate)}</p>
-                  <p>Vervaldatum: {hasDueDate ? formatDate(dueDate) : 'n.v.t.'}</p>
+                  <p>{t('invoiceGenerator:preview.date')}: {formatDate(issueDate)}</p>
+                  <p>{t('invoiceGenerator:preview.dueDate')}: {hasDueDate ? formatDate(dueDate) : t('invoiceGenerator:preview.na')}</p>
                 </div>
               </div>
 
               <div className="mt-6 rounded-lg bg-white p-4 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Aan</p>
-                <p className="mt-1 font-semibold text-slate-900">{clientName || 'Klantnaam ontbreekt'}</p>
-                <p className="text-sm text-slate-600">{clientEmail || 'E-mail ontbreekt'}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('invoiceGenerator:preview.to')}</p>
+                <p className="mt-1 font-semibold text-slate-900">{clientName || t('invoiceGenerator:preview.clientMissing')}</p>
+                <p className="text-sm text-slate-600">{clientEmail || t('invoiceGenerator:preview.emailMissing')}</p>
               </div>
 
               {invoiceDescription.trim() ? (
                 <div className="mt-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Beschrijving</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('invoiceGenerator:preview.description')}</p>
                   <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{invoiceDescription}</p>
                 </div>
               ) : null}
 
               {noVat && vatExemptionReason.trim() ? (
                 <div className="mt-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">BTW-vrijstelling</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('invoiceGenerator:preview.vatExemption')}</p>
                   <p className="mt-1 text-sm text-slate-700">{vatExemptionReason}</p>
                 </div>
               ) : null}
@@ -1234,11 +1243,11 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 <table className="w-full min-w-[460px] text-left text-sm">
                   <thead className="border-b border-slate-200 text-slate-500">
                     <tr>
-                      <th className="pb-2 font-semibold">Omschrijving</th>
-                      <th className="pb-2 font-semibold">Aantal</th>
-                      <th className="pb-2 font-semibold">Prijs</th>
-                      <th className="pb-2 font-semibold">BTW</th>
-                      <th className="pb-2 text-right font-semibold">Totaal</th>
+                      <th className="pb-2 font-semibold">{t('invoiceGenerator:preview.descriptionHeader')}</th>
+                      <th className="pb-2 font-semibold">{t('invoiceGenerator:preview.quantityHeader')}</th>
+                      <th className="pb-2 font-semibold">{t('invoiceGenerator:preview.priceHeader')}</th>
+                      <th className="pb-2 font-semibold">{t('invoiceGenerator:preview.vatHeader')}</th>
+                      <th className="pb-2 text-right font-semibold">{t('invoiceGenerator:preview.totalHeader')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1266,15 +1275,15 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
 
               <div className="mt-6 space-y-2 border-t border-slate-200 pt-4 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Subtotaal</span>
+                  <span className="text-slate-600">{t('invoiceGenerator:preview.subtotal')}</span>
                   <span>{formatCurrency(totals.subtotal, currencyCode)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">BTW</span>
+                  <span className="text-slate-600">{t('invoiceGenerator:preview.vat')}</span>
                   <span>{formatCurrency(totals.vatTotal, currencyCode)}</span>
                 </div>
                 <div className="flex items-center justify-between border-t border-slate-200 pt-2 text-base font-extrabold">
-                  <span>Totaal</span>
+                  <span>{t('invoiceGenerator:preview.total')}</span>
                   <span>{formatCurrency(totals.total, currencyCode)}</span>
                 </div>
               </div>
@@ -1293,7 +1302,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
               }}
               className="flex-1 rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white"
             >
-              {guestMode ? 'PDF downloaden' : editInvoice ? 'Opslaan' : 'Factuur opslaan'}
+              {guestMode ? t('invoiceGenerator:buttons.mobileDownload') : editInvoice ? t('invoiceGenerator:buttons.mobileSave') : t('invoiceGenerator:buttons.mobileSaveInvoice')}
             </button>
             {!guestMode ? (
               <button
@@ -1301,7 +1310,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 onClick={() => navigate('/facturen')}
                 className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
               >
-                Overzicht
+                {t('invoiceGenerator:buttons.mobileOverview')}
               </button>
             ) : null}
           </div>

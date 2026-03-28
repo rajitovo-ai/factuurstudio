@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import type { CustomerProfile } from '../stores/customerStore'
 import { useCustomerStore } from '../stores/customerStore'
@@ -7,6 +8,7 @@ import { useCustomerStore } from '../stores/customerStore'
 const EMPTY_CUSTOMERS: CustomerProfile[] = []
 
 export default function CustomersPage() {
+  const { t } = useTranslation(['customers', 'common'])
   const userId = useAuthStore((state) => state.userId)
   const customersByUser = useCustomerStore((state) => state.customersByUser)
   const isLoading = useCustomerStore((state) => state.isLoading)
@@ -47,7 +49,7 @@ export default function CustomersPage() {
     const ok = await removeCustomer(customerId, userId)
     if (!ok) return
 
-    setMessage('Klantprofiel verwijderd.')
+    setMessage(t('customers:messages.deleted'))
     setTimeout(() => setMessage(null), 2500)
   }
 
@@ -56,12 +58,12 @@ export default function CustomersPage() {
     setMessage(null)
 
     if (!userId) {
-      setCreateError('Geen actieve gebruiker gevonden. Log opnieuw in.')
+      setCreateError(t('customers:messages.noActiveUser'))
       return
     }
 
     if (!contactName.trim() && !companyName.trim()) {
-      setCreateError('Vul minimaal een contactnaam of bedrijfsnaam in.')
+      setCreateError(t('customers:messages.fillRequired'))
       return
     }
 
@@ -82,7 +84,7 @@ export default function CustomersPage() {
     })
 
     if (!created) {
-      setCreateError('Klantprofiel opslaan is mislukt. Probeer opnieuw.')
+      setCreateError(t('customers:messages.saveFailed'))
       return
     }
 
@@ -100,7 +102,7 @@ export default function CustomersPage() {
     setPaymentTermDays(14)
     setPaymentTermNotApplicable(false)
     setNotes('')
-    setMessage('Nieuw klantprofiel opgeslagen.')
+    setMessage(t('customers:messages.saved'))
     setTimeout(() => setMessage(null), 2500)
   }
 
@@ -109,103 +111,103 @@ export default function CustomersPage() {
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Klantbeheer</p>
-            <h1 className="mt-2 text-2xl font-extrabold">Klantenprofielen</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">{t('customers:management')}</p>
+            <h1 className="mt-2 text-2xl font-extrabold">{t('customers:customerProfiles')}</h1>
             <p className="mt-2 text-sm text-slate-600">
-              Beheer opgeslagen klanten en gebruik ze direct bij het maken van facturen.
+              {t('customers:description')}
             </p>
           </div>
           <Link
             to="/facturen/nieuw"
             className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
           >
-            Nieuwe factuur
+            {t('customers:newInvoice')}
           </Link>
         </div>
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-extrabold text-slate-900">Nieuw klantenprofiel</h2>
+        <h2 className="text-lg font-extrabold text-slate-900">{t('customers:newCustomer')}</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Voeg hier direct een klant toe, zonder eerst via een factuur te werken.
+          {t('customers:addDirectly')}
         </p>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">Contactpersoon</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.contactName')}</span>
             <input
               value={contactName}
               onChange={(event) => setContactName(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="Bijv. Lisa Jansen"
+              placeholder={t('customers:form.contactPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">Bedrijfsnaam</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.companyName')}</span>
             <input
               value={companyName}
               onChange={(event) => setCompanyName(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="Bijv. Studio Noord"
+              placeholder={t('customers:form.companyPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">E-mail</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.email')}</span>
             <input
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="contact@bedrijf.nl"
+              placeholder={t('customers:form.emailPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">Telefoon</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.phone')}</span>
             <input
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="+31 6 12345678"
+              placeholder={t('customers:form.phonePlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1 sm:col-span-2">
-            <span className="text-sm font-medium text-slate-700">Adres</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.address')}</span>
             <input
               value={address}
               onChange={(event) => setAddress(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="Straatnaam 12"
+              placeholder={t('customers:form.addressPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">Postcode</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.postalCode')}</span>
             <input
               value={postalCode}
               onChange={(event) => setPostalCode(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="1234 AB"
+              placeholder={t('customers:form.postalCodePlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">Plaats</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.city')}</span>
             <input
               value={city}
               onChange={(event) => setCity(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="Amsterdam"
+              placeholder={t('customers:form.cityPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">Land</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.country')}</span>
             <input
               value={country}
               onChange={(event) => setCountry(event.target.value.toUpperCase())}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase"
-              placeholder="NL"
+              placeholder={t('customers:form.countryPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">Betaaltermijn (dagen)</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.paymentTerm')}</span>
             <input
               type="number"
               min={0}
@@ -225,43 +227,43 @@ export default function CustomersPage() {
               onChange={(event) => setPaymentTermNotApplicable(event.target.checked)}
               className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-600"
             />
-            <span className="text-sm font-medium text-slate-700">Betaaltermijn niet van toepassing</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.paymentTermNotApplicable')}</span>
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">KvK</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.kvk')}</span>
             <input
               value={kvkNumber}
               onChange={(event) => setKvkNumber(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="12345678"
+              placeholder={t('customers:form.kvkPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">BTW-nummer</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.vatNumber')}</span>
             <input
               value={btwNumber}
               onChange={(event) => setBtwNumber(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="NL123456789B01"
+              placeholder={t('customers:form.vatPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-700">IBAN</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.iban')}</span>
             <input
               value={iban}
               onChange={(event) => setIban(event.target.value)}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="NL00BANK0123456789"
+              placeholder={t('customers:form.ibanPlaceholder')}
             />
           </label>
           <label className="flex flex-col gap-1 sm:col-span-2">
-            <span className="text-sm font-medium text-slate-700">Notities</span>
+            <span className="text-sm font-medium text-slate-700">{t('customers:form.notes')}</span>
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               rows={2}
               className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
-              placeholder="Interne notitie of extra afspraken"
+              placeholder={t('customers:form.notesPlaceholder')}
             />
           </label>
         </div>
@@ -274,42 +276,42 @@ export default function CustomersPage() {
             }}
             className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
           >
-            Klantprofiel opslaan
+            {t('customers:form.saveProfile')}
           </button>
           {createError ? <p className="text-sm text-rose-700">{createError}</p> : null}
         </div>
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-extrabold text-slate-900">Bestaande klantenprofielen</h2>
-        <p className="mt-1 text-sm text-slate-600">Overzicht van opgeslagen klanten.</p>
+        <h2 className="text-lg font-extrabold text-slate-900">{t('customers:existingCustomers')}</h2>
+        <p className="mt-1 text-sm text-slate-600">{t('customers:overview')}</p>
 
         {customers.length === 0 ? (
           <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-            Nog geen klantenprofielen. Maak een factuur aan en sla de klant op als profiel.
+            {t('customers:messages.empty')}
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {customers.map((customer) => (
               <article key={customer.id} className="rounded-xl border border-slate-200 p-4">
                 <h2 className="text-base font-bold text-slate-900">{customer.companyName || customer.name}</h2>
-                <p className="mt-1 text-sm text-slate-600">Contact: {customer.name || '-'}</p>
-                <p className="text-sm text-slate-600">E-mail: {customer.email || '-'}</p>
-                <p className="text-sm text-slate-600">Telefoon: {customer.phone || '-'}</p>
-                <p className="text-sm text-slate-600">Adres: {customer.address || '-'}</p>
+                <p className="mt-1 text-sm text-slate-600">{t('customers:customerCard.contact')}: {customer.name || '-'}</p>
+                <p className="text-sm text-slate-600">{t('customers:customerCard.email')}: {customer.email || '-'}</p>
+                <p className="text-sm text-slate-600">{t('customers:customerCard.phone')}: {customer.phone || '-'}</p>
+                <p className="text-sm text-slate-600">{t('customers:customerCard.address')}: {customer.address || '-'}</p>
                 <p className="text-sm text-slate-600">
-                  Plaats: {customer.postalCode || '-'} {customer.city || '-'} ({customer.country || 'NL'})
+                  {t('customers:customerCard.city')}: {customer.postalCode || '-'} {customer.city || '-'} ({customer.country || 'NL'})
                 </p>
-                <p className="text-sm text-slate-600">IBAN: {customer.iban || '-'}</p>
+                <p className="text-sm text-slate-600">{t('customers:customerCard.iban')}: {customer.iban || '-'}</p>
                 <p className="text-sm text-slate-600">
-                  Betaaltermijn: {customer.paymentTermDays > 0 ? `${customer.paymentTermDays} dagen` : 'n.v.t.'}
+                  {t('customers:customerCard.paymentTerm')}: {customer.paymentTermDays > 0 ? `${customer.paymentTermDays} ${t('customers:customerCard.days')}` : t('customers:customerCard.notApplicable')}
                 </p>
                 <div className="mt-3 flex flex-wrap justify-end gap-2">
                   <Link
                     to={`/facturen/nieuw?customerId=${encodeURIComponent(customer.id)}`}
                     className="rounded-lg border border-cyan-200 px-3 py-2 text-xs font-semibold text-cyan-700 hover:bg-cyan-50"
                   >
-                    Gebruik in nieuwe factuur
+                    {t('customers:customerCard.useInInvoice')}
                   </Link>
                   <button
                     type="button"
@@ -318,7 +320,7 @@ export default function CustomersPage() {
                     }}
                     className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50"
                   >
-                    Verwijder
+                    {t('customers:customerCard.delete')}
                   </button>
                 </div>
               </article>
@@ -326,7 +328,7 @@ export default function CustomersPage() {
           </div>
         )}
 
-        {isLoading ? <p className="mt-4 text-sm text-slate-500">Klanten laden...</p> : null}
+        {isLoading ? <p className="mt-4 text-sm text-slate-500">{t('customers:loading')}</p> : null}
         {error ? <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p> : null}
         {message ? <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{message}</p> : null}
       </section>

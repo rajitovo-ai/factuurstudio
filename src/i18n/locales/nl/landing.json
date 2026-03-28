@@ -1,0 +1,162 @@
+{
+  "meta": {
+    "title": "Factuur Studio – Online facturen maken voor zzp'ers en mkb",
+    "description": "Maak professionele facturen in seconden. Factuur Studio is dé eenvoudige factuurapp voor Nederlandse zzp'ers en mkb. Gratis starten, geen abonnement nodig."
+  },
+  "og": {
+    "title": "Factuur Studio – Online facturen maken voor zzp'ers en mkb",
+    "description": "Maak professionele facturen in seconden. Gratis starten, geen abonnement nodig."
+  },
+  "badge": "Slim factureren voor ondernemers",
+  "hero": {
+    "title": "Professionele facturen. Minder administratie.",
+    "description": "Factuur Studio helpt je sneller facturen maken, betalingen opvolgen en je omzet scharp volgen. Alles in een strak platform dat direct duidelijk is voor jou en je klanten.",
+    "ctaStartFree": "Start gratis",
+    "ctaViewDashboard": "Bekijk dashboard"
+  },
+  "benefits": {
+    "lessWork": "Minder handmatig werk en minder fouten",
+    "fasterPaid": "Sneller betaald door duidelijke, professionele facturen",
+    "overview": "Overzichtelijk dashboard met directe actiepunten",
+    "easyToUse": "Eenvoudig voor beginners, krachtig genoeg voor groei"
+  },
+  "features": {
+    "title": "Wat je met het platform kan doen",
+    "subtitle": "Alle kernfuncties die je nodig hebt om facturatie professioneel en overzichtelijk te organiseren.",
+    "items": {
+      "invoicesInMinutes": {
+        "title": "Facturen in minuten",
+        "description": "Maak professionele facturen met automatische totalen, btw-regels en een duidelijke opmaak voor je klant."
+      },
+      "smartCustomerManagement": {
+        "title": "Slim klantbeheer",
+        "description": "Bewaar klantgegevens centraal en hergebruik ze direct bij elle nieuwe factuur zonder dubbel werk."
+      },
+      "realtimeInsight": {
+        "title": "Altijd realtime inzicht",
+        "description": "Zie in een oogopslag welke facturen openstaan, betaald zijn en waar je omzet vandaan vandaan komt."
+      },
+      "quickImport": {
+        "title": "Snelle import en editing",
+        "description": "Importeer bestaande facturen, werk details snel bij en houd je administratie netjes en consistent."
+      },
+      "fasterPayment": {
+        "title": "Sneller betaald",
+        "description": "Verstuur duidelijke facturen met heldere betaalinformatie zodat klanten sneller begrijpen en afrekenen."
+      },
+      "growthReady": {
+        "title": "Groeiklaar platform",
+        "description": "Van starter tot groeiend bedrijf: je workflows blijven snel, overzichtelijk en schaalbaar."
+      }
+    }
+  },
+  "useCases": {
+    "title": "Use-cases in beeld",
+    "subtitle": "Duidelijke, clean previews van hoe je team Factuur Studio dagelijks gebruikt.",
+    "ctaTry": "Zelf proberen",
+    "items": {
+      "newInvoice": {
+        "title": "Nieuwe factuur maken",
+        "description": "Van klantselectie tot verzendklare factuur in enkele stappen."
+      },
+      "dashboard": {
+        "title": "Dashboard en opvolging",
+        "description": "Zie direct welke facturen actie nodig hebben en waar omzet groeit."
+      },
+      "import": {
+        "title": "Import en controle",
+        "description": "Importeer bestaande facturen en corrigeer gegevens waar nodig."
+      }
+    }
+  },
+  "trust": {
+    "title": "Vertrouwd door ondernemers",
+    "subtitle": "Gemaakt voor zzp'ers en kleine bedrijven die snel willen factureren.",
+    "ctaPricing": "Probeer gratis",
+    "items": {
+      "dutchPlatform": {
+        "title": "Nederlands platform",
+        "description": "Gebouwd voor lokale facturatiebehoeften."
+      },
+      "secureStorage": {
+        "title": "Veilige opslag",
+        "description": "Data blijft beschermd en versleuteld."
+      },
+      "quickStart": {
+        "title": "Snel in gebruik",
+        "description": "Binnen minuten je eerste factuur versturen."
+      },
+      "growsWithYou": {
+        "title": "Groeit met je mee",
+        "description": "Start gratis en upgrade alleen als je wilt."
+      }
+    }
+  },
+  "blog": {
+    "badge": "Praktische inzichten",
+    "title": "Slimme tips voor ondernemers die minder tijd kwijt willen zijn aan administratie",
+    "description": "Niet alleen software, maar ook bruikbare kennis. Lees hoe ondernemers hun facturatie strakker organiseren, cashflow beter bewaken en sneller betaald worden zonder extra gedoe.",
+    "ctaRead": "Bekijk artikel",
+    "article": {
+      "badge": "Nieuwe blogpost",
+      "readTime": "8-10 min lezen",
+      "date": "26 maart 2026",
+      "title": "Hoe ondernemers echt uren administratie besparen en tegelijk grip houden op hun cashflow",
+      "description": "Een praktisch artikel voor zzp'ers en kleine bedrijven over sneller factureren, openstaande facturen beter opvolgen en slimmer werken zonder je administratie zwaarder te maken.",
+      "bullet1": "Minder handmatig werk bij terugkerende facturen.",
+      "bullet2": "Meer overzicht over openstaande bedragen en betaalmomenten.",
+      "bullet3": "Betere basis voor stabiele cashflow en minder stress.",
+      "ctaFullArticle": "Lees het volledige artikel"
+    }
+  },
+  "faq": {
+    "title": "Veelgestelde vragen",
+    "subtitle": "Korte antwoorden op de vragen die we het meest krijgen van starters en zzp'ers.",
+    "questions": {
+      "free": {
+        "question": "Is Factuur Studio echt gratis te gebruiken?",
+        "answer": "Ja. Je kunt starten met het Free-plan zonder creditcard. Je betaalt pas zodra je kiest voor Pro."
+      },
+      "upgrade": {
+        "question": "Kan ik later upgraden of terugschakelen?",
+        "answer": "Zeker. Je kunt op elk moment upgraden naar Pro of later weer terug naar Free."
+      },
+      "firstInvoice": {
+        "question": "Hoe snel kan ik mijn eerste factuur versturen?",
+        "answer": "Meestal binnen enkele minuten. Vul je profiel aan, voeg een klant toe en maak direct je eerste factuur."
+      },
+      "security": {
+        "question": "Zijn mijn facturen en klantgegevens veilig?",
+        "answer": "Ja. Gegevens worden veilig opgeslagen en alleen gebruikt voor jouw facturatieproces."
+      },
+      "mobile": {
+        "question": "Werkt dit ook op mobiel?",
+        "answer": "Ja, de interface is responsive en werkt op desktop, tablet en mobiel."
+      }
+    }
+  },
+  "cta": {
+    "title": "Klaar om slimmer te factureren?",
+    "description": "Start gratis, ervaar direct het verschil in snelheid en overzicht, en schaal mee wanneer je bedrijf groeit.",
+    "ctaCreateAccount": "Gratis account aanmaken",
+    "ctaHaveAccount": "Ik heb al een account"
+  },
+  "dashboardPreview": {
+    "label": "Dashboard overzicht",
+    "badge": "Realtime",
+    "outstanding": "Openstaand",
+    "thisMonth": "Deze maand",
+    "recentActivity": "Laatste activiteit",
+    "activities": {
+      "invoiceSent": "Factuur #2026-014 verzonden",
+      "invoicePaid": "Factuur #2026-013 betaald",
+      "newCustomer": "Nieuwe klant toegevoegd"
+    }
+  },
+  "referralTest": {
+    "title": "Referral testen (dev)",
+    "description": "1) Log in met account A 2) open referralpagina en kopieer/open je link 3) registreer account B via die link.",
+    "ctaReferral": "Naar referralpagina",
+    "ctaLogin": "Inloggen"
+  }
+}

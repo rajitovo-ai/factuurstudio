@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { extractInvoiceDataFromPdf } from '../lib/invoiceImport'
 import { useAuthStore } from '../stores/authStore'
 import { useCustomerStore } from '../stores/customerStore'
@@ -68,6 +69,7 @@ const buildFallbackInvoiceNumber = (existingNumbers: Set<string>, preferred: str
 }
 
 export default function InvoiceImportPage() {
+  const { t } = useTranslation(['invoiceImport', 'common', 'invoices'])
   const userId = useAuthStore((state) => state.userId)
   const invoices = useInvoiceStore((state) => state.invoices)
   const createInvoice = useInvoiceStore((state) => state.createInvoice)
@@ -139,7 +141,7 @@ export default function InvoiceImportPage() {
           id: `${file.name}-${Date.now()}-${index}`,
           fileName: file.name,
           parseWarnings: [],
-          parseError: parseError instanceof Error ? parseError.message : 'Onbekende fout bij uitlezen PDF.',
+          parseError: parseError instanceof Error ? parseError.message : t('invoiceImport:errors.parseError'),
           importCustomer: false,
           importInvoice: false,
           status: 'concept' as InvoiceStatus,
@@ -163,7 +165,7 @@ export default function InvoiceImportPage() {
           vatTotal: 0,
           vatRate: 0,
           total: 0,
-          invoiceDescription: `Import mislukt voor ${file.name}`,
+          invoiceDescription: t('invoiceImport:errors.importFailed', { fileName: file.name }),
           usedOcr: false,
         })
       }
@@ -186,13 +188,13 @@ export default function InvoiceImportPage() {
     setSummary(null)
 
     if (!userId) {
-      setError('Geen actieve gebruiker gevonden. Log opnieuw in.')
+      setError(t('invoiceImport:errors.noUser'))
       return
     }
 
     const activeRows = rows.filter((row) => row.importCustomer || row.importInvoice)
     if (activeRows.length === 0) {
-      setError('Selecteer minimaal 1 regel om te importeren.')
+      setError(t('invoiceImport:errors.selectOne'))
       return
     }
 
@@ -230,7 +232,7 @@ export default function InvoiceImportPage() {
           btwNumber: row.clientBtwNumber,
           iban: row.clientIban,
           paymentTermDays: row.hasDueDate ? 14 : 0,
-          notes: 'Geimporteerd uit bestaande PDF-factuur.',
+          notes: t('invoiceImport:notes.importedFromPdf'),
         })
 
         if (createdCustomer) {
@@ -281,7 +283,7 @@ export default function InvoiceImportPage() {
           lines: [
             {
               id: 1,
-              description: row.invoiceDescription || `Geimporteerde factuur (${row.fileName})`,
+              description: row.invoiceDescription || t('invoiceImport:notes.importedInvoice', { fileName: row.fileName }),
               quantity: 1,
               unitPrice: subtotal,
               vatRate: toAllowedVatRate(row.vatRate),
@@ -301,7 +303,7 @@ export default function InvoiceImportPage() {
     setIsImporting(false)
 
     setSummary(
-      `Import afgerond. Klanten: ${customerCount}, facturen: ${invoiceCount}, fouten: ${failureCount}.`,
+      t('invoiceImport:summary', { customers: customerCount, invoices: invoiceCount, errors: failureCount }),
     )
   }
 
@@ -310,23 +312,23 @@ export default function InvoiceImportPage() {
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Importeren</p>
-            <h1 className="mt-2 text-2xl font-extrabold">PDF facturen importeren</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">{t('common:import')}</p>
+            <h1 className="mt-2 text-2xl font-extrabold">{t('invoiceImport:title')}</h1>
             <p className="mt-2 text-sm text-slate-600">
-              Upload meerdere bestaande PDF-facturen tegelijk. Controleer de gevonden gegevens en kies per bestand wat je wilt importeren.
+              {t('invoiceImport:subtitle')}
             </p>
           </div>
           <Link
             to="/facturen"
             className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
           >
-            Naar facturen
+            {t('invoiceImport:buttons.toInvoices')}
           </Link>
         </div>
 
         <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-slate-700">Upload 1 of meerdere PDF-bestanden</span>
+            <span className="text-sm font-medium text-slate-700">{t('invoiceImport:upload.label')}</span>
             <input
               type="file"
               accept="application/pdf"
@@ -339,7 +341,7 @@ export default function InvoiceImportPage() {
             />
           </label>
           <p className="mt-2 text-xs text-slate-500">
-            Fase 2: Diepe scan voor scan-PDF's. Dit duurt iets langer maar herkent meer gegevens.
+            {t('invoiceImport:upload.placeholder')}
           </p>
           <label className="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2">
             <input
@@ -347,7 +349,7 @@ export default function InvoiceImportPage() {
               checked={useOcrFallback}
               onChange={(event) => setUseOcrFallback(event.target.checked)}
             />
-            <span className="text-sm text-slate-700">Diepe scan voor scans inschakelen</span>
+            <span className="text-sm text-slate-700">{t('invoiceImport:upload.deepScan')}</span>
           </label>
         </div>
 
@@ -360,9 +362,9 @@ export default function InvoiceImportPage() {
             }}
             className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isImporting ? 'Importeren...' : 'Importeer geselecteerde gegevens'}
+            {isImporting ? t('invoiceImport:buttons.importing') : t('invoiceImport:buttons.importSelected')}
           </button>
-          {isParsing ? <p className="text-sm text-slate-600">PDF's analyseren...</p> : null}
+          {isParsing ? <p className="text-sm text-slate-600">{t('invoiceImport:buttons.parsing')}</p> : null}
         </div>
 
         {error ? <p className="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p> : null}
@@ -372,7 +374,7 @@ export default function InvoiceImportPage() {
       <section className="space-y-3">
         {rows.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm text-slate-600">
-            Nog geen PDF's ingeladen.
+            {t('invoiceImport:empty')}
           </div>
         ) : null}
 
@@ -381,9 +383,9 @@ export default function InvoiceImportPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-slate-900">{row.fileName}</p>
-                {row.usedOcr ? <p className="mt-1 text-xs text-cyan-700">OCR gebruikt voor deze PDF.</p> : null}
+                {row.usedOcr ? <p className="mt-1 text-xs text-cyan-700">{t('invoiceImport:labels.ocrUsed')}</p> : null}
                 {row.parseWarnings.length > 0 ? (
-                  <p className="mt-1 text-xs text-amber-700">Waarschuwingen: {row.parseWarnings.join(' ')}</p>
+                  <p className="mt-1 text-xs text-amber-700">{t('invoiceImport:labels.warnings')}: {row.parseWarnings.join(' ')}</p>
                 ) : null}
                 {row.parseError ? <p className="mt-1 text-xs text-rose-700">{row.parseError}</p> : null}
               </div>
@@ -392,7 +394,7 @@ export default function InvoiceImportPage() {
                 onClick={() => removeRow(row.id)}
                 className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50"
               >
-                Verwijder
+                {t('invoiceImport:buttons.remove')}
               </button>
             </div>
 
@@ -403,7 +405,7 @@ export default function InvoiceImportPage() {
                   checked={row.importCustomer}
                   onChange={(event) => updateRow(row.id, 'importCustomer', event.target.checked)}
                 />
-                <span className="text-sm text-slate-700">Importeer klantgegevens</span>
+                <span className="text-sm text-slate-700">{t('invoiceImport:labels.importCustomer')}</span>
               </label>
               <label className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2">
                 <input
@@ -411,25 +413,25 @@ export default function InvoiceImportPage() {
                   checked={row.importInvoice}
                   onChange={(event) => updateRow(row.id, 'importInvoice', event.target.checked)}
                 />
-                <span className="text-sm text-slate-700">Importeer factuurdata</span>
+                <span className="text-sm text-slate-700">{t('invoiceImport:labels.importInvoice')}</span>
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Status</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.status')}</span>
                 <select
                   value={row.status}
                   onChange={(event) => updateRow(row.id, 'status', event.target.value as InvoiceStatus)}
                   className="rounded-lg border border-slate-300 px-2 py-2 text-sm"
                 >
-                  <option value="concept">concept</option>
-                  <option value="verzonden">verzonden</option>
-                  <option value="betaald">betaald</option>
+                  <option value="concept">{t('invoiceImport:status.draft')}</option>
+                  <option value="verzonden">{t('invoiceImport:status.sent')}</option>
+                  <option value="betaald">{t('invoiceImport:status.paid')}</option>
                 </select>
               </label>
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Factuurnummer</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.invoiceNumber')}</span>
                 <input
                   value={row.invoiceNumber}
                   onChange={(event) => updateRow(row.id, 'invoiceNumber', event.target.value)}
@@ -437,7 +439,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Bedrijfsnaam op factuur</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.companyName')}</span>
                 <input
                   value={row.companyName}
                   onChange={(event) => updateRow(row.id, 'companyName', event.target.value)}
@@ -445,7 +447,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Klantnaam</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.clientName')}</span>
                 <input
                   value={row.clientName}
                   onChange={(event) => updateRow(row.id, 'clientName', event.target.value)}
@@ -453,7 +455,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Klant e-mail</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.clientEmail')}</span>
                 <input
                   value={row.clientEmail}
                   onChange={(event) => updateRow(row.id, 'clientEmail', event.target.value)}
@@ -461,7 +463,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-xs font-medium text-slate-600">Klant adres</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.clientAddress')}</span>
                 <input
                   value={row.clientAddress}
                   onChange={(event) => updateRow(row.id, 'clientAddress', event.target.value)}
@@ -469,7 +471,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Straat</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.street')}</span>
                 <input
                   value={row.clientStreet}
                   onChange={(event) => updateRow(row.id, 'clientStreet', event.target.value)}
@@ -477,7 +479,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Huisnummer</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.houseNumber')}</span>
                 <input
                   value={row.clientHouseNumber}
                   onChange={(event) => updateRow(row.id, 'clientHouseNumber', event.target.value)}
@@ -485,7 +487,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Postcode</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.postalCode')}</span>
                 <input
                   value={row.clientPostalCode}
                   onChange={(event) => updateRow(row.id, 'clientPostalCode', event.target.value.toUpperCase())}
@@ -493,7 +495,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Stad</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.city')}</span>
                 <input
                   value={row.clientCity}
                   onChange={(event) => updateRow(row.id, 'clientCity', event.target.value)}
@@ -501,7 +503,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">KvK</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.kvk')}</span>
                 <input
                   value={row.clientKvkNumber}
                   onChange={(event) => updateRow(row.id, 'clientKvkNumber', event.target.value)}
@@ -509,7 +511,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">BTW-nummer</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.vatNumber')}</span>
                 <input
                   value={row.clientBtwNumber}
                   onChange={(event) => updateRow(row.id, 'clientBtwNumber', event.target.value)}
@@ -517,7 +519,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">IBAN</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.iban')}</span>
                 <input
                   value={row.clientIban}
                   onChange={(event) => updateRow(row.id, 'clientIban', event.target.value)}
@@ -525,7 +527,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Valuta</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.currency')}</span>
                 <input
                   value={row.currencyCode}
                   onChange={(event) => updateRow(row.id, 'currencyCode', event.target.value.toUpperCase())}
@@ -533,7 +535,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Factuurdatum</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.issueDate')}</span>
                 <input
                   type="date"
                   value={row.issueDate}
@@ -542,7 +544,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Vervaldatum</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.dueDate')}</span>
                 <input
                   type="date"
                   value={row.dueDate}
@@ -557,10 +559,10 @@ export default function InvoiceImportPage() {
                   checked={row.hasDueDate}
                   onChange={(event) => updateRow(row.id, 'hasDueDate', event.target.checked)}
                 />
-                <span className="text-sm text-slate-700">Vervaldatum gebruiken</span>
+                <span className="text-sm text-slate-700">{t('invoiceImport:labels.useDueDate')}</span>
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Subtotaal</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.subtotal')}</span>
                 <input
                   type="number"
                   min={0}
@@ -571,7 +573,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">BTW totaal</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.vatTotal')}</span>
                 <input
                   type="number"
                   min={0}
@@ -582,7 +584,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">BTW %</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.vatRate')}</span>
                 <input
                   type="number"
                   min={0}
@@ -594,7 +596,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-slate-600">Totaalbedrag</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.total')}</span>
                 <input
                   type="number"
                   min={0}
@@ -605,7 +607,7 @@ export default function InvoiceImportPage() {
                 />
               </label>
               <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-xs font-medium text-slate-600">Beschrijving</span>
+                <span className="text-xs font-medium text-slate-600">{t('invoiceImport:labels.description')}</span>
                 <textarea
                   value={row.invoiceDescription}
                   onChange={(event) => updateRow(row.id, 'invoiceDescription', event.target.value)}

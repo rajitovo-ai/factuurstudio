@@ -1,0 +1,49 @@
+{
+  "settings": "Settings",
+  "companyProfile": "Company Profile",
+  "description": "These details are used on your invoice and PDF and are securely stored in your account.",
+  "logoFormats": "Allowed formats: PNG, JPEG, WebP — max 5 MB. Large images are automatically resized to max 400×200 px.",
+  "form": {
+    "companyName": "Company Name",
+    "address": "Address",
+    "kvkNumber": "Chamber of Commerce Number",
+    "vatNumber": "VAT Number",
+    "iban": "Bank Account (IBAN)",
+    "logo": "Logo",
+    "uploadLogo": "Upload logo",
+    "removeLogo": "Remove logo",
+    "companyLogo": "Company logo",
+    "save": "Save"
+  },
+  "messages": {
+    "fileTooLarge": "File is larger than 5 MB and cannot be loaded.",
+    "logoResized": "Logo has been resized but is still quite large. Consider using a simpler image.",
+    "saved": "Settings saved.",
+    "checkoutStarted": "Payment received. We're syncing your subscription...",
+    "checkoutCancelled": "Checkout cancelled. Your current plan remains active.",
+    "synced": "Subscription synchronized.",
+    "syncedWithStripe": "Subscription synchronized with Stripe.",
+    "planUpdated": "Plan updated to {{plan}}.",
+    "syncFailed": "Synchronization failed.",
+    "checkoutFailed": "Checkout failed to start."
+  },
+  "plan": {
+    "title": "Plan",
+    "currentPlan": "Current plan",
+    "nextRenewal": "Next renewal",
+    "endsAtPeriod": "Ends at the end of this period",
+    "syncSubscription": "Sync subscription",
+    "syncing": "Synchronizing...",
+    "proMonthly": "Pro monthly",
+    "proYearly": "Pro yearly",
+    "pro": "Pro",
+    "free": "Free",
+    "upgradeToPro": "Upgrade to Pro",
+    "chooseCycle": "Choose your billing cycle. You'll be redirected to Stripe Checkout.",
+    "monthlyPrice": "Pro monthly ($4.99)",
+    "yearlyPrice": "Pro yearly ($39.99)",
+    "processing": "Processing...",
+    "setFree": "Set plan to Free",
+    "setPro": "Set plan to Pro"
+  }
+}

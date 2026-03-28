@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import { useReferralStore } from '../stores/referralStore'
+import { LanguageSwitcher } from '../components/ui/LanguageSwitcher'
 
 export default function RegisterPage() {
+  const { t } = useTranslation(['auth', 'common'])
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const refCode = searchParams.get('ref')
@@ -26,12 +29,12 @@ export default function RegisterPage() {
     setLocalError(null)
 
     if (password.length < 8) {
-      setLocalError('Wachtwoord moet minimaal 8 tekens bevatten.')
+      setLocalError(t('errors:passwordTooShort'))
       return
     }
 
     if (password !== confirmPassword) {
-      setLocalError('Wachtwoorden komen niet overeen.')
+      setLocalError(t('errors:passwordsDontMatch'))
       return
     }
 
@@ -41,7 +44,7 @@ export default function RegisterPage() {
 
     const result = await signUp(email, password)
     if (result.ok && result.requiresEmailConfirmation) {
-      setSuccessMessage('Je account is aangemaakt. Controleer je e-mail en bevestig je account om in te loggen.')
+      setSuccessMessage(t('auth:register.success'))
       setPassword('')
       setConfirmPassword('')
       return
@@ -60,10 +63,13 @@ export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-cyan-50 via-white to-slate-100 px-4">
       <form onSubmit={onSubmit} className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Factuur Studio</p>
-        <h1 className="mt-2 text-3xl font-extrabold">Registreren</h1>
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">{t('common:appName')}</p>
+          <LanguageSwitcher />
+        </div>
+        <h1 className="mt-2 text-3xl font-extrabold">{t('auth:register.title')}</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Maak een account voor je factuurdashboard.
+          {t('auth:register.subtitle')}
           {refCode ? (
             <span className="ml-1 font-semibold text-cyan-700">Je wordt uitgenodigd via een referral-link.</span>
           ) : null}
@@ -77,32 +83,36 @@ export default function RegisterPage() {
 
         <div className="mt-6 space-y-4">
           <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">E-mailadres</span>
+            <span className="mb-1 block text-sm font-medium text-slate-700">{t('auth:register.email')}</span>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              placeholder={t('auth:register.emailPlaceholder')}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 focus:ring-2"
             />
           </label>
           <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">Wachtwoord</span>
+            <span className="mb-1 block text-sm font-medium text-slate-700">{t('auth:register.password')}</span>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              placeholder={t('auth:register.passwordPlaceholder')}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 focus:ring-2"
             />
+            <p className="mt-1 text-xs text-slate-500">{t('auth:register.passwordRequirements')}</p>
           </label>
           <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700">Herhaal wachtwoord</span>
+            <span className="mb-1 block text-sm font-medium text-slate-700">{t('auth:resetPassword.passwordConfirm')}</span>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              placeholder={t('auth:resetPassword.passwordConfirmPlaceholder')}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 focus:ring-2"
             />
           </label>
@@ -117,13 +127,13 @@ export default function RegisterPage() {
           disabled={isLoading}
           className="mt-5 w-full rounded-lg bg-cyan-700 px-4 py-2 font-semibold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:bg-cyan-400"
         >
-          {isLoading ? 'Bezig...' : 'Account maken'}
+          {isLoading ? t('common:loadingDots') : t('auth:register.submit')}
         </button>
 
         <p className="mt-4 text-sm text-slate-600">
-          Al een account?{' '}
+          {t('auth:register.haveAccount')}{' '}
           <Link to="/login" className="font-semibold text-cyan-700 hover:text-cyan-800">
-            Inloggen
+            {t('auth:register.login')}
           </Link>
         </p>
       </form>

@@ -1,0 +1,19 @@
+{
+  "nav": {
+    "blog": "Blog",
+    "login": "Inloggen",
+    "freeAccount": "Gratis account",
+    "dashboard": "Dashboard",
+    "invoices": "Facturen",
+    "customers": "Klanten",
+    "settings": "Instellingen",
+    "support": "Support",
+    "admin": "Admin",
+    "referral": "Referral",
+    "pricing": "Prijzen"
+  },
+  "userMenu": {
+    "profile": "Profiel",
+    "logout": "Uitloggen"
+  }
+}

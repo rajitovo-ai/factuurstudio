@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { trackEvent } from '../lib/analytics'
 import { PLAN_CONFIGS } from '../lib/billing'
 import { startProCheckout, syncBillingAfterCheckout } from '../lib/stripeBilling'
@@ -13,6 +14,8 @@ const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS ?? '')
   .filter(Boolean)
 
 export default function SettingsPage() {
+  const { t, i18n } = useTranslation(['settings', 'common'])
+  const _language = i18n.language
   const userId = useAuthStore((state) => state.userId)
   const email = useAuthStore((state) => state.email)
   const profiles = useProfileStore((state) => state.profiles)
@@ -64,7 +67,7 @@ export default function SettingsPage() {
     const billingState = searchParams.get('billing')
 
     if (billingState === 'success') {
-      setPlanMessage('Betaling ontvangen. We synchroniseren je abonnement...')
+      setPlanMessage(t('settings:messages.checkoutStarted'))
       window.setTimeout(() => {
         void (async () => {
           try {
@@ -86,7 +89,7 @@ export default function SettingsPage() {
             console.error('Directe billing-sync mislukt:', error)
           } finally {
             await syncUserPlan(userId)
-            setPlanMessage('Abonnement gesynchroniseerd.')
+            setPlanMessage(t('settings:messages.synced'))
           }
         })()
       }, 0)
@@ -97,7 +100,7 @@ export default function SettingsPage() {
     }
 
     if (billingState === 'cancelled') {
-      setPlanMessage('Afrekenen is geannuleerd. Je huidige plan blijft actief.')
+      setPlanMessage(t('settings:messages.checkoutCancelled'))
       searchParams.delete('billing')
       const nextQuery = searchParams.toString()
       const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}`
@@ -117,7 +120,7 @@ export default function SettingsPage() {
     setLogoWarning(null)
 
     if (file.size > 5 * 1024 * 1024) {
-      setLogoWarning('Bestand is groter dan 5 MB en kan niet worden geladen.')
+      setLogoWarning(t('settings:messages.fileTooLarge'))
       return
     }
 
@@ -144,7 +147,7 @@ export default function SettingsPage() {
         setLogoDataUrl(resized)
         // Warn if the resized result is still large (> ~200 KB as base64)
         if (resized.length > 200 * 1024) {
-          setLogoWarning('Logo is verkleind maar nog steeds vrij groot. Overweeg een eenvoudiger afbeelding.')
+          setLogoWarning(t('settings:messages.logoResized'))
         }
       }
       img.src = reader.result
@@ -170,14 +173,15 @@ export default function SettingsPage() {
       return
     }
 
-    setSavedMessage('Instellingen opgeslagen.')
+    setSavedMessage(t('settings:messages.saved'))
     setTimeout(() => setSavedMessage(null), 3000)
   }
 
   const setPlan = async (nextPlan: 'free' | 'pro') => {
     if (!userId) return
     await setUserPlan(userId, nextPlan)
-    setPlanMessage(`Plan bijgewerkt naar ${PLAN_CONFIGS[nextPlan].name}.`)
+    const planName = nextPlan === 'pro' ? t('settings:plan.pro') : t('settings:plan.free')
+    setPlanMessage(t('settings:messages.planUpdated', { plan: planName }))
     setTimeout(() => setPlanMessage(null), 2500)
   }
 
@@ -193,7 +197,7 @@ export default function SettingsPage() {
       })
       await startProCheckout(billingCycle)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Checkout starten is mislukt.'
+      const message = error instanceof Error ? error.message : t('settings:messages.checkoutFailed')
       setCheckoutError(message)
       setCheckoutLoading(null)
     }
@@ -207,9 +211,9 @@ export default function SettingsPage() {
       const syncResult = await syncBillingAfterCheckout()
       setBillingCycle(syncResult.billingCycle ?? null)
       await syncUserPlan(userId)
-      setPlanMessage('Abonnement gesynchroniseerd met Stripe.')
+      setPlanMessage(t('settings:messages.syncedWithStripe'))
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Synchroniseren is mislukt.'
+      const message = error instanceof Error ? error.message : t('settings:messages.syncFailed')
       setCheckoutError(message)
     } finally {
       setSyncLoading(false)
@@ -227,19 +231,19 @@ export default function SettingsPage() {
   const currentPlanLabel =
     planId === 'pro'
       ? billingCycle === 'yearly'
-        ? 'Pro jaarlijks'
+        ? t('settings:plan.proYearly')
         : billingCycle === 'monthly'
-          ? 'Pro maandelijks'
-          : 'Pro'
+          ? t('settings:plan.proMonthly')
+          : t('settings:plan.pro')
       : PLAN_CONFIGS[planId].name
 
   return (
     <main className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Instellingen</p>
-      <h1 className="mt-2 text-2xl font-extrabold">Bedrijfsprofiel</h1>
+      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">{t('settings:settings')}</p>
+      <h1 className="mt-2 text-2xl font-extrabold">{t('settings:companyProfile')}</h1>
       <p className="mt-2 text-sm text-slate-600">
-        Deze gegevens worden gebruikt in je factuur en PDF en worden veilig opgeslagen in je account.
-        Toegestane formaten: PNG, JPEG, WebP — max 5 MB. Grote afbeeldingen worden automatisch verkleind naar max 400×200 px.
+        {t('settings:description')}
+        {t('settings:logoFormats')}
       </p>
 
       {profileError ? (
@@ -250,7 +254,7 @@ export default function SettingsPage() {
 
       <form onSubmit={onSubmit} className="mt-6 grid gap-4 md:grid-cols-2">
         <label className="flex flex-col gap-1 md:col-span-2">
-          <span className="text-sm font-medium text-slate-700">Bedrijfsnaam</span>
+          <span className="text-sm font-medium text-slate-700">{t('settings:form.companyName')}</span>
           <input
             value={companyName}
             onChange={(event) => setCompanyName(event.target.value)}
@@ -259,7 +263,7 @@ export default function SettingsPage() {
         </label>
 
         <label className="flex flex-col gap-1 md:col-span-2">
-          <span className="text-sm font-medium text-slate-700">Adres</span>
+          <span className="text-sm font-medium text-slate-700">{t('settings:form.address')}</span>
           <input
             value={address}
             onChange={(event) => setAddress(event.target.value)}
@@ -268,7 +272,7 @@ export default function SettingsPage() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-slate-700">KvK-nummer</span>
+          <span className="text-sm font-medium text-slate-700">{t('settings:form.kvkNumber')}</span>
           <input
             value={kvkNumber}
             onChange={(event) => setKvkNumber(event.target.value)}
@@ -277,7 +281,7 @@ export default function SettingsPage() {
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-slate-700">BTW-nummer</span>
+          <span className="text-sm font-medium text-slate-700">{t('settings:form.vatNumber')}</span>
           <input
             value={btwNumber}
             onChange={(event) => setBtwNumber(event.target.value)}
@@ -286,7 +290,7 @@ export default function SettingsPage() {
         </label>
 
         <label className="flex flex-col gap-1 md:col-span-2">
-          <span className="text-sm font-medium text-slate-700">IBAN</span>
+          <span className="text-sm font-medium text-slate-700">{t('settings:form.iban')}</span>
           <input
             value={iban}
             onChange={(event) => setIban(event.target.value)}
@@ -295,7 +299,7 @@ export default function SettingsPage() {
         </label>
 
         <div className="md:col-span-2">
-          <p className="mb-2 text-sm font-medium text-slate-700">Logo</p>
+          <p className="mb-2 text-sm font-medium text-slate-700">{t('settings:form.logo')}</p>
           <div className="flex flex-wrap items-center gap-3">
             <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onLogoChange} />
             {logoDataUrl ? (
@@ -304,7 +308,7 @@ export default function SettingsPage() {
                 onClick={() => { setLogoDataUrl(null); setLogoWarning(null) }}
                 className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50"
               >
-                Verwijder logo
+                {t('settings:form.removeLogo')}
               </button>
             ) : null}
           </div>
@@ -313,7 +317,7 @@ export default function SettingsPage() {
           ) : null}
           {logoDataUrl ? (
             <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
-              <img src={logoDataUrl} alt="Bedrijfslogo" className="max-h-20 w-auto" />
+              <img src={logoDataUrl} alt={t('settings:form.companyLogo')} className="max-h-20 w-auto" />
             </div>
           ) : null}
         </div>
@@ -323,20 +327,20 @@ export default function SettingsPage() {
             type="submit"
             className="rounded-lg bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800"
           >
-            Opslaan
+            {t('settings:form.save')}
           </button>
           {savedMessage ? <p className="text-sm text-emerald-700">{savedMessage}</p> : null}
         </div>
       </form>
 
       <section className="mt-8 rounded-xl border border-slate-200 bg-slate-50/70 p-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Plan</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{t('settings:plan.title')}</p>
         <p className="mt-1 text-sm text-slate-700">
-          Huidig plan: <span className="font-semibold">{currentPlanLabel}</span>
+          {t('settings:plan.currentPlan')}: <span className="font-semibold">{currentPlanLabel}</span>
         </p>
         <p className="mt-1 text-xs text-slate-500">
-          {formattedPeriodEnd ? `Volgende verlenging: ${formattedPeriodEnd}` : ''}
-          {billingDetails.cancelAtPeriodEnd ? ' · Eindigt aan het einde van deze periode' : ''}
+          {formattedPeriodEnd ? `${t('settings:plan.nextRenewal')}: ${formattedPeriodEnd}` : ''}
+          {billingDetails.cancelAtPeriodEnd ? ` · ${t('settings:plan.endsAtPeriod')}` : ''}
         </p>
         <div className="mt-3">
           <button
@@ -347,15 +351,15 @@ export default function SettingsPage() {
             disabled={syncLoading}
             className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {syncLoading ? 'Synchroniseren...' : 'Synchroniseer abonnement'}
+            {syncLoading ? t('settings:plan.syncing') : t('settings:plan.syncSubscription')}
           </button>
         </div>
 
         {!isAdminUser ? (
           <div className="mt-4 rounded-xl border border-cyan-200 bg-cyan-50/70 p-4">
-            <p className="text-sm font-semibold text-cyan-900">Upgrade naar Pro</p>
+            <p className="text-sm font-semibold text-cyan-900">{t('settings:plan.upgradeToPro')}</p>
             <p className="mt-1 text-xs text-cyan-800">
-              Kies je betaalcyclus. Je wordt doorgestuurd naar Stripe Checkout.
+              {t('settings:plan.chooseCycle')}
             </p>
             <div className="mt-3 flex flex-wrap gap-3">
               <button
@@ -366,7 +370,7 @@ export default function SettingsPage() {
                 disabled={checkoutLoading !== null}
                 className="rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-semibold text-cyan-800 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {checkoutLoading === 'monthly' ? 'Bezig...' : 'Pro maandelijks (€4,99)'}
+                {checkoutLoading === 'monthly' ? t('settings:plan.processing') : t('settings:plan.monthlyPrice')}
               </button>
               <button
                 type="button"
@@ -376,7 +380,7 @@ export default function SettingsPage() {
                 disabled={checkoutLoading !== null}
                 className="rounded-lg border border-cyan-700 bg-cyan-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {checkoutLoading === 'yearly' ? 'Bezig...' : 'Pro jaarlijks (€39,99)'}
+                {checkoutLoading === 'yearly' ? t('settings:plan.processing') : t('settings:plan.yearlyPrice')}
               </button>
             </div>
             {checkoutError ? <p className="mt-3 text-xs text-rose-700">{checkoutError}</p> : null}
@@ -392,7 +396,7 @@ export default function SettingsPage() {
               }}
               className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
             >
-              Zet plan op Free
+              {t('settings:plan.setFree')}
             </button>
             <button
               type="button"
@@ -401,7 +405,7 @@ export default function SettingsPage() {
               }}
               className="rounded-lg border border-cyan-300 bg-white px-4 py-2 text-sm font-semibold text-cyan-700 hover:bg-cyan-50"
             >
-              Zet plan op Pro
+              {t('settings:plan.setPro')}
             </button>
           </div>
         ) : null}

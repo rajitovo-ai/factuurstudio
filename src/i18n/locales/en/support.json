@@ -1,0 +1,33 @@
+{
+  "support": "Support",
+  "helpCenter": "Help Center",
+  "description": "Find quick answers, browse popular topics, and contact us if you need help.",
+  "contactSupport": "Contact support",
+  "myTickets": "My tickets",
+  "ticketsDescription": "View the status of your recent support requests and admin responses.",
+  "refresh": "Refresh",
+  "noTickets": "No tickets found yet.",
+  "adminResponse": "Admin response",
+  "search": "Search",
+  "searchPlaceholder": "e.g. VAT, invoice status, or import",
+  "noResults": "No results found. Try a different keyword or contact support.",
+  "wasThisHelpful": "Was this helpful?",
+  "yes": "Yes",
+  "no": "No",
+  "supportTicket": "Support ticket",
+  "sendMessage": "Need help? Send us a message",
+  "emailDirect": "Or email directly to info@webdesignerstudio.nl",
+  "subject": "Subject",
+  "subjectPlaceholder": "e.g. Invoice status not changing",
+  "message": "Message",
+  "messagePlaceholder": "Describe your question, what you did, and what you expected.",
+  "submit": "Send ticket",
+  "submitting": "Sending...",
+  "quickLinks": "Quick links",
+  "messages": {
+    "subjectMinChars": "Subject must be at least 3 characters.",
+    "messageMinChars": "Message must be at least 10 characters.",
+    "ticketFailed": "Failed to send ticket. Please try again or use email.",
+    "ticketSent": "Your support ticket has been sent. We'll respond as soon as possible."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "title": "PDF facturen importeren",
+  "subtitle": "Upload meerdere bestaande PDF-facturen tegelijk. Controleer de gevonden gegevens en kies per bestand wat je wilt importeren.",
+  "upload": {
+    "label": "Upload 1 of meerdere PDF-bestanden",
+    "placeholder": "Fase 2: Diepe scan voor scan-PDF's. Dit duurt iets langer maar herkent meer gegevens.",
+    "deepScan": "Diepe scan voor scans inschakelen"
+  },
+  "buttons": {
+    "toInvoices": "Naar facturen",
+    "importSelected": "Importeer geselecteerde gegevens",
+    "importing": "Importeren...",
+    "remove": "Verwijder",
+    "parsing": "PDF's analyseren..."
+  },
+  "empty": "Nog geen PDF's ingeladen.",
+  "labels": {
+    "importCustomer": "Importeer klantgegevens",
+    "importInvoice": "Importeer factuurdata",
+    "status": "Status",
+    "invoiceNumber": "Factuurnummer",
+    "companyName": "Bedrijfsnaam op factuur",
+    "clientName": "Klantnaam",
+    "clientEmail": "Klant e-mail",
+    "clientAddress": "Klant adres",
+    "street": "Straat",
+    "houseNumber": "Huisnummer",
+    "postalCode": "Postcode",
+    "city": "Stad",
+    "kvk": "KvK",
+    "vatNumber": "BTW-nummer",
+    "iban": "IBAN",
+    "currency": "Valuta",
+    "issueDate": "Factuurdatum",
+    "dueDate": "Vervaldatum",
+    "useDueDate": "Vervaldatum gebruiken",
+    "subtotal": "Subtotaal",
+    "vatTotal": "BTW totaal",
+    "vatRate": "BTW %",
+    "total": "Totaalbedrag",
+    "description": "Beschrijving",
+    "ocrUsed": "OCR gebruikt voor deze PDF.",
+    "warnings": "Waarschuwingen"
+  },
+  "status": {
+    "draft": "concept",
+    "sent": "verzonden",
+    "paid": "betaald"
+  },
+  "errors": {
+    "noUser": "Geen actieve gebruiker gevonden. Log opnieuw in.",
+    "selectOne": "Selecteer minimaal 1 regel om te importeren.",
+    "parseError": "Onbekende fout bij uitlezen PDF.",
+    "importFailed": "Import mislukt voor {{fileName}}",
+    "generic": "Er is een fout opgetreden bij het importeren."
+  },
+  "summary": "Import afgerond. Klanten: {{customers}}, facturen: {{invoices}}, fouten: {{errors}}.",
+  "notes": {
+    "importedFromPdf": "Geimporteerd uit bestaande PDF-factuur.",
+    "unknownClient": "Onbekende klant",
+    "importedInvoice": "Geimporteerde factuur"
+  }
+}

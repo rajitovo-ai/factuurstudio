@@ -1,0 +1,49 @@
+{
+  "settings": "Instellingen",
+  "companyProfile": "Bedrijfsprofiel",
+  "description": "Deze gegevens worden gebruikt in je factuur en PDF en worden veilig opgeslagen in je account.",
+  "logoFormats": "Toegestane formaten: PNG, JPEG, WebP — max 5 MB. Grote afbeeldingen worden automatisch verkleind naar max 400×200 px.",
+  "form": {
+    "companyName": "Bedrijfsnaam",
+    "address": "Adres",
+    "kvkNumber": "KvK-nummer",
+    "vatNumber": "BTW-nummer",
+    "iban": "IBAN",
+    "logo": "Logo",
+    "uploadLogo": "Logo uploaden",
+    "removeLogo": "Verwijder logo",
+    "companyLogo": "Bedrijfslogo",
+    "save": "Opslaan"
+  },
+  "messages": {
+    "fileTooLarge": "Bestand is groter dan 5 MB en kan niet worden geladen.",
+    "logoResized": "Logo is verkleind maar nog steeds vrij groot. Overweeg een eenvoudiger afbeelding.",
+    "saved": "Instellingen opgeslagen.",
+    "checkoutStarted": "Betaling ontvangen. We synchroniseren je abonnement...",
+    "checkoutCancelled": "Afrekenen is geannuleerd. Je huidige plan blijft actief.",
+    "synced": "Abonnement gesynchroniseerd.",
+    "syncedWithStripe": "Abonnement gesynchroniseerd met Stripe.",
+    "planUpdated": "Plan bijgewerkt naar {{plan}}.",
+    "syncFailed": "Synchroniseren is mislukt.",
+    "checkoutFailed": "Checkout starten is mislukt."
+  },
+  "plan": {
+    "title": "Plan",
+    "currentPlan": "Huidig plan",
+    "nextRenewal": "Volgende verlenging",
+    "endsAtPeriod": "Eindigt aan het einde van deze periode",
+    "syncSubscription": "Synchroniseer abonnement",
+    "syncing": "Synchroniseren...",
+    "proMonthly": "Pro maandelijks",
+    "proYearly": "Pro jaarlijks",
+    "pro": "Pro",
+    "free": "Gratis",
+    "upgradeToPro": "Upgrade naar Pro",
+    "chooseCycle": "Kies je betaalcyclus. Je wordt doorgestuurd naar Stripe Checkout.",
+    "monthlyPrice": "Pro maandelijks (€4,99)",
+    "yearlyPrice": "Pro jaarlijks (€39,99)",
+    "processing": "Bezig...",
+    "setFree": "Zet plan op Free",
+    "setPro": "Zet plan op Pro"
+  }
+}

@@ -1,8 +1,12 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { PLAN_CONFIGS, canCreateInvoiceThisMonth } from '../lib/billing'
 import RelatedSupport from '../components/support/RelatedSupport'
 import { deriveDashboardMetrics } from '../lib/dashboard'
+import SearchInput from '../components/ui/SearchInput'
+import { filterInvoices } from '../lib/searchUtils'
+import Skeleton, { CardSkeleton } from '../components/ui/Skeleton'
 import { useAuthStore } from '../stores/authStore'
 import { useBillingStore } from '../stores/billingStore'
 import { getInvoiceDisplayStatus, useInvoiceStore } from '../stores/invoiceStore'
@@ -12,23 +16,23 @@ const isDev = import.meta.env.DEV
 const statCardClass =
   'rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md'
 
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat('nl-NL', {
+const formatCurrency = (amount: number, language: string) =>
+  new Intl.NumberFormat(language === 'en' ? 'en-US' : 'nl-NL', {
     style: 'currency',
     currency: 'EUR',
   }).format(amount)
 
-const formatDate = (isoDate: string) =>
-  new Intl.DateTimeFormat('nl-NL', {
+const formatDate = (isoDate: string, language: string) =>
+  new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'nl-NL', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
   }).format(new Date(isoDate))
 
-const formatMonth = (monthKey: string) => {
+const formatMonth = (monthKey: string, language: string) => {
   const [year, month] = monthKey.split('-')
   const date = new Date(Number(year), Number(month) - 1, 1)
-  return new Intl.DateTimeFormat('nl-NL', { month: 'short' }).format(date)
+  return new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'nl-NL', { month: 'short' }).format(date)
 }
 
 const statusBadgeClass = (status: ReturnType<typeof getInvoiceDisplayStatus>) => {
@@ -38,14 +42,16 @@ const statusBadgeClass = (status: ReturnType<typeof getInvoiceDisplayStatus>) =>
   return 'bg-slate-100 text-slate-700'
 }
 
-const statusLabel = (status: ReturnType<typeof getInvoiceDisplayStatus>) => {
-  if (status === 'betaald') return 'Betaald'
-  if (status === 'vervallen') return 'Vervallen'
-  if (status === 'verzonden') return 'Verzonden'
-  return 'Concept'
+const statusLabel = (status: ReturnType<typeof getInvoiceDisplayStatus>, t: (key: string) => string) => {
+  if (status === 'betaald') return t('common:paid')
+  if (status === 'vervallen') return t('common:overdue')
+  if (status === 'verzonden') return t('common:sent')
+  return t('common:draft')
 }
 
 export default function DashboardPage() {
+  const { t, i18n } = useTranslation(['dashboard', 'common', 'navigation'])
+  const language = i18n.language
   const { isDemoMode, userId } = useAuthStore()
   const invoices = useInvoiceStore((state) => state.invoices)
   const invoicesLoading = useInvoiceStore((state) => state.isLoading)
@@ -53,6 +59,7 @@ export default function DashboardPage() {
   const loadInvoices = useInvoiceStore((state) => state.loadInvoices)
   const planId = useBillingStore((state) => state.getUserPlan(userId))
   const setUserPlan = useBillingStore((state) => state.setUserPlan)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     void loadInvoices(userId)
@@ -60,13 +67,18 @@ export default function DashboardPage() {
 
   const currentMonth = new Date().toISOString().slice(0, 7)
 
+  const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
+  const filteredInvoices = useMemo(() => {
+    return filterInvoices(userInvoices, searchQuery)
+  }, [userInvoices, searchQuery])
+
   const dashboardMetrics = useMemo(
-    () => deriveDashboardMetrics(invoices, userId, currentMonth),
-    [currentMonth, invoices, userId],
+    () => deriveDashboardMetrics(filteredInvoices, userId, currentMonth),
+    [currentMonth, filteredInvoices, userId],
   )
 
   const {
-    userInvoices,
+    userInvoices: filteredUserInvoices,
     openInvoices,
     overdueInvoices,
     conceptInvoices,
@@ -79,8 +91,8 @@ export default function DashboardPage() {
   } = dashboardMetrics
 
   const monthlyQuota = useMemo(
-    () => canCreateInvoiceThisMonth(planId, userInvoices, userId),
-    [planId, userId, userInvoices],
+    () => canCreateInvoiceThisMonth(planId, filteredUserInvoices, userId),
+    [planId, userId, filteredUserInvoices],
   )
   const quotaUsedPercent = monthlyQuota.limit
     ? Math.min(100, (monthlyQuota.usedThisMonth / monthlyQuota.limit) * 100)
@@ -92,53 +104,52 @@ export default function DashboardPage() {
 
   return (
     <main className="space-y-5">
-      <section className="overflow-hidden rounded-3xl border border-slate-200 bg-[linear-gradient(135deg,#0f172a_0%,#164e63_42%,#ecfeff_100%)] p-6 shadow-[0_22px_60px_-36px_rgba(15,23,42,0.85)] sm:p-7">
+        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-[linear-gradient(135deg,#0f172a_0%,#164e63_42%,#ecfeff_100%)] p-6 shadow-[0_22px_60px_-36px_rgba(15,23,42,0.85)] sm:p-7">
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">Dashboard</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">{t('dashboard:title')}</p>
             <h1 className="mt-2 text-3xl font-extrabold text-white sm:text-4xl">Focus op wat nu telt</h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-cyan-50/90 sm:text-base">
-              Openstaande facturen, aandachtspunten en recente activiteit staan nu in een heldere volgorde zodat je
-              sneller acties kunt nemen.
+              {t('dashboard:hero.description')}
             </p>
             <div className="mt-6 flex flex-wrap gap-2">
               <span className="rounded-full border border-cyan-200/30 bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-50">
-                {openInvoices.length} open
+                {openInvoices.length} {t('common:open').toLowerCase()}
               </span>
               <span className="rounded-full border border-cyan-200/30 bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-50">
-                {overdueInvoices.length} vervallen
+                {overdueInvoices.length} {t('common:overdue').toLowerCase()}
               </span>
               <span className="rounded-full border border-cyan-200/30 bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-50">
-                {paidThisMonthCount} betaald deze maand
+                {paidThisMonthCount} {t('dashboard:stats.paidThisMonth')}
               </span>
               <Link
                 to="/support"
                 className="rounded-full border border-cyan-200/40 bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-50 transition hover:bg-white/20"
               >
-                Hulp nodig?
+                {t('common:help')}?
               </Link>
             </div>
           </div>
           <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">Snelle acties</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100">{t('dashboard:quickActions.title')}</p>
             <div className="mt-3 grid gap-2">
               <Link
                 to="/facturen/nieuw"
                 className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-50"
               >
-                Nieuwe factuur
+                {t('dashboard:actions.newInvoice')}
               </Link>
               <Link
                 to="/facturen"
                 className="rounded-lg border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
               >
-                Bekijk facturen
+                {t('dashboard:actions.viewInvoices')}
               </Link>
               <Link
                 to="/klanten"
                 className="rounded-lg border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
               >
-                Klanten beheren
+                {t('dashboard:actions.manageCustomers')}
               </Link>
             </div>
           </div>
@@ -152,36 +163,42 @@ export default function DashboardPage() {
       ) : null}
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* Search Input */}
+        <div className="sm:col-span-2 xl:col-span-4">
+          <SearchInput
+            placeholder="Dashboard zoeken..."
+            onSearch={setSearchQuery}
+            className="max-w-lg"
+          />
+        </div>
+        
         {showLoadingSkeleton ? (
           <>
-            {[0, 1, 2, 3].map((index) => (
-              <article key={index} className={`${statCardClass} animate-pulse`}>
-                <div className="h-3 w-24 rounded bg-slate-200" />
-                <div className="mt-3 h-8 w-28 rounded bg-slate-200" />
-                <div className="mt-2 h-3 w-20 rounded bg-slate-100" />
-              </article>
-            ))}
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
           </>
         ) : null}
         {!showLoadingSkeleton ? (
           <>
         <article className={`${statCardClass} border-cyan-100 bg-gradient-to-b from-cyan-50 to-white`}>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Openstaand</p>
-          <p className="mt-2 text-2xl font-extrabold text-slate-900">{formatCurrency(openAmount)}</p>
-          <p className="mt-1 text-xs text-slate-500">{openInvoices.length} facturen</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('dashboard:stats.outstanding')}</p>
+          <p className="mt-2 text-2xl font-extrabold text-slate-900">{formatCurrency(openAmount, language)}</p>
+          <p className="mt-1 text-xs text-slate-500">{openInvoices.length} {t('common:invoices').toLowerCase()}</p>
         </article>
         <article className={`${statCardClass} border-rose-100 bg-gradient-to-b from-rose-50 to-white`}>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Vervallen</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('dashboard:stats.overdue')}</p>
           <p className="mt-2 text-2xl font-extrabold text-rose-700">{overdueInvoices.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Facturen met verlopen termijn</p>
+          <p className="mt-1 text-xs text-slate-500">{t('dashboard:stats.overdueDescription')}</p>
         </article>
         <article className={`${statCardClass} border-violet-100 bg-gradient-to-b from-violet-50 to-white`}>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Facturen deze maand</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('dashboard:stats.thisMonth')}</p>
           <p className="mt-2 text-2xl font-extrabold text-violet-700">{monthlyInvoiceCount}</p>
         </article>
         <article className={`${statCardClass} border-emerald-100 bg-gradient-to-b from-emerald-50 to-white`}>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Betaald</p>
-          <p className="mt-2 text-2xl font-extrabold text-emerald-700">{formatCurrency(paidAmount)}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('common:paid')}</p>
+          <p className="mt-2 text-2xl font-extrabold text-emerald-700">{formatCurrency(paidAmount, language)}</p>
         </article>
           </>
         ) : null}
@@ -191,17 +208,17 @@ export default function DashboardPage() {
         <div className="space-y-4">
           {userInvoices.length === 0 && !showLoadingSkeleton ? (
             <section className="rounded-2xl border border-cyan-200 bg-cyan-50 p-6 shadow-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Eerste stappen</p>
-              <h2 className="mt-2 text-xl font-extrabold text-slate-900">Start in 3 stappen</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">{t('dashboard:gettingStarted.title')}</p>
+              <h2 className="mt-2 text-xl font-extrabold text-slate-900">{t('dashboard:gettingStarted.subtitle')}</h2>
               <ol className="mt-4 space-y-3 text-sm text-slate-700">
                 <li className="rounded-lg border border-cyan-200 bg-white px-3 py-2">
-                  1. Vul je bedrijfsprofiel aan in <Link to="/instellingen" className="font-semibold text-cyan-700 hover:underline">Instellingen</Link>
+                  1. {t('dashboard:gettingStarted.step1')} <Link to="/instellingen" className="font-semibold text-cyan-700 hover:underline">{t('navigation:nav.settings')}</Link>
                 </li>
                 <li className="rounded-lg border border-cyan-200 bg-white px-3 py-2">
-                  2. Maak je eerste klant aan via <Link to="/klanten" className="font-semibold text-cyan-700 hover:underline">Klanten</Link>
+                  2. {t('dashboard:gettingStarted.step2')} <Link to="/klanten" className="font-semibold text-cyan-700 hover:underline">{t('navigation:nav.customers')}</Link>
                 </li>
                 <li className="rounded-lg border border-cyan-200 bg-white px-3 py-2">
-                  3. Verstuur je eerste factuur via <Link to="/facturen/nieuw" className="font-semibold text-cyan-700 hover:underline">Nieuwe factuur</Link>
+                  3. {t('dashboard:gettingStarted.step3')} <Link to="/facturen/nieuw" className="font-semibold text-cyan-700 hover:underline">{t('dashboard:actions.newInvoice')}</Link>
                 </li>
               </ol>
             </section>
@@ -209,43 +226,43 @@ export default function DashboardPage() {
 
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">Vandaag belangrijk</p>
-              <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">Prioriteiten</span>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-700">{t('dashboard:today.title')}</p>
+              <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-600">{t('dashboard:today.priorities')}</span>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               <article className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Concepten</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{t('common:drafts')}</p>
                 <p className="mt-2 text-2xl font-extrabold text-slate-900">{conceptInvoices.length}</p>
-                <p className="mt-1 text-xs text-slate-600">Nog niet verzonden facturen</p>
+                <p className="mt-1 text-xs text-slate-600">{t('dashboard:today.draftsDescription')}</p>
                 <Link
                   to="/facturen"
                   className="mt-3 inline-flex rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100"
                 >
-                  Controleren
+                  {t('common:check')}
                 </Link>
               </article>
 
               <article className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Opvolging</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{t('dashboard:today.followUp')}</p>
                 <p className="mt-2 text-2xl font-extrabold text-slate-900">{openInvoices.length}</p>
-                <p className="mt-1 text-xs text-slate-600">Openstaande facturen</p>
+                <p className="mt-1 text-xs text-slate-600">{t('dashboard:today.followUpDescription')}</p>
                 <Link
                   to="/facturen"
                   className="mt-3 inline-flex rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-100"
                 >
-                  Herinneren
+                  {t('common:remind')}
                 </Link>
               </article>
 
               <article className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Groei</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{t('dashboard:today.growth')}</p>
                 <p className="mt-2 text-2xl font-extrabold text-slate-900">{monthlyInvoiceCount}</p>
-                <p className="mt-1 text-xs text-slate-600">Facturen deze maand</p>
+                <p className="mt-1 text-xs text-slate-600">{t('dashboard:stats.thisMonth')}</p>
                 <Link
                   to="/facturen/nieuw"
                   className="mt-3 inline-flex rounded-lg border border-cyan-300 bg-cyan-50 px-3 py-1.5 text-xs font-semibold text-cyan-700 transition hover:-translate-y-0.5 hover:bg-cyan-100"
                 >
-                  Nieuwe factuur
+                  {t('dashboard:actions.newInvoice')}
                 </Link>
               </article>
             </div>
@@ -333,13 +350,13 @@ export default function DashboardPage() {
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div>
                           <p className="text-sm font-semibold text-slate-800">{invoice.invoiceNumber}</p>
-                          <p className="text-xs text-slate-500">{invoice.clientName || 'Onbekende klant'} · {formatDate(invoice.issueDate)}</p>
+                          <p className="text-xs text-slate-500">{invoice.clientName || t('common:unknownUser')} · {formatDate(invoice.issueDate, language)}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`rounded-full px-2 py-1 text-xs font-semibold ${statusBadgeClass(displayStatus)}`}>
-                            {statusLabel(displayStatus)}
+                            {statusLabel(displayStatus, t)}
                           </span>
-                          <span className="text-sm font-semibold text-slate-800">{formatCurrency(invoice.total)}</span>
+                          <span className="text-sm font-semibold text-slate-800">{formatCurrency(invoice.total, language)}</span>
                         </div>
                       </div>
                     </li>
@@ -351,10 +368,10 @@ export default function DashboardPage() {
             ) : null}
 
             {showLoadingSkeleton ? (
-              <div className="mt-4 space-y-2 animate-pulse">
-                <div className="h-14 rounded-xl bg-slate-100" />
-                <div className="h-14 rounded-xl bg-slate-100" />
-                <div className="h-14 rounded-xl bg-slate-100" />
+              <div className="mt-4 space-y-2">
+                <Skeleton lines={2} />
+                <Skeleton lines={2} />
+                <Skeleton lines={2} />
               </div>
             ) : null}
           </section>
@@ -376,11 +393,11 @@ export default function DashboardPage() {
                       <div
                         className="w-full rounded bg-cyan-600/80"
                         style={{ height: `${barHeight}px`, marginTop: `${80 - barHeight - 8}px` }}
-                        title={`${formatMonth(entry.month)}: ${formatCurrency(entry.paidTotal)}`}
+                        title={`${formatMonth(entry.month, language)}: ${formatCurrency(entry.paidTotal, language)}`}
                       />
                     </div>
                     <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                      {formatMonth(entry.month)}
+                      {formatMonth(entry.month, language)}
                     </span>
                   </div>
                 )

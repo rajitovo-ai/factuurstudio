@@ -1,0 +1,19 @@
+{
+  "nav": {
+    "blog": "Blog",
+    "login": "Login",
+    "freeAccount": "Free account",
+    "dashboard": "Dashboard",
+    "invoices": "Invoices",
+    "customers": "Customers",
+    "settings": "Settings",
+    "support": "Support",
+    "admin": "Admin",
+    "referral": "Referral",
+    "pricing": "Pricing"
+  },
+  "userMenu": {
+    "profile": "Profile",
+    "logout": "Logout"
+  }
+}

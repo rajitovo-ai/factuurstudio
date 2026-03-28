@@ -1,14 +1,18 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+
+// Components
 import AdminRoute from './components/auth/AdminRoute'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
-import CustomersPage from './pages/CustomersPage'
+
+// Pages
 import DashboardPage from './pages/DashboardPage'
 import AdminPage from './pages/AdminPage'
+import BlogIndexPage from './pages/BlogIndexPage'
+import BlogPostPage from './pages/BlogPostPage'
 import InvoiceCreatePage from './pages/InvoiceCreatePage'
 import InvoiceEditPage from './pages/InvoiceEditPage'
-import InvoicesPage from './pages/InvoicesPage'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
@@ -17,14 +21,20 @@ import ReferralPage from './pages/ReferralPage'
 import RegisterPage from './pages/RegisterPage'
 import BlogAdministratieBesparenPage from './pages/BlogAdministratieBesparenPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
-import SettingsPage from './pages/SettingsPage'
-import SupportPage from './pages/SupportPage'
+
+// Lazy loaded pages
+const InvoiceImportPage = lazy(() => import('./pages/InvoiceImportPage'))
+const InvoicesPage = lazy(() => import('./pages/InvoicesPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const SupportPage = lazy(() => import('./pages/SupportPage'))
+const CustomersPage = lazy(() => import('./pages/CustomersPage'))
+
+// Utilities
 import { captureAttributionFromUrl, getAttributionPayload } from './lib/attribution'
+import { initializeTheme } from './stores/themeStore'
 import { useAuthStore } from './stores/authStore'
 import { useInvoiceStore } from './stores/invoiceStore'
 import { useProfileStore } from './stores/profileStore'
-
-const InvoiceImportPage = lazy(() => import('./pages/InvoiceImportPage'))
 
 function App() {
   const location = useLocation()
@@ -36,6 +46,9 @@ function App() {
 
   useEffect(() => {
     void init()
+    // Initialize theme
+    const cleanup = initializeTheme()
+    return cleanup
   }, [init])
 
   useEffect(() => {
@@ -64,6 +77,8 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/blog" element={<BlogIndexPage />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
       <Route path="/blog/administratie-besparen" element={<BlogAdministratieBesparenPage />} />
       <Route path="/wachtwoord-vergeten" element={<ForgotPasswordPage />} />
       <Route path="/reset-wachtwoord" element={<ResetPasswordPage />} />
@@ -71,8 +86,22 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/klanten" element={<CustomersPage />} />
-          <Route path="/facturen" element={<InvoicesPage />} />
+          <Route
+            path="/klanten"
+            element={
+              <Suspense fallback={<div className="p-6 text-center">Laden...</div>}>
+                <CustomersPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/facturen"
+            element={
+              <Suspense fallback={<div className="p-6 text-center">Laden...</div>}>
+                <InvoicesPage />
+              </Suspense>
+            }
+          />
           <Route path="/facturen/nieuw" element={<InvoiceCreatePage />} />
           <Route
             path="/facturen/importeren"
@@ -84,8 +113,22 @@ function App() {
           />
           <Route path="/facturen/:id/bewerken" element={<InvoiceEditPage />} />
           <Route path="/referral" element={<ReferralPage />} />
-          <Route path="/instellingen" element={<SettingsPage />} />
-          <Route path="/support" element={<SupportPage />} />
+          <Route
+            path="/instellingen"
+            element={
+              <Suspense fallback={<div className="p-6 text-center">Laden...</div>}>
+                <SettingsPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/support"
+            element={
+              <Suspense fallback={<div className="p-6 text-center">Laden...</div>}>
+                <SupportPage />
+              </Suspense>
+            }
+          />
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminPage />} />
           </Route>

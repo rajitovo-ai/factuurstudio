@@ -2,27 +2,128 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://factuurstudio.nl/</loc>
+    <lastmod>2024-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://factuurstudio.nl/pricing</loc>
-    <changefreq>monthly</changefreq>
+    <loc>https://factuurstudio.nl/blog</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://factuurstudio.nl/login</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://factuurstudio.nl/register</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://factuurstudio.nl/blog/administratie-besparen</loc>
+    <loc>https://factuurstudio.nl/pricing</loc>
+    <lastmod>2024-07-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/zzp-starten-2024-complete-checklist</loc>
+    <lastmod>2024-01-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/wat-moet-er-op-factuur-staan-wetgeving-2024</loc>
+    <lastmod>2024-01-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/btw-nummer-aanvragen-stappenplan</loc>
+    <lastmod>2024-02-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/hobby-naar-onderneming-wanneer-ondernemer</loc>
+    <lastmod>2024-02-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/uurtarief-zzp-berekenen-formule</loc>
+    <lastmod>2024-03-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/kleineondernemersregeling-kor-btw</loc>
+    <lastmod>2024-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/btw-aangifte-doen-stappenplan-2024</loc>
+    <lastmod>2024-04-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/btw-verlegd-factureren-buitenland</loc>
+    <lastmod>2024-04-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/betalingsherinneringen-incasso-facturen</loc>
+    <lastmod>2024-05-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/korting-factuur-berekenen-btw</loc>
+    <lastmod>2024-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/geldigheidsduur-factuur-wettelijk</loc>
+    <lastmod>2024-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/verplichte-vermeldingen-factuur-uitgebreid</loc>
+    <lastmod>2024-05-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/administratie-bewaren-7-jaar-wettelijk</loc>
+    <lastmod>2024-06-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/zakelijke-rekening-kiezen-vergelijken</loc>
+    <lastmod>2024-06-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/btw-nummer-valideren-vies-check</loc>
+    <lastmod>2024-07-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/boekhoudsoftware-kiezen-zzp-vergelijken</loc>
+    <lastmod>2024-07-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/eenmanszaak-besloten-vennootschap-ondernemingsvorm</loc>
+    <lastmod>2024-07-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://factuurstudio.nl/blog/zzp-pensioen-opbouwen-aov-verzekering</loc>
+    <lastmod>2024-07-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

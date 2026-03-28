@@ -169,34 +169,43 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
   loadedForUserId: null,
 
   loadInvoices: async (userId, force = false) => {
-    if (!userId || !hasSupabaseConfig) {
-      set({ invoices: [], loadedForUserId: userId, isLoading: false })
-      return
+    try {
+      if (!userId || !hasSupabaseConfig) {
+        set({ invoices: [], loadedForUserId: userId, isLoading: false })
+        return
+      }
+
+      if (!force && get().loadedForUserId === userId && get().invoices.length > 0) {
+        return
+      }
+
+      set({ isLoading: true, error: null })
+
+      const { data, error } = await supabase
+        .from('app_invoices')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error loading invoices:', error)
+        set({ isLoading: false, error: `Kan facturen niet laden: ${error.message}` })
+        return
+      }
+
+      set({
+        invoices: (data ?? []).map((row) => toStoredInvoice(row as DbInvoiceRow)),
+        loadedForUserId: userId,
+        isLoading: false,
+        error: null,
+      })
+    } catch (err) {
+      console.error('Unexpected error loading invoices:', err)
+      set({ 
+        isLoading: false, 
+        error: err instanceof Error ? err.message : 'Onverwachte fout bij laden van facturen' 
+      })
     }
-
-    if (!force && get().loadedForUserId === userId && get().invoices.length > 0) {
-      return
-    }
-
-    set({ isLoading: true, error: null })
-
-    const { data, error } = await supabase
-      .from('app_invoices')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      set({ isLoading: false, error: error.message })
-      return
-    }
-
-    set({
-      invoices: (data ?? []).map((row) => toStoredInvoice(row as DbInvoiceRow)),
-      loadedForUserId: userId,
-      isLoading: false,
-      error: null,
-    })
   },
 
   createInvoice: async (invoice) => {

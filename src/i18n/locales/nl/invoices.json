@@ -1,0 +1,89 @@
+{
+  "title": "Facturen",
+  "subtitle": "Beheer al je facturen op één plek",
+  "search": "Zoek facturen...",
+  "management": "Factuurbeheer",
+  "allInvoices": "Alle facturen",
+  "managementDescription": "Concept opstellen, verzenden, PDF downloaden en daarna als betaald markeren.",
+  "help": "Hulp bij factuurstatus en bulkacties",
+  "importPDF": "Importeer PDF",
+  "filters": {
+    "all": "Alle",
+    "draft": "Concept",
+    "sent": "Verstuurd",
+    "paid": "Betaald",
+    "overdue": "Achterstallig",
+    "cancelled": "Geannuleerd"
+  },
+  "sort": {
+    "dateDesc": "Datum (nieuwste eerst)",
+    "dateAsc": "Datum (oudste eerst)",
+    "amountDesc": "Bedrag (hoogste eerst)",
+    "amountAsc": "Bedrag (laagste eerst)",
+    "numberDesc": "Nummer (nieuwste eerst)",
+    "numberAsc": "Nummer (oudste eerst)"
+  },
+  "table": {
+    "number": "Factuurnummer",
+    "customer": "Klant",
+    "date": "Datum",
+    "dueDate": "Vervaldatum",
+    "amount": "Bedrag",
+    "status": "Status",
+    "actions": "Acties",
+    "selectAll": "Selecteer alle facturen",
+    "noEmail": "Geen e-mail",
+    "imported": "Geïmporteerde factuur"
+  },
+  "status": {
+    "draft": "Concept",
+    "sent": "Verstuurd",
+    "paid": "Betaald",
+    "overdue": "Achterstallig",
+    "cancelled": "Geannuleerd"
+  },
+  "actions": {
+    "newInvoice": "Nieuwe factuur",
+    "import": "Importeren",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "duplicate": "Dupliceren",
+    "send": "Versturen",
+    "markSent": "Markeer verzonden",
+    "markPaid": "Markeer betaald",
+    "download": "Download PDF",
+    "print": "Printen",
+    "bulkDelete": "Verwijder geselecteerd",
+    "deselect": "Deselecteer",
+    "selected": "geselecteerd"
+  },
+  "empty": {
+    "title": "Nog geen facturen",
+    "description": "Maak je eerste testfactuur aan via 'Nieuwe factuur'.",
+    "noSearchResults": "Geen facturen gevonden voor",
+    "tryDifferent": "Probeer een andere zoekterm."
+  },
+  "loading": "Facturen laden...",
+  "undo": {
+    "deleteSingle": "Factuur gemarkeerd voor verwijderen.",
+    "deleteMultiple": "{{count}} facturen gemarkeerd voor verwijderen.",
+    "confirmDelete": "Definitief over 5 seconden.",
+    "undoAction": "Ongedaan maken"
+  },
+  "deleteConfirm": {
+    "title": "Factuur verwijderen",
+    "message": "Weet je zeker dat je factuur {{number}} wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "paidWarning": "Let op: factuur {{number}} staat op betaald. Als je deze verwijdert, wordt het betaalde bedrag direct uit je dashboard gehaald. Weet je het zeker?",
+    "bulkConfirm": "Weet je zeker dat je {{count}} facturen wilt verwijderen?"
+  },
+  "import": {
+    "title": "Factuur importeren",
+    "subtitle": "Importeer een bestaande factuur vanuit PDF",
+    "dropzone": "Sleep een PDF hierheen of klik om te uploaden",
+    "uploading": "Uploaden...",
+    "processing": "Factuur verwerken...",
+    "success": "Factuur succesvol geïmporteerd",
+    "error": "Import mislukt"
+  },
+  "searchResults": "resultaten voor"
+}

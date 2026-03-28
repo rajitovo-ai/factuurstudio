@@ -1,0 +1,33 @@
+{
+  "support": "Support",
+  "helpCenter": "Hulpcentrum",
+  "description": "Vind snel antwoorden, bekijk de meest gebruikte onderwerpen en neem contact op als je er niet uitkomt.",
+  "contactSupport": "Contact support",
+  "myTickets": "Mijn tickets",
+  "ticketsDescription": "Bekijk de status van je laatste supportvragen en reacties van admin.",
+  "refresh": "Vernieuwen",
+  "noTickets": "Nog geen tickets gevonden.",
+  "adminResponse": "Admin reactie",
+  "search": "Zoeken",
+  "searchPlaceholder": "Bijv. BTW, factuurstatus of import",
+  "noResults": "Geen resultaten gevonden. Probeer een ander zoekwoord of neem contact op met support.",
+  "wasThisHelpful": "Was dit nuttig?",
+  "yes": "Ja",
+  "no": "Nee",
+  "supportTicket": "Support ticket",
+  "sendMessage": "Kom je er niet uit? Stuur ons een bericht",
+  "emailDirect": "Of mail direct naar info@webdesignerstudio.nl",
+  "subject": "Onderwerp",
+  "subjectPlaceholder": "Bijv. Factuurstatus wijzigt niet",
+  "message": "Bericht",
+  "messagePlaceholder": "Omschrijf je vraag, wat je deed en wat je verwachtte.",
+  "submit": "Verstuur ticket",
+  "submitting": "Versturen...",
+  "quickLinks": "Snel naar",
+  "messages": {
+    "subjectMinChars": "Onderwerp moet minimaal 3 tekens zijn.",
+    "messageMinChars": "Bericht moet minimaal 10 tekens zijn.",
+    "ticketFailed": "Ticket versturen is mislukt. Probeer het opnieuw of gebruik e-mail.",
+    "ticketSent": "Je supportticket is verzonden. We reageren zo snel mogelijk."
+  }
+}
