@@ -17,7 +17,7 @@ export function LanguageSwitcher() {
       aria-label={t('language')}
     >
       <span className="text-[10px] leading-none opacity-80">{i18n.language === 'nl' ? '🇳🇱' : '🇬🇧'}</span>
-      <span className="text-xs font-semibold tracking-wide">{displayLang}</span>
+      <span className="hidden sm:inline text-xs font-semibold tracking-wide">{displayLang}</span>
     </button>
   )
 }

@@ -53,12 +53,14 @@ export default function AppLayout() {
         <Link to="/dashboard" className="text-lg font-extrabold text-cyan-800">
           Factuur Studio
         </Link>
-        <button
-          type="button"
-          onClick={() => setMobileNavOpen((v) => !v)}
-          className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
-          aria-label="Menu"
-        >
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen((v) => !v)}
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+            aria-label="Menu"
+          >
           {mobileNavOpen ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

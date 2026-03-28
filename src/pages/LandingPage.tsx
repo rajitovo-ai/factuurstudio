@@ -66,7 +66,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/blog"
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:text-slate-900"
+              className="hidden sm:block rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:text-slate-900"
             >
               {t('navigation:nav.blog')}
             </Link>
