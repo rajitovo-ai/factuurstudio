@@ -14,8 +14,7 @@ const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS ?? '')
   .filter(Boolean)
 
 export default function SettingsPage() {
-  const { t, i18n } = useTranslation(['settings', 'common'])
-  const _language = i18n.language
+  const { t } = useTranslation(['settings', 'common'])
   const userId = useAuthStore((state) => state.userId)
   const email = useAuthStore((state) => state.email)
   const profiles = useProfileStore((state) => state.profiles)
