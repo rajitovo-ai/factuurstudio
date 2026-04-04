@@ -271,6 +271,7 @@ export default function InvoiceImportPage() {
           clientPaymentTermDays: hasDueDate ? 14 : 0,
           clientNotes: 'Geimporteerd uit bestaande PDF-factuur.',
           invoiceDescription: row.invoiceDescription,
+          paymentInstructions: '',
           hasDueDate,
           issueDate,
           dueDate,

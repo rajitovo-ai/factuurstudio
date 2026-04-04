@@ -17,6 +17,9 @@ export type StoredInvoice = {
   id: string
   userId: string
   invoiceNumber: string
+  sellerName?: string
+  sellerEmail?: string
+  sellerIban?: string
   companyName: string
   logoDataUrl?: string | null
   clientName: string
@@ -33,6 +36,7 @@ export type StoredInvoice = {
   clientPaymentTermDays: number
   clientNotes: string
   invoiceDescription: string
+  paymentInstructions?: string
   hasDueDate: boolean
   issueDate: string
   dueDate: string
@@ -63,6 +67,9 @@ type DbInvoiceRow = {
   id: string
   user_id: string
   invoice_number: string
+  seller_name: string | null
+  seller_email: string | null
+  seller_iban: string | null
   company_name: string
   logo_data_url: string | null
   client_name: string
@@ -79,6 +86,7 @@ type DbInvoiceRow = {
   client_payment_term_days: number | null
   client_notes: string | null
   invoice_description: string | null
+  payment_instructions: string | null
   has_due_date: boolean | null
   issue_date: string
   due_date: string
@@ -98,6 +106,9 @@ const toStoredInvoice = (row: DbInvoiceRow): StoredInvoice => ({
   id: row.id,
   userId: row.user_id,
   invoiceNumber: row.invoice_number,
+  sellerName: typeof row.seller_name === 'string' ? row.seller_name : undefined,
+  sellerEmail: typeof row.seller_email === 'string' ? row.seller_email : undefined,
+  sellerIban: typeof row.seller_iban === 'string' ? row.seller_iban : undefined,
   companyName: row.company_name,
   logoDataUrl: row.logo_data_url,
   clientName: row.client_name,
@@ -114,6 +125,7 @@ const toStoredInvoice = (row: DbInvoiceRow): StoredInvoice => ({
   clientPaymentTermDays: row.client_payment_term_days ?? 14,
   clientNotes: row.client_notes ?? '',
   invoiceDescription: row.invoice_description ?? '',
+  paymentInstructions: row.payment_instructions ?? '',
   hasDueDate: row.has_due_date ?? true,
   issueDate: row.issue_date,
   dueDate: row.due_date,
@@ -217,6 +229,9 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
     const payload = {
       user_id: invoice.userId,
       invoice_number: invoice.invoiceNumber,
+      seller_name: invoice.sellerName ?? '',
+      seller_email: invoice.sellerEmail ?? '',
+      seller_iban: invoice.sellerIban ?? '',
       company_name: invoice.companyName,
       logo_data_url: invoice.logoDataUrl ?? null,
       client_name: invoice.clientName,
@@ -233,6 +248,7 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       client_payment_term_days: invoice.clientPaymentTermDays,
       client_notes: invoice.clientNotes,
       invoice_description: invoice.invoiceDescription,
+      payment_instructions: invoice.paymentInstructions ?? '',
       has_due_date: invoice.hasDueDate,
       issue_date: invoice.issueDate,
       due_date: invoice.dueDate,
@@ -259,10 +275,14 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
     insertData = initialInsert.data
     insertError = initialInsert.error
 
-    if (insertError && /is_imported|column/i.test(insertError.message)) {
+    if (insertError && /is_imported|seller_name|seller_email|seller_iban|payment_instructions|column/i.test(insertError.message)) {
       const legacyPayload = { ...payload }
       delete (legacyPayload as { is_imported?: boolean }).is_imported
       delete (legacyPayload as { vat_exemption_reason?: string }).vat_exemption_reason
+      delete (legacyPayload as { seller_name?: string }).seller_name
+      delete (legacyPayload as { seller_email?: string }).seller_email
+      delete (legacyPayload as { seller_iban?: string }).seller_iban
+      delete (legacyPayload as { payment_instructions?: string }).payment_instructions
       const legacyInsert = await supabase
         .from('app_invoices')
         .insert(legacyPayload)
@@ -308,6 +328,9 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
 
     const payload = {
       invoice_number: update.invoiceNumber,
+      seller_name: update.sellerName ?? '',
+      seller_email: update.sellerEmail ?? '',
+      seller_iban: update.sellerIban ?? '',
       company_name: update.companyName,
       logo_data_url: update.logoDataUrl ?? null,
       client_name: update.clientName,
@@ -324,6 +347,7 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       client_payment_term_days: update.clientPaymentTermDays,
       client_notes: update.clientNotes,
       invoice_description: update.invoiceDescription,
+      payment_instructions: update.paymentInstructions ?? '',
       has_due_date: update.hasDueDate,
       issue_date: update.issueDate,
       due_date: update.dueDate,
@@ -337,7 +361,10 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       updated_at: new Date().toISOString(),
     }
 
-    const { data, error } = await supabase
+    let updateData: unknown = null
+    let updateError: { message: string } | null = null
+
+    const initialUpdate = await supabase
       .from('app_invoices')
       .update(payload)
       .eq('id', invoiceId)
@@ -345,12 +372,34 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       .select('*')
       .single()
 
-    if (error) {
-      set({ error: error.message })
+    updateData = initialUpdate.data
+    updateError = initialUpdate.error
+
+    if (updateError && /seller_name|seller_email|seller_iban|payment_instructions|column/i.test(updateError.message)) {
+      const legacyPayload = { ...payload }
+      delete (legacyPayload as { seller_name?: string }).seller_name
+      delete (legacyPayload as { seller_email?: string }).seller_email
+      delete (legacyPayload as { seller_iban?: string }).seller_iban
+      delete (legacyPayload as { payment_instructions?: string }).payment_instructions
+
+      const legacyUpdate = await supabase
+        .from('app_invoices')
+        .update(legacyPayload)
+        .eq('id', invoiceId)
+        .eq('status', 'concept')
+        .select('*')
+        .single()
+
+      updateData = legacyUpdate.data
+      updateError = legacyUpdate.error
+    }
+
+    if (updateError) {
+      set({ error: updateError.message })
       return false
     }
 
-    const updatedInvoice = toStoredInvoice(data as DbInvoiceRow)
+    const updatedInvoice = toStoredInvoice(updateData as DbInvoiceRow)
     set((state) => ({
       invoices: state.invoices.map((invoice) => (invoice.id === invoiceId ? updatedInvoice : invoice)),
       error: null,

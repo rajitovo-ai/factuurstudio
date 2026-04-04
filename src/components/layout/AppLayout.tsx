@@ -71,6 +71,7 @@ export default function AppLayout() {
             </svg>
           )}
         </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}
@@ -80,7 +81,9 @@ export default function AppLayout() {
             <NavLink to="/dashboard" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Dashboard</NavLink>
             <NavLink to="/klanten" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Klanten</NavLink>
             <NavLink to="/facturen" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Facturen</NavLink>
+            <NavLink to="/offertes" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Offertes</NavLink>
             <NavLink to="/facturen/nieuw" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Nieuwe factuur</NavLink>
+            <NavLink to="/offertes/nieuw" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Nieuwe offerte</NavLink>
             <NavLink to="/facturen/importeren" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Importeer facturen</NavLink>
             <NavLink to="/referral" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Vrienden uitnodigen</NavLink>
             <NavLink to="/instellingen" className={navLinkClass} onClick={() => setMobileNavOpen(false)}>Instellingen</NavLink>
@@ -112,7 +115,9 @@ export default function AppLayout() {
             <NavLink to="/dashboard" className={navLinkClass}>Dashboard</NavLink>
             <NavLink to="/klanten" className={navLinkClass}>Klanten</NavLink>
             <NavLink to="/facturen" className={navLinkClass}>Facturen</NavLink>
+            <NavLink to="/offertes" className={navLinkClass}>Offertes</NavLink>
             <NavLink to="/facturen/nieuw" className={navLinkClass}>Nieuwe factuur</NavLink>
+            <NavLink to="/offertes/nieuw" className={navLinkClass}>Nieuwe offerte</NavLink>
             <NavLink to="/facturen/importeren" className={navLinkClass}>Importeer facturen</NavLink>
             <NavLink to="/referral" className={navLinkClass}>Vrienden uitnodigen</NavLink>
             <NavLink to="/instellingen" className={navLinkClass}>Instellingen</NavLink>

@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "jest",
+    "test:quote": "jest src/__tests__/quoteNumber.test.ts src/__tests__/quoteStore.test.ts",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test"

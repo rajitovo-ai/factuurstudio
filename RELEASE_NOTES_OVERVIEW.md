@@ -6,6 +6,38 @@
 
 ## 📦 Release [v0.4.0] - 2026-03-28
 
+## 📦 Release [v0.5.0] - 2026-04-04
+
+### ✨ Nieuwe Features
+
+- **Offerte module (volledig):** nieuwe offerteflow met eigen pagina's, statusmodel en nummering.
+- **Automatische quote -> factuur conversie:** via transactionele RPC (`approve_quote_to_invoice`).
+- **Offerte PDF's:** direct downloaden vanuit editor en overzicht.
+- **Afzender-professionaliteit:** uitgebreide afzendervelden voor facturen en offertes (naam, e-mail, IBAN, telefoon/KvK op offertes).
+- **Betaalinstructies op facturen:** vrij invulbare tekst onder totaalsectie in PDF.
+- **Klant -> offerte prefill:** directe knop vanuit klantenkaart.
+
+### 🔧 Wijzigingen
+
+- PDF-layout voor ontvangergegevens geprofessionaliseerd met duidelijke labels.
+- Hardcoded betalingsregels onderaan factuur-PDF verwijderd.
+- Document-specifieke afzenderwaarden (niet alleen profielfallback) worden nu gebruikt bij PDF-download vanuit overzichten.
+
+### 🗄️ Database
+
+- `016_app_quotes.sql`
+- `017_quote_approval_rpc.sql`
+- `018_app_invoices_sender_fields.sql`
+- `019_app_quotes_sender_fields.sql`
+- `020_app_invoices_payment_instructions.sql`
+- `021_app_quotes_seller_phone_kvk.sql`
+
+### ✅ Validatie
+
+- Build geslaagd.
+- Quote tests geslaagd (2 suites, 7 tests).
+- Migraties remote toegepast.
+
 ### ✨ Nieuwe Features
 
 - **i18n (Internationalisatie)** - Volledige NL/EN taalondersteuning

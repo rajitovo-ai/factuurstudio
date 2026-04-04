@@ -25,9 +25,12 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 // Lazy loaded pages
 const InvoiceImportPage = lazy(() => import('./pages/InvoiceImportPage'))
 const InvoicesPage = lazy(() => import('./pages/InvoicesPage'))
+const QuotesPage = lazy(() => import('./pages/QuotesPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const SupportPage = lazy(() => import('./pages/SupportPage'))
 const CustomersPage = lazy(() => import('./pages/CustomersPage'))
+const QuoteCreatePage = lazy(() => import('./pages/QuoteCreatePage'))
+const QuoteEditPage = lazy(() => import('./pages/QuoteEditPage'))
 
 // Utilities
 import { captureAttributionFromUrl, getAttributionPayload } from './lib/attribution'
@@ -99,6 +102,30 @@ function App() {
             element={
               <Suspense fallback={<div className="p-6 text-center">Laden...</div>}>
                 <InvoicesPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/offertes"
+            element={
+              <Suspense fallback={<div className="p-6 text-center">Laden...</div>}>
+                <QuotesPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/offertes/nieuw"
+            element={
+              <Suspense fallback={<div className="p-6 text-center">Laden...</div>}>
+                <QuoteCreatePage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/offertes/:id/bewerken"
+            element={
+              <Suspense fallback={<div className="p-6 text-center">Laden...</div>}>
+                <QuoteEditPage />
               </Suspense>
             }
           />

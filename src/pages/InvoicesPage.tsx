@@ -10,6 +10,7 @@ import { filterInvoices } from '../lib/searchUtils'
 import { TableSkeleton } from '../components/ui/Skeleton'
 import { useAuthStore } from '../stores/authStore'
 import { getInvoiceDisplayStatus, useInvoiceStore } from '../stores/invoiceStore'
+import { defaultCompanyProfile, useProfileStore } from '../stores/profileStore'
 
 const formatCurrency = (amount: number, language: string, currencyCode = 'EUR') =>
   new Intl.NumberFormat(language === 'en' ? 'en-US' : 'nl-NL', {
@@ -22,6 +23,16 @@ const statusClassName: Record<string, string> = {
   verzonden: 'bg-amber-50 text-amber-800 border-amber-200',
   betaald: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   vervallen: 'bg-rose-50 text-rose-800 border-rose-200',
+}
+
+const getDefaultSellerName = (email: string | null): string => {
+  if (!email) return ''
+  const localPart = email.split('@')[0]?.trim()
+  if (!localPart) return ''
+  return localPart
+    .replace(/[._-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 const statusLabel = (status: string, t: (key: string) => string) => {
@@ -38,6 +49,7 @@ export default function InvoicesPage() {
   const { t, i18n } = useTranslation(['invoices', 'common'])
   const language = i18n.language
   const userId = useAuthStore((state) => state.userId)
+  const email = useAuthStore((state) => state.email)
   const invoices = useInvoiceStore((state) => state.invoices)
   const isLoading = useInvoiceStore((state) => state.isLoading)
   const storeError = useInvoiceStore((state) => state.error)
@@ -45,6 +57,8 @@ export default function InvoicesPage() {
   const markInvoiceSent = useInvoiceStore((state) => state.markInvoiceSent)
   const markInvoicePaid = useInvoiceStore((state) => state.markInvoicePaid)
   const removeInvoice = useInvoiceStore((state) => state.removeInvoice)
+  const profiles = useProfileStore((state) => state.profiles)
+  const loadProfile = useProfileStore((state) => state.loadProfile)
   const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<string[]>([])
   const [pendingDeleteIds, setPendingDeleteIds] = useState<string[]>([])
   const [undoState, setUndoState] = useState<{ ids: string[]; label: string } | null>(null)
@@ -60,8 +74,9 @@ export default function InvoicesPage() {
   useEffect(() => {
     if (userId) {
       void loadInvoices(userId)
+      void loadProfile(userId)
     }
-  }, [loadInvoices, userId])
+  }, [loadInvoices, loadProfile, userId])
 
   useEffect(() => {
     const timers = deleteTimersRef.current
@@ -73,6 +88,16 @@ export default function InvoicesPage() {
   }, [])
 
   const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
+  const profile = userId ? profiles[userId] ?? defaultCompanyProfile : defaultCompanyProfile
+
+  const downloadPdfForInvoice = (invoice: (typeof userInvoices)[number]) => {
+    downloadInvoicePdf(invoice, {
+      sellerProfile: profile,
+      sellerName: invoice.sellerName !== undefined ? invoice.sellerName : getDefaultSellerName(email),
+      sellerEmail: invoice.sellerEmail !== undefined ? invoice.sellerEmail : email,
+      sellerIban: invoice.sellerIban !== undefined ? invoice.sellerIban : profile.iban,
+    })
+  }
   
   // Apply search filter
   const searchFilteredInvoices = useMemo(() => {
@@ -391,7 +416,7 @@ export default function InvoicesPage() {
                         <td className="py-4">
                           <div className="flex justify-end gap-2 flex-wrap">
                             {canEdit ? <Link to={`/facturen/${invoice.id}/bewerken`} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">{t('common:edit')}</Link> : null}
-                            <button type="button" onClick={() => downloadInvoicePdf(invoice)} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF</button>
+                            <button type="button" onClick={() => downloadPdfForInvoice(invoice)} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF</button>
                             <button type="button" onClick={() => void markInvoiceSent(invoice.id)} disabled={!canSend} className="rounded-lg border border-cyan-200 px-3 py-2 text-xs font-semibold text-cyan-700 hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-50">{t('common:sent')}</button>
                             <button type="button" onClick={() => void markInvoicePaid(invoice.id)} disabled={!canMarkPaid} className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50">{t('common:paid')}</button>
                             <button type="button" onClick={() => void handleRemoveInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50">{t('common:delete')}</button>
@@ -453,7 +478,7 @@ export default function InvoicesPage() {
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {canEdit ? <Link to={`/facturen/${invoice.id}/bewerken`} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700">Bewerken</Link> : null}
-                      <button type="button" onClick={() => downloadInvoicePdf(invoice)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700">PDF</button>
+                      <button type="button" onClick={() => downloadPdfForInvoice(invoice)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700">PDF</button>
                       <button type="button" onClick={() => void markInvoiceSent(invoice.id)} disabled={!canSend} className="rounded-lg border border-cyan-200 px-3 py-1.5 text-xs font-semibold text-cyan-700 disabled:opacity-40">Verzonden</button>
                       <button type="button" onClick={() => void markInvoicePaid(invoice.id)} disabled={!canMarkPaid} className="rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 disabled:opacity-40">Betaald</button>
                       <button type="button" onClick={() => void handleRemoveInvoice(invoice.id)} disabled={!canDelete} className="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 disabled:opacity-40">Verwijder</button>

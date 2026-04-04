@@ -13,7 +13,55 @@ const formatDate = (isoDate: string) => {
   return `${day}-${month}-${year}`
 }
 
-export const downloadInvoicePdf = (invoice: StoredInvoice) => {
+type PdfVariant = 'invoice' | 'quote'
+
+type SellerProfile = {
+  companyName?: string
+  address?: string
+  kvkNumber?: string
+  btwNumber?: string
+  iban?: string
+}
+
+type DownloadPdfOptions = {
+  variant?: PdfVariant
+  filenamePrefix?: string
+  sellerProfile?: SellerProfile
+  sellerName?: string | null
+  sellerEmail?: string | null
+  sellerKvk?: string | null
+  sellerIban?: string | null
+  sellerPhone?: string | null
+}
+
+const addDaysIso = (isoDate: string, days: number): string => {
+  if (!isoDate) return ''
+  const date = new Date(`${isoDate}T00:00:00`)
+  date.setDate(date.getDate() + Math.max(0, Math.round(days)))
+  return date.toISOString().slice(0, 10)
+}
+
+export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfOptions = {}) => {
+  const variant = options.variant ?? 'invoice'
+  const isQuote = variant === 'quote'
+  const filenamePrefix = options.filenamePrefix ?? (isQuote ? 'offerte' : 'factuur')
+  const numberLabel = isQuote ? 'Offertenummer' : 'Factuurnummer'
+  const issueDateLabel = isQuote ? 'Offertedatum' : 'Factuurdatum'
+  const dueDateLabel = isQuote ? 'Geldig tot' : 'Vervaldatum'
+  const recipientLabel = isQuote ? 'Offerte voor' : 'Factuur voor'
+  const sellerProfile = options.sellerProfile
+  const sellerCompanyName = sellerProfile?.companyName?.trim() || invoice.companyName || 'Bedrijfsnaam'
+  const sellerKvk = options.sellerKvk !== undefined
+    ? (options.sellerKvk ?? '').trim()
+    : (sellerProfile?.kvkNumber ?? '')
+  const sellerIban = options.sellerIban !== undefined
+    ? (options.sellerIban ?? '').trim()
+    : (sellerProfile?.iban ?? '')
+  const fallbackQuoteDueDate = addDaysIso(invoice.issueDate, invoice.clientPaymentTermDays || 14)
+  const effectiveDueDate = isQuote
+    ? (invoice.hasDueDate ? invoice.dueDate : fallbackQuoteDueDate)
+    : (invoice.hasDueDate ? invoice.dueDate : '')
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -29,7 +77,7 @@ export const downloadInvoicePdf = (invoice: StoredInvoice) => {
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(20)
-  doc.text(invoice.companyName || 'Bedrijfsnaam', left, y)
+  doc.text(sellerCompanyName, left, y)
 
   if (invoice.logoDataUrl) {
     try {
@@ -43,56 +91,68 @@ export const downloadInvoicePdf = (invoice: StoredInvoice) => {
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
   y += 7
-  doc.text(`Factuurnummer: ${invoice.invoiceNumber}`, left, y)
+  doc.text(`${numberLabel}: ${invoice.invoiceNumber}`, left, y)
   y += 5
-  doc.text(`Factuurdatum: ${formatDate(invoice.issueDate)}`, left, y)
+  doc.text(`${issueDateLabel}: ${formatDate(invoice.issueDate)}`, left, y)
   y += 5
-  doc.text(`Vervaldatum: ${invoice.hasDueDate ? formatDate(invoice.dueDate) : 'n.v.t.'}`, left, y)
+  doc.text(`${dueDateLabel}: ${formatDate(effectiveDueDate)}`, left, y)
+
+  const sellerDetails: string[] = []
+  if (sellerProfile?.address) sellerDetails.push(sellerProfile.address)
+  if (options.sellerName) sellerDetails.push(`Contact: ${options.sellerName}`)
+  if (options.sellerEmail) sellerDetails.push(`E-mail: ${options.sellerEmail}`)
+  if (options.sellerPhone) sellerDetails.push(`Tel: ${options.sellerPhone}`)
+  if (sellerKvk) sellerDetails.push(`KvK: ${sellerKvk}`)
+  if (sellerProfile?.btwNumber) sellerDetails.push(`BTW: ${sellerProfile.btwNumber}`)
+  if (sellerIban) sellerDetails.push(`IBAN: ${sellerIban}`)
+
+  if (sellerDetails.length > 0) {
+    doc.setFontSize(9)
+    let sellerY = 44
+    sellerDetails.forEach((line) => {
+      doc.text(line, right, sellerY, { align: 'right' })
+      sellerY += 4.5
+    })
+    doc.setFontSize(10)
+  }
 
   y += 10
   doc.setFont('helvetica', 'bold')
-  doc.text('Factuur voor', left, y)
-  doc.setFont('helvetica', 'normal')
-  if (invoice.clientContactName) {
+  doc.text(recipientLabel, left, y)
+
+  const addRecipientField = (label: string, value: string) => {
+    const trimmedValue = value.trim()
+    if (!trimmedValue) return
+
     y += 5
-    doc.text(invoice.clientContactName, left, y)
+    doc.setFont('helvetica', 'bold')
+    doc.text(`${label}:`, left, y)
+    doc.setFont('helvetica', 'normal')
+
+    const wrappedValue = doc.splitTextToSize(trimmedValue, right - (left + 30))
+    doc.text(wrappedValue, left + 30, y)
+    if (wrappedValue.length > 1) {
+      y += (wrappedValue.length - 1) * 4
+    }
   }
-  y += 5
-  doc.text(invoice.clientName || '-', left, y)
-  y += 5
-  doc.text(invoice.clientEmail || '-', left, y)
-  if (invoice.clientPhone) {
-    y += 5
-    doc.text(`Tel: ${invoice.clientPhone}`, left, y)
-  }
-  if (invoice.clientAddress) {
-    y += 5
-    doc.text(invoice.clientAddress, left, y)
-  }
+
+  addRecipientField('Contactpersoon', invoice.clientContactName)
+  addRecipientField('Bedrijf / naam', invoice.clientName || '-')
+  addRecipientField('E-mail', invoice.clientEmail || '-')
+  addRecipientField('Telefoon', invoice.clientPhone)
+  addRecipientField('Adres', invoice.clientAddress)
+
   const clientCityLine = [invoice.clientPostalCode, invoice.clientCity].filter(Boolean).join(' ')
-  if (clientCityLine || invoice.clientCountry) {
-    y += 5
-    const location = [clientCityLine, invoice.clientCountry].filter(Boolean).join(' - ')
-    doc.text(location || '-', left, y)
+  const hasLocationDetails = Boolean(invoice.clientAddress || clientCityLine)
+  const showCountry = Boolean(invoice.clientCountry) && (hasLocationDetails || invoice.clientCountry !== 'NL')
+  if (clientCityLine || showCountry) {
+    const location = [clientCityLine, showCountry ? invoice.clientCountry : ''].filter(Boolean).join(' - ')
+    addRecipientField('Plaats', location || '-')
   }
-  if (invoice.clientIban) {
-    y += 5
-    doc.text(`IBAN klant: ${invoice.clientIban}`, left, y)
-  }
-  if (invoice.clientKvkNumber || invoice.clientBtwNumber) {
-    y += 5
-    const regInfo = [
-      invoice.clientKvkNumber ? `KvK: ${invoice.clientKvkNumber}` : '',
-      invoice.clientBtwNumber ? `BTW: ${invoice.clientBtwNumber}` : '',
-    ]
-      .filter(Boolean)
-      .join(' | ')
-    doc.text(regInfo, left, y)
-  }
-  if (invoice.clientNotes) {
-    y += 5
-    doc.text(`Notitie: ${invoice.clientNotes}`, left, y)
-  }
+  addRecipientField('KvK', invoice.clientKvkNumber)
+  addRecipientField('BTW', invoice.clientBtwNumber)
+  addRecipientField('IBAN klant', invoice.clientIban)
+  addRecipientField('Notitie', invoice.clientNotes)
 
   if (invoice.invoiceDescription) {
     y += 8
@@ -171,9 +231,29 @@ export const downloadInvoicePdf = (invoice: StoredInvoice) => {
   y += 14
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
-  doc.text('Betaalinstructie: maak het bedrag over onder vermelding van het factuurnummer.', left, y)
-  y += 5
-  doc.text(`Betaaltermijn klantprofiel: ${invoice.clientPaymentTermDays} dagen.`, left, y)
+  if (!isQuote) {
+    const instructions = invoice.paymentInstructions?.trim()
+    if (instructions) {
+      const wrappedInstructions = doc.splitTextToSize(instructions, 170)
+      doc.text(wrappedInstructions, left, y)
+      y += wrappedInstructions.length * 4
+    }
+  } else {
+    if (y > 238) {
+      doc.addPage()
+      y = 24
+    }
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Voor akkoord', left, y)
+    y += 7
+    doc.setFont('helvetica', 'normal')
+    doc.text('Datum:', left, y)
+    doc.line(left + 18, y, left + 90, y)
+    y += 10
+    doc.text('Handtekening:', left, y)
+    doc.line(left + 30, y, right, y)
+  }
 
-  doc.save(`factuur-${invoice.invoiceNumber}.pdf`)
+  doc.save(`${filenamePrefix}-${invoice.invoiceNumber}.pdf`)
 }

@@ -308,6 +308,12 @@ export default function CustomersPage() {
                 </p>
                 <div className="mt-3 flex flex-wrap justify-end gap-2">
                   <Link
+                    to={`/offertes/nieuw?customerId=${encodeURIComponent(customer.id)}`}
+                    className="rounded-lg border border-emerald-200 px-3 py-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
+                  >
+                    Gebruik in offerte
+                  </Link>
+                  <Link
                     to={`/facturen/nieuw?customerId=${encodeURIComponent(customer.id)}`}
                     className="rounded-lg border border-cyan-200 px-3 py-2 text-xs font-semibold text-cyan-700 hover:bg-cyan-50"
                   >

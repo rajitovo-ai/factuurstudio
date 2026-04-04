@@ -2,6 +2,50 @@
 
 All notable changes to Factuur Studio are documented here.
 
+## [0.5.0] — 2026-04-04
+
+### Added
+- **Complete offerte module:** Added end-to-end quote flow with dedicated routes and pages (`/offertes`, create/edit), including quote status lifecycle (`concept`, `verzonden`, `goedgekeurd`, `afgewezen`, `vervallen`).
+- **Quote numbering and conversion:** Added quote numbering (`OFF-YYYY-NNNN`) and quote approval conversion to invoice (`YYYY-NNNN`) with atomic RPC path.
+- **Quote PDF support:** Added quote PDF generation and download from quote editor and quote list.
+- **Seller identity controls (invoice and quote):** Added editable sender fields on document forms:
+	- name
+	- email (optional)
+	- phone (optional, quote)
+	- KvK (optional, quote)
+	- IBAN (optional, hideable)
+- **Configurable payment instructions:** Added per-invoice free-text payment instructions shown under the total in PDF.
+- **Customer-to-quote shortcut:** Added action on customer cards to create quotes with prefilled customer data.
+
+### Changed
+- **PDF professional layout:** Improved sender and recipient blocks with clearer labeled rows for recipient data and cleaner professional structure.
+- **Optional IBAN behavior:** Explicitly blank IBAN values are respected and no longer unintentionally fallback to profile IBAN in PDF output.
+- **Quote and invoice list PDF behavior:** PDF downloads from overview pages now prefer document-specific stored sender values.
+
+### Removed
+- Removed hardcoded PDF footer lines for invoices:
+	- `Betaalinstructie: maak het bedrag over onder vermelding van het factuurnummer.`
+	- `Betaaltermijn klantprofiel: X dagen.`
+
+### Database
+- Added migration `016_app_quotes.sql`:
+	- `app_quotes` table, constraints, indices, RLS policies.
+- Added migration `017_quote_approval_rpc.sql`:
+	- `approve_quote_to_invoice(uuid)` conversion RPC.
+- Added migration `018_app_invoices_sender_fields.sql`:
+	- invoice sender fields (`seller_name`, `seller_email`, `seller_iban`).
+- Added migration `019_app_quotes_sender_fields.sql`:
+	- quote sender fields and RPC update to copy sender fields into converted invoices.
+- Added migration `020_app_invoices_payment_instructions.sql`:
+	- invoice `payment_instructions` persistence.
+- Added migration `021_app_quotes_seller_phone_kvk.sql`:
+	- quote sender phone/KvK fields (`seller_phone`, `seller_kvk`).
+
+### Verification
+- `npm run build` passed after final integration changes.
+- `npm run test:quote` passed (2 suites, 7 tests).
+- Supabase remote migrations were applied through `021_app_quotes_seller_phone_kvk.sql`.
+
 ## [0.3.4] — 2026-03-20
 
 ### Added
