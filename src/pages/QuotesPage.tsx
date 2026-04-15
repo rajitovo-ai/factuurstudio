@@ -148,8 +148,8 @@ export default function QuotesPage() {
                           ) : null}
                           <button
                             type="button"
-                            onClick={() =>
-                              downloadQuotePdf(quote, {
+                            onClick={async () =>
+                              await downloadQuotePdf(quote, {
                                 companyProfile: profile,
                                 sellerName: quote.sellerName !== undefined ? quote.sellerName : getDefaultSellerName(email),
                                 sellerEmail: quote.sellerEmail !== undefined ? quote.sellerEmail : email,

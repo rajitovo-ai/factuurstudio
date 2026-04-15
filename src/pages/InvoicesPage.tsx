@@ -90,8 +90,8 @@ export default function InvoicesPage() {
   const userInvoices = invoices.filter((invoice) => invoice.userId === userId)
   const profile = userId ? profiles[userId] ?? defaultCompanyProfile : defaultCompanyProfile
 
-  const downloadPdfForInvoice = (invoice: (typeof userInvoices)[number]) => {
-    downloadInvoicePdf(invoice, {
+  const downloadPdfForInvoice = async (invoice: (typeof userInvoices)[number]) => {
+    await downloadInvoicePdf(invoice, {
       sellerProfile: profile,
       sellerName: invoice.sellerName !== undefined ? invoice.sellerName : getDefaultSellerName(email),
       sellerEmail: invoice.sellerEmail !== undefined ? invoice.sellerEmail : email,

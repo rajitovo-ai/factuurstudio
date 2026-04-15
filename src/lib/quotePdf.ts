@@ -48,8 +48,8 @@ const toInvoiceLike = (quote: StoredQuote, context?: QuotePdfContext): StoredInv
   createdAt: quote.createdAt,
 })
 
-export const downloadQuotePdf = (quote: StoredQuote, context?: QuotePdfContext) => {
-  downloadInvoicePdf(toInvoiceLike(quote, context), {
+export const downloadQuotePdf = async (quote: StoredQuote, context?: QuotePdfContext) => {
+  await downloadInvoicePdf(toInvoiceLike(quote, context), {
     variant: 'quote',
     filenamePrefix: 'offerte',
     sellerProfile: context?.companyProfile,

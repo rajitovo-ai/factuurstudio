@@ -593,7 +593,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     }
 
     setSaveError(null)
-    downloadInvoicePdf(tempInvoice, {
+    await downloadInvoicePdf(tempInvoice, {
       sellerProfile: {
         companyName,
         address: profile.address,

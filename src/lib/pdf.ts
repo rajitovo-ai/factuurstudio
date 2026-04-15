@@ -1,13 +1,29 @@
 import { jsPDF } from 'jspdf'
 import type { StoredInvoice } from '../stores/invoiceStore'
 
-// PDF currency formatter - uses EUR prefix for reliable mobile rendering
+// PDF currency formatter - uses euro symbol
 const pdfCurrency = (amount: number) => {
   const formatted = new Intl.NumberFormat('nl-NL', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)
-  return `EUR ${formatted}`
+  return `€${formatted}`
+}
+
+// Load LiberationSans font with euro support
+const loadEuroFont = async (doc: jsPDF) => {
+  try {
+    const response = await fetch('/fonts/LiberationSans-Regular.ttf')
+    if (!response.ok) return
+    const arrayBuffer = await response.arrayBuffer()
+    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+    doc.addFileToVFS('LiberationSans-Regular.ttf', base64)
+    doc.addFont('LiberationSans-Regular.ttf', 'LiberationSans', 'normal')
+    doc.addFont('LiberationSans-Regular.ttf', 'LiberationSans', 'bold')
+    return true
+  } catch {
+    return false
+  }
 }
 
 const formatDate = (isoDate: string) => {
@@ -44,7 +60,7 @@ const addDaysIso = (isoDate: string, days: number): string => {
   return date.toISOString().slice(0, 10)
 }
 
-export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfOptions = {}) => {
+export const downloadInvoicePdf = async (invoice: StoredInvoice, options: DownloadPdfOptions = {}) => {
   const variant = options.variant ?? 'invoice'
   const isQuote = variant === 'quote'
   const filenamePrefix = options.filenamePrefix ?? (isQuote ? 'offerte' : 'factuur')
@@ -71,6 +87,10 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
     format: 'a4',
   })
 
+  // Load font with euro support
+  const fontLoaded = await loadEuroFont(doc)
+  const fontName = fontLoaded ? 'LiberationSans' : 'helvetica'
+
   const left = 16
   const right = 194
   let y = 18
@@ -78,7 +98,7 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
   doc.setTextColor(0, 0, 0)
   doc.setLineWidth(0.3)
 
-  doc.setFont('helvetica', 'bold')
+  doc.setFont(fontName, 'bold')
   doc.setFontSize(20)
   doc.text(sellerCompanyName, left, y)
 
@@ -91,7 +111,7 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
     }
   }
 
-  doc.setFont('helvetica', 'normal')
+  doc.setFont(fontName, 'normal')
   doc.setFontSize(10)
   y += 7
   doc.text(`${numberLabel}: ${invoice.invoiceNumber}`, left, y)
@@ -120,7 +140,7 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
   }
 
   y += 10
-  doc.setFont('helvetica', 'bold')
+  doc.setFont(fontName, 'bold')
   doc.text(recipientLabel, left, y)
 
   const addRecipientField = (label: string, value: string) => {
@@ -128,9 +148,9 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
     if (!trimmedValue) return
 
     y += 5
-    doc.setFont('helvetica', 'bold')
+    doc.setFont(fontName, 'bold')
     doc.text(`${label}:`, left, y)
-    doc.setFont('helvetica', 'normal')
+    doc.setFont(fontName, 'normal')
 
     const wrappedValue = doc.splitTextToSize(trimmedValue, right - (left + 30))
     doc.text(wrappedValue, left + 30, y)
@@ -159,10 +179,10 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
 
   if (invoice.invoiceDescription) {
     y += 8
-    doc.setFont('helvetica', 'bold')
+    doc.setFont(fontName, 'bold')
     doc.text('Beschrijving', left, y)
     y += 5
-    doc.setFont('helvetica', 'normal')
+    doc.setFont(fontName, 'normal')
     const wrappedDescription = doc.splitTextToSize(invoice.invoiceDescription, 170)
     doc.text(wrappedDescription, left, y)
     y += wrappedDescription.length * 4
@@ -170,10 +190,10 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
 
   if (invoice.vatExemptionReason?.trim()) {
     y += 8
-    doc.setFont('helvetica', 'bold')
+    doc.setFont(fontName, 'bold')
     doc.text('BTW-vrijstelling', left, y)
     y += 5
-    doc.setFont('helvetica', 'normal')
+    doc.setFont(fontName, 'normal')
     const wrappedExemption = doc.splitTextToSize(invoice.vatExemptionReason, 170)
     doc.text(wrappedExemption, left, y)
     y += wrappedExemption.length * 4
@@ -183,7 +203,7 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
   doc.line(left, y, right, y)
   y += 6
 
-  doc.setFont('helvetica', 'bold')
+  doc.setFont(fontName, 'bold')
   doc.text('Omschrijving', left, y)
   doc.text('Aantal', 116, y, { align: 'right' })
   doc.text('Prijs', 145, y, { align: 'right' })
@@ -194,7 +214,7 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
   doc.line(left, y, right, y)
   y += 6
 
-  doc.setFont('helvetica', 'normal')
+  doc.setFont(fontName, 'normal')
 
   invoice.lines.forEach((line) => {
     const lineExVat = line.quantity * line.unitPrice
@@ -219,7 +239,7 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
   doc.line(126, y, right, y)
   y += 7
 
-  doc.setFont('helvetica', 'normal')
+  doc.setFont(fontName, 'normal')
   doc.text('Subtotaal', 160, y, { align: 'right' })
   doc.text(pdfCurrency(invoice.subtotal), right, y, { align: 'right' })
   y += 6
@@ -227,12 +247,12 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
   doc.text(pdfCurrency(invoice.vatTotal), right, y, { align: 'right' })
   y += 7
 
-  doc.setFont('helvetica', 'bold')
+  doc.setFont(fontName, 'bold')
   doc.text('Totaal te betalen', 160, y, { align: 'right' })
   doc.text(pdfCurrency(invoice.total), right, y, { align: 'right' })
 
   y += 14
-  doc.setFont('helvetica', 'normal')
+  doc.setFont(fontName, 'normal')
   doc.setFontSize(9)
   if (!isQuote) {
     const instructions = invoice.paymentInstructions?.trim()
@@ -247,10 +267,10 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
       y = 24
     }
     doc.setFontSize(10)
-    doc.setFont('helvetica', 'bold')
+    doc.setFont(fontName, 'bold')
     doc.text('Voor akkoord', left, y)
     y += 7
-    doc.setFont('helvetica', 'normal')
+    doc.setFont(fontName, 'normal')
     doc.text('Datum:', left, y)
     doc.line(left + 18, y, left + 90, y)
     y += 10

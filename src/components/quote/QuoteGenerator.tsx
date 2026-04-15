@@ -268,7 +268,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
     }
 
     setSaveError(null)
-    downloadQuotePdf(quoteForPdf, {
+    await downloadQuotePdf(quoteForPdf, {
       companyProfile: profile,
       sellerName,
       sellerEmail,
