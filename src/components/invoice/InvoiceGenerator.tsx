@@ -539,7 +539,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     )
   }
 
-  const downloadCurrentInvoicePdf = () => {
+  const downloadCurrentInvoicePdf = async () => {
     const hasValidLine = lines.some((line) => line.description.trim() && line.quantity > 0)
     if (!clientName.trim()) {
       setSaveError(t('invoiceGenerator:errors.noClientName'))

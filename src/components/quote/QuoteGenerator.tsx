@@ -216,7 +216,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
     setLines((current) => (current.length > 1 ? current.filter((line) => line.id !== id) : current))
   }
 
-  const downloadCurrentPdf = () => {
+  const downloadCurrentPdf = async () => {
     const hasValidLine = lines.some((line) => line.description.trim() && line.quantity > 0)
     if (!clientName.trim() || !issueDate || !dueDate || !hasValidLine) {
       setSaveError('Vul eerst klant, offertedatum, geldig-tot datum en minimaal 1 regel in om PDF te downloaden.')
