@@ -95,6 +95,7 @@ export default function InvoicesPage() {
       sellerProfile: profile,
       sellerName: invoice.sellerName !== undefined ? invoice.sellerName : getDefaultSellerName(email),
       sellerEmail: invoice.sellerEmail !== undefined ? invoice.sellerEmail : email,
+      sellerKvk: profile.kvkNumber,
       sellerIban: invoice.sellerIban !== undefined ? invoice.sellerIban : profile.iban,
     })
   }

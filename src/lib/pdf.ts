@@ -1,27 +1,32 @@
 import { jsPDF } from 'jspdf'
 import type { StoredInvoice } from '../stores/invoiceStore'
 
-// PDF currency formatter - uses euro symbol
-const pdfCurrency = (amount: number) => {
+// PDF currency formatter - uses euro symbol, falls back to EUR if font fails
+const pdfCurrency = (amount: number, useEurFallback = false) => {
   const formatted = new Intl.NumberFormat('nl-NL', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)
-  return `€${formatted}`
+  return useEurFallback ? `EUR ${formatted}` : `€${formatted}`
 }
 
 // Load LiberationSans font with euro support
 const loadEuroFont = async (doc: jsPDF) => {
   try {
     const response = await fetch('/fonts/LiberationSans-Regular.ttf')
-    if (!response.ok) return
+    if (!response.ok) {
+      console.warn('Failed to load LiberationSans font:', response.status)
+      return false
+    }
     const arrayBuffer = await response.arrayBuffer()
     const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
     doc.addFileToVFS('LiberationSans-Regular.ttf', base64)
     doc.addFont('LiberationSans-Regular.ttf', 'LiberationSans', 'normal')
     doc.addFont('LiberationSans-Regular.ttf', 'LiberationSans', 'bold')
+    console.log('LiberationSans font loaded successfully')
     return true
-  } catch {
+  } catch (error) {
+    console.warn('Error loading LiberationSans font:', error)
     return false
   }
 }
@@ -69,7 +74,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   const dueDateLabel = isQuote ? 'Geldig tot' : 'Vervaldatum'
   const recipientLabel = isQuote ? 'Offerte voor' : 'Factuur voor'
   const sellerProfile = options.sellerProfile
-  const sellerCompanyName = sellerProfile?.companyName?.trim() || invoice.companyName || 'Bedrijfsnaam'
+  const sellerCompanyName = sellerProfile?.companyName?.trim() || invoice.companyName?.trim() || 'Bedrijfsnaam'
   const sellerKvk = options.sellerKvk !== undefined
     ? (options.sellerKvk ?? '').trim()
     : (sellerProfile?.kvkNumber ?? '')
@@ -90,6 +95,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   // Load font with euro support
   const fontLoaded = await loadEuroFont(doc)
   const fontName = fontLoaded ? 'LiberationSans' : 'helvetica'
+  const useEurFallback = !fontLoaded
 
   const left = 16
   const right = 194
@@ -223,9 +229,9 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
 
     doc.text(line.description || '-', left, y)
     doc.text(String(line.quantity), 116, y, { align: 'right' })
-    doc.text(pdfCurrency(line.unitPrice), 145, y, { align: 'right' })
+    doc.text(pdfCurrency(line.unitPrice, useEurFallback), 145, y, { align: 'right' })
     doc.text(`${line.vatRate}%`, 164, y, { align: 'right' })
-    doc.text(pdfCurrency(lineTotal), right, y, { align: 'right' })
+    doc.text(pdfCurrency(lineTotal, useEurFallback), right, y, { align: 'right' })
 
     y += 6
 
@@ -241,15 +247,15 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
 
   doc.setFont(fontName, 'normal')
   doc.text('Subtotaal', 160, y, { align: 'right' })
-  doc.text(pdfCurrency(invoice.subtotal), right, y, { align: 'right' })
+  doc.text(pdfCurrency(invoice.subtotal, useEurFallback), right, y, { align: 'right' })
   y += 6
   doc.text('BTW', 160, y, { align: 'right' })
-  doc.text(pdfCurrency(invoice.vatTotal), right, y, { align: 'right' })
+  doc.text(pdfCurrency(invoice.vatTotal, useEurFallback), right, y, { align: 'right' })
   y += 7
 
   doc.setFont(fontName, 'bold')
   doc.text('Totaal te betalen', 160, y, { align: 'right' })
-  doc.text(pdfCurrency(invoice.total), right, y, { align: 'right' })
+  doc.text(pdfCurrency(invoice.total, useEurFallback), right, y, { align: 'right' })
 
   y += 14
   doc.setFont(fontName, 'normal')

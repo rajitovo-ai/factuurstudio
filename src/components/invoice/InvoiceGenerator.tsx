@@ -603,6 +603,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       },
       sellerName,
       sellerEmail,
+      sellerKvk: profile.kvkNumber,
       sellerIban,
     })
 
@@ -1389,6 +1390,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   <p className="mt-1 text-lg font-bold">{companyName || t('invoiceGenerator:preview.yourCompany')}</p>
                   {sellerName.trim() ? <p className="mt-1 text-sm text-slate-700">Contact: {sellerName}</p> : null}
                   {sellerEmail.trim() ? <p className="text-sm text-slate-600">E-mail: {sellerEmail}</p> : null}
+                  {profile.kvkNumber ? <p className="text-sm text-slate-600">KvK: {profile.kvkNumber}</p> : null}
                   {sellerIban.trim() ? <p className="text-sm text-slate-600">IBAN: {sellerIban}</p> : null}
                   {companyLogoDataUrl ? (
                     <img

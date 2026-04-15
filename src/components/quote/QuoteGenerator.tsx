@@ -273,7 +273,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
       sellerName,
       sellerEmail,
       sellerPhone,
-      sellerKvk,
+      sellerKvk: profile.kvkNumber,
       sellerIban: showSellerIban ? sellerIban : '',
     })
   }
