@@ -48,8 +48,8 @@ Object.defineProperty(window, 'localStorage', {
 // Suppress console errors during tests
 const originalError = console.error
 beforeAll(() => {
-  console.error = (...args: any[]) => {
-    if (/Warning.*not wrapped in act/.test(args[0])) {
+  console.error = (...args: unknown[]) => {
+    if (typeof args[0] === 'string' && /Warning.*not wrapped in act/.test(args[0])) {
       return
     }
     originalError.call(console, ...args)

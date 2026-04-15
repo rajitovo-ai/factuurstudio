@@ -105,7 +105,7 @@ export default function SettingsPage() {
       const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}`
       window.history.replaceState({}, document.title, nextUrl)
     }
-  }, [syncUserPlan, userId])
+  }, [syncUserPlan, userId, t])
 
 
   const MAX_LOGO_WIDTH = 400

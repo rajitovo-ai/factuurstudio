@@ -9,10 +9,6 @@ export default function BlogPostPage() {
   const [activeSection, setActiveSection] = useState<string>('')
   const [openFAQ, setOpenFAQ] = useState<number | null>(null)
 
-  if (!post) {
-    return <Navigate to="/blog" replace />
-  }
-
   useEffect(() => {
     const handleScroll = () => {
       const sections = document.querySelectorAll('h2[id]')
@@ -28,6 +24,10 @@ export default function BlogPostPage() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  if (!post) {
+    return <Navigate to="/blog" replace />
+  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
