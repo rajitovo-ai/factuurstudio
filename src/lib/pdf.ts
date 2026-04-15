@@ -7,6 +7,16 @@ const currency = (amount: number, code = 'EUR') =>
     currency: code,
   }).format(amount)
 
+// PDF-safe currency formatter - uses EUR prefix instead of € symbol
+// to prevent rendering issues on mobile PDF viewers
+const pdfCurrency = (amount: number) => {
+  const formatted = new Intl.NumberFormat('nl-NL', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount)
+  return `EUR ${formatted}`
+}
+
 const formatDate = (isoDate: string) => {
   if (!isoDate) return '-'
   const [year, month, day] = isoDate.split('-')
@@ -200,9 +210,9 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
 
     doc.text(line.description || '-', left, y)
     doc.text(String(line.quantity), 116, y, { align: 'right' })
-    doc.text(currency(line.unitPrice, invoice.currencyCode), 145, y, { align: 'right' })
+    doc.text(pdfCurrency(line.unitPrice), 145, y, { align: 'right' })
     doc.text(`${line.vatRate}%`, 164, y, { align: 'right' })
-    doc.text(currency(lineTotal, invoice.currencyCode), right, y, { align: 'right' })
+    doc.text(pdfCurrency(lineTotal), right, y, { align: 'right' })
 
     y += 6
 
@@ -218,15 +228,15 @@ export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfO
 
   doc.setFont('helvetica', 'normal')
   doc.text('Subtotaal', 160, y, { align: 'right' })
-  doc.text(currency(invoice.subtotal, invoice.currencyCode), right, y, { align: 'right' })
+  doc.text(pdfCurrency(invoice.subtotal), right, y, { align: 'right' })
   y += 6
   doc.text('BTW', 160, y, { align: 'right' })
-  doc.text(currency(invoice.vatTotal, invoice.currencyCode), right, y, { align: 'right' })
+  doc.text(pdfCurrency(invoice.vatTotal), right, y, { align: 'right' })
   y += 7
 
   doc.setFont('helvetica', 'bold')
   doc.text('Totaal te betalen', 160, y, { align: 'right' })
-  doc.text(currency(invoice.total, invoice.currencyCode), right, y, { align: 'right' })
+  doc.text(pdfCurrency(invoice.total), right, y, { align: 'right' })
 
   y += 14
   doc.setFont('helvetica', 'normal')
