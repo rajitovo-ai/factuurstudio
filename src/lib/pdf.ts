@@ -1,12 +1,6 @@
 import { jsPDF } from 'jspdf'
 import type { StoredInvoice } from '../stores/invoiceStore'
 
-const currency = (amount: number, code = 'EUR') =>
-  new Intl.NumberFormat('nl-NL', {
-    style: 'currency',
-    currency: code,
-  }).format(amount)
-
 // PDF currency formatter using unicode euro sign
 const pdfCurrency = (amount: number) => {
   const formatted = new Intl.NumberFormat('nl-NL', {
