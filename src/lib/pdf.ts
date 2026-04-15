@@ -1,13 +1,13 @@
 import { jsPDF } from 'jspdf'
 import type { StoredInvoice } from '../stores/invoiceStore'
 
-// PDF currency formatter using unicode euro sign
+// PDF currency formatter - uses EUR prefix for reliable mobile rendering
 const pdfCurrency = (amount: number) => {
   const formatted = new Intl.NumberFormat('nl-NL', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)
-  return `€${formatted}`
+  return `EUR ${formatted}`
 }
 
 const formatDate = (isoDate: string) => {
@@ -44,7 +44,7 @@ const addDaysIso = (isoDate: string, days: number): string => {
   return date.toISOString().slice(0, 10)
 }
 
-export const downloadInvoicePdf = async (invoice: StoredInvoice, options: DownloadPdfOptions = {}) => {
+export const downloadInvoicePdf = (invoice: StoredInvoice, options: DownloadPdfOptions = {}) => {
   const variant = options.variant ?? 'invoice'
   const isQuote = variant === 'quote'
   const filenamePrefix = options.filenamePrefix ?? (isQuote ? 'offerte' : 'factuur')
@@ -71,18 +71,6 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
     format: 'a4',
   })
 
-  // Add DejaVu Sans font for proper euro symbol rendering on mobile
-  try {
-    const dejavuFont = await fetch('https://cdn.jsdelivr.net/npm/dejavu-fonts-ttf@2.37/ttf/DejaVuSans.ttf')
-    const dejavuFontArrayBuffer = await dejavuFont.arrayBuffer()
-    const dejavuFontBase64 = btoa(String.fromCharCode(...new Uint8Array(dejavuFontArrayBuffer)))
-    doc.addFileToVFS('DejaVuSans.ttf', dejavuFontBase64)
-    doc.addFont('DejaVuSans.ttf', 'DejaVu', 'normal')
-    doc.addFont('DejaVuSans.ttf', 'DejaVu', 'bold')
-  } catch {
-    // Fallback to helvetica if font loading fails
-  }
-
   const left = 16
   const right = 194
   let y = 18
@@ -90,7 +78,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   doc.setTextColor(0, 0, 0)
   doc.setLineWidth(0.3)
 
-  doc.setFont('DejaVu', 'bold')
+  doc.setFont('helvetica', 'bold')
   doc.setFontSize(20)
   doc.text(sellerCompanyName, left, y)
 
@@ -103,7 +91,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
     }
   }
 
-  doc.setFont('DejaVu', 'normal')
+  doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
   y += 7
   doc.text(`${numberLabel}: ${invoice.invoiceNumber}`, left, y)
@@ -132,7 +120,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   }
 
   y += 10
-  doc.setFont('DejaVu', 'bold')
+  doc.setFont('helvetica', 'bold')
   doc.text(recipientLabel, left, y)
 
   const addRecipientField = (label: string, value: string) => {
@@ -140,9 +128,9 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
     if (!trimmedValue) return
 
     y += 5
-    doc.setFont('DejaVu', 'bold')
+    doc.setFont('helvetica', 'bold')
     doc.text(`${label}:`, left, y)
-    doc.setFont('DejaVu', 'normal')
+    doc.setFont('helvetica', 'normal')
 
     const wrappedValue = doc.splitTextToSize(trimmedValue, right - (left + 30))
     doc.text(wrappedValue, left + 30, y)
@@ -171,10 +159,10 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
 
   if (invoice.invoiceDescription) {
     y += 8
-    doc.setFont('DejaVu', 'bold')
+    doc.setFont('helvetica', 'bold')
     doc.text('Beschrijving', left, y)
     y += 5
-    doc.setFont('DejaVu', 'normal')
+    doc.setFont('helvetica', 'normal')
     const wrappedDescription = doc.splitTextToSize(invoice.invoiceDescription, 170)
     doc.text(wrappedDescription, left, y)
     y += wrappedDescription.length * 4
@@ -182,10 +170,10 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
 
   if (invoice.vatExemptionReason?.trim()) {
     y += 8
-    doc.setFont('DejaVu', 'bold')
+    doc.setFont('helvetica', 'bold')
     doc.text('BTW-vrijstelling', left, y)
     y += 5
-    doc.setFont('DejaVu', 'normal')
+    doc.setFont('helvetica', 'normal')
     const wrappedExemption = doc.splitTextToSize(invoice.vatExemptionReason, 170)
     doc.text(wrappedExemption, left, y)
     y += wrappedExemption.length * 4
@@ -195,7 +183,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   doc.line(left, y, right, y)
   y += 6
 
-  doc.setFont('DejaVu', 'bold')
+  doc.setFont('helvetica', 'bold')
   doc.text('Omschrijving', left, y)
   doc.text('Aantal', 116, y, { align: 'right' })
   doc.text('Prijs', 145, y, { align: 'right' })
@@ -206,7 +194,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   doc.line(left, y, right, y)
   y += 6
 
-  doc.setFont('DejaVu', 'normal')
+  doc.setFont('helvetica', 'normal')
 
   invoice.lines.forEach((line) => {
     const lineExVat = line.quantity * line.unitPrice
@@ -231,7 +219,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   doc.line(126, y, right, y)
   y += 7
 
-  doc.setFont('DejaVu', 'normal')
+  doc.setFont('helvetica', 'normal')
   doc.text('Subtotaal', 160, y, { align: 'right' })
   doc.text(pdfCurrency(invoice.subtotal), right, y, { align: 'right' })
   y += 6
@@ -239,12 +227,12 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   doc.text(pdfCurrency(invoice.vatTotal), right, y, { align: 'right' })
   y += 7
 
-  doc.setFont('DejaVu', 'bold')
+  doc.setFont('helvetica', 'bold')
   doc.text('Totaal te betalen', 160, y, { align: 'right' })
   doc.text(pdfCurrency(invoice.total), right, y, { align: 'right' })
 
   y += 14
-  doc.setFont('DejaVu', 'normal')
+  doc.setFont('helvetica', 'normal')
   doc.setFontSize(9)
   if (!isQuote) {
     const instructions = invoice.paymentInstructions?.trim()
@@ -259,10 +247,10 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
       y = 24
     }
     doc.setFontSize(10)
-    doc.setFont('DejaVu', 'bold')
+    doc.setFont('helvetica', 'bold')
     doc.text('Voor akkoord', left, y)
     y += 7
-    doc.setFont('DejaVu', 'normal')
+    doc.setFont('helvetica', 'normal')
     doc.text('Datum:', left, y)
     doc.line(left + 18, y, left + 90, y)
     y += 10
