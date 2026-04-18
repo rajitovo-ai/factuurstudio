@@ -167,7 +167,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
 
   addRecipientField('Contactpersoon', invoice.clientContactName)
   addRecipientField('Bedrijf / naam', invoice.clientName || '-')
-  addRecipientField('E-mail', invoice.clientEmail || '-')
+  addRecipientField('E-mail', invoice.clientEmail)
   addRecipientField('Telefoon', invoice.clientPhone)
   addRecipientField('Adres', invoice.clientAddress)
 

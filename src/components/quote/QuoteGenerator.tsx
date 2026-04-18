@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { downloadQuotePdf } from '../../lib/quotePdf'
+import { calculateTotalsWithDiscount } from '../../lib/totals'
 import { useAuthStore } from '../../stores/authStore'
 import type { CustomerProfile } from '../../stores/customerStore'
 import { useCustomerStore } from '../../stores/customerStore'
@@ -188,15 +189,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
   }, [customers, editQuote, issueDate, searchParams])
 
   const totals = useMemo(() => {
-    const subtotal = lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0)
-    const vatTotal = lines.reduce((sum, line) => sum + line.quantity * line.unitPrice * (line.vatRate / 100), 0)
-    const discount = Math.max(0, discountAmount || 0)
-    return {
-      subtotal,
-      vatTotal,
-      discountAmount: discount,
-      total: Math.max(0, subtotal + vatTotal - discount),
-    }
+    return calculateTotalsWithDiscount(lines, 'excl', discountAmount)
   }, [lines, discountAmount])
 
   const updateLine = (id: number, field: keyof QuoteLine, value: string) => {

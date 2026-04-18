@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { canCreateInvoiceThisMonth, PLAN_CONFIGS } from '../../lib/billing'
 import { downloadInvoicePdf } from '../../lib/pdf'
 import { getNextInvoiceNumber } from '../../lib/invoiceNumber'
+import { calculateTotalsWithDiscount } from '../../lib/totals'
 import RelatedSupport from '../support/RelatedSupport'
 import { useAuthStore } from '../../stores/authStore'
 import { useBillingStore } from '../../stores/billingStore'
@@ -163,7 +164,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   )
   const [sellerEmail, setSellerEmail] = useState(editInvoice?.sellerEmail ?? (email ?? ''))
   const [sellerIban, setSellerIban] = useState(editInvoice?.sellerIban ?? profile.iban)
-  const [companyLogoDataUrl] = useState<string | null>(
+  const [companyLogoDataUrl, setCompanyLogoDataUrl] = useState<string | null>(
     editInvoice ? (editInvoice.logoDataUrl ?? null) : profile.logoDataUrl,
   )
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -235,6 +236,14 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
 
     hasInitializedSenderDefaults.current = true
   }, [editInvoice, email, profile.iban, sellerEmail, sellerIban, sellerName])
+
+  useEffect(() => {
+    if (editInvoice) {
+      return
+    }
+
+    setCompanyLogoDataUrl(profile.logoDataUrl ?? null)
+  }, [editInvoice, profile.logoDataUrl])
 
   useEffect(() => {
     if (!draftStorageKey || hasRestoredDraft.current) {
@@ -469,36 +478,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   }
 
   const totals = useMemo(() => {
-    const subtotal = lines.reduce((sum, line) => {
-      const vatRate = noVat ? 0 : line.vatRate
-      const lineBase =
-        pricingMode === 'incl'
-          ? (line.quantity * line.unitPrice) / (1 + vatRate / 100)
-          : line.quantity * line.unitPrice
-      return sum + lineBase
-    }, 0)
-
-    const vatTotal = lines.reduce((sum, line) => {
-      const vatRate = noVat ? 0 : line.vatRate
-      const lineBase =
-        pricingMode === 'incl'
-          ? (line.quantity * line.unitPrice) / (1 + vatRate / 100)
-          : line.quantity * line.unitPrice
-      return sum + lineBase * (vatRate / 100)
-    }, 0)
-
-    const total =
-      pricingMode === 'incl'
-        ? lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0)
-        : subtotal + vatTotal
-
-    const discount = Math.max(0, discountAmount || 0)
-    return {
-      subtotal,
-      vatTotal,
-      discountAmount: discount,
-      total: Math.max(0, total - discount),
-    }
+    return calculateTotalsWithDiscount(lines, pricingMode, discountAmount, noVat)
   }, [lines, pricingMode, noVat, discountAmount])
 
   const updateLine = (id: number, field: keyof InvoiceLine, value: string) => {
@@ -924,6 +904,15 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   className="rounded-lg border border-cyan-200 px-4 py-2 text-sm font-semibold text-cyan-700 transition hover:bg-cyan-50"
                 >
                   PDF voorbeeld
+                </button>
+              ) : null}
+              {!guestMode ? (
+                <button
+                  type="button"
+                  onClick={() => navigate('/offertes/nieuw')}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  {t('invoiceGenerator:buttons.toQuote')}
                 </button>
               ) : null}
               {!guestMode ? (
