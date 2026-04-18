@@ -265,6 +265,9 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
       y += wrappedDiscount.length * 4
       doc.setFontSize(10)
     }
+    doc.text('Bedrag na korting', 160, y, { align: 'right' })
+    doc.text(pdfCurrency(invoice.subtotal - (invoice.discountAmount * (invoice.subtotal / (invoice.subtotal + invoice.vatTotal))), useEurFallback), right, y, { align: 'right' })
+    y += 6
   }
 
   doc.setFont(fontName, 'bold')
