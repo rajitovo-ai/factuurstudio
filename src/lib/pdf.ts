@@ -111,7 +111,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   if (invoice.logoDataUrl) {
     try {
       const imageType = invoice.logoDataUrl.startsWith('data:image/jpeg') ? 'JPEG' : 'PNG'
-      doc.addImage(invoice.logoDataUrl, imageType, 140, 25, 50, 25, undefined, 'FAST')
+      doc.addImage(invoice.logoDataUrl, imageType, 140, 8, 45, 22, undefined, 'FAST')
     } catch {
       // Ignore image parse issues and continue PDF generation.
     }
