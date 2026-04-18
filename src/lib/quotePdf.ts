@@ -32,6 +32,8 @@ const toInvoiceLike = (quote: StoredQuote, context?: QuotePdfContext): StoredInv
   clientPaymentTermDays: quote.clientPaymentTermDays,
   clientNotes: quote.clientNotes,
   invoiceDescription: quote.quoteDescription,
+  discountDescription: quote.discountDescription,
+  discountAmount: quote.discountAmount,
   paymentInstructions: '',
   hasDueDate: quote.hasDueDate,
   issueDate: quote.issueDate,

@@ -104,6 +104,8 @@ export default function QuoteGenerator({ editQuote }: Props) {
   )
   const [dueDate, setDueDate] = useState(editQuote?.dueDate ?? createDefaultDueDate())
   const [quoteDescription, setQuoteDescription] = useState(editQuote?.quoteDescription ?? DEFAULT_QUOTE_DESCRIPTION)
+  const [discountDescription, setDiscountDescription] = useState(editQuote?.discountDescription ?? '')
+  const [discountAmount, setDiscountAmount] = useState(editQuote?.discountAmount ?? 0)
   const [currencyCode, setCurrencyCode] = useState(editQuote?.currencyCode ?? 'EUR')
   const [saveError, setSaveError] = useState<string | null>(null)
   const [lines, setLines] = useState<QuoteLine[]>(
@@ -188,12 +190,14 @@ export default function QuoteGenerator({ editQuote }: Props) {
   const totals = useMemo(() => {
     const subtotal = lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0)
     const vatTotal = lines.reduce((sum, line) => sum + line.quantity * line.unitPrice * (line.vatRate / 100), 0)
+    const discount = Math.max(0, discountAmount || 0)
     return {
       subtotal,
       vatTotal,
-      total: subtotal + vatTotal,
+      discountAmount: discount,
+      total: Math.max(0, subtotal + vatTotal - discount),
     }
-  }, [lines])
+  }, [lines, discountAmount])
 
   const updateLine = (id: number, field: keyof QuoteLine, value: string) => {
     setLines((current) =>
@@ -248,6 +252,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
       clientPaymentTermDays,
       clientNotes,
       quoteDescription,
+      discountDescription,
       hasDueDate: true,
       issueDate,
       dueDate,
@@ -257,6 +262,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
       vatExemptionReason: '',
       subtotal: totals.subtotal,
       vatTotal: totals.vatTotal,
+      discountAmount: totals.discountAmount,
       total: totals.total,
       status: 'concept',
       lines,
@@ -330,6 +336,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
       clientPaymentTermDays,
       clientNotes,
       quoteDescription,
+      discountDescription,
       hasDueDate: true,
       issueDate,
       dueDate,
@@ -339,6 +346,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
       vatExemptionReason: '',
       subtotal: totals.subtotal,
       vatTotal: totals.vatTotal,
+      discountAmount: totals.discountAmount,
       total: totals.total,
       status: 'concept' as const,
       lines,
@@ -522,6 +530,28 @@ export default function QuoteGenerator({ editQuote }: Props) {
               />
             </label>
             <label className="flex flex-col gap-1 sm:col-span-2">
+              <span className="text-sm font-medium text-slate-700">Korting beschrijving (optioneel)</span>
+              <input
+                type="text"
+                value={discountDescription}
+                onChange={(event) => setDiscountDescription(event.target.value)}
+                placeholder="Bijv. Seizoenskorting"
+                className="rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+            <label className="flex flex-col gap-1 sm:col-span-2">
+              <span className="text-sm font-medium text-slate-700">Korting bedrag</span>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={discountAmount}
+                onChange={(event) => setDiscountAmount(Number(event.target.value) || 0)}
+                placeholder="0.00"
+                className="rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+            <label className="flex flex-col gap-1 sm:col-span-2">
               <span className="text-sm font-medium text-slate-700">Valuta</span>
               <select
                 value={currencyCode}
@@ -596,6 +626,12 @@ export default function QuoteGenerator({ editQuote }: Props) {
           <div className="mt-6 grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
             <p className="flex items-center justify-between"><span>Subtotaal</span><span>{formatCurrency(totals.subtotal, currencyCode)}</span></p>
             <p className="flex items-center justify-between"><span>BTW</span><span>{formatCurrency(totals.vatTotal, currencyCode)}</span></p>
+            {totals.discountAmount > 0 ? (
+              <div className="space-y-1 rounded-lg bg-white p-3 text-sm text-slate-700">
+                <div className="flex items-center justify-between"><span>Korting</span><span>-{formatCurrency(totals.discountAmount, currencyCode)}</span></div>
+                {discountDescription ? <p className="text-xs text-slate-500">{discountDescription}</p> : null}
+              </div>
+            ) : null}
             <p className="flex items-center justify-between text-base font-bold"><span>Totaal</span><span>{formatCurrency(totals.total, currencyCode)}</span></p>
           </div>
         </section>

@@ -133,6 +133,8 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   const [vatExemptionReason, setVatExemptionReason] = useState(editInvoice?.vatExemptionReason ?? '')
   const [currencyCode, setCurrencyCode] = useState(editInvoice?.currencyCode ?? 'EUR')
   const [invoiceDescription, setInvoiceDescription] = useState(editInvoice?.invoiceDescription ?? '')
+  const [discountDescription, setDiscountDescription] = useState(editInvoice?.discountDescription ?? '')
+  const [discountAmount, setDiscountAmount] = useState(editInvoice?.discountAmount ?? 0)
   const [paymentInstructions, setPaymentInstructions] = useState(editInvoice?.paymentInstructions ?? '')
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
   const [clientName, setClientName] = useState(editInvoice?.clientName ?? '')
@@ -490,12 +492,14 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         ? lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0)
         : subtotal + vatTotal
 
+    const discount = Math.max(0, discountAmount || 0)
     return {
       subtotal,
       vatTotal,
-      total,
+      discountAmount: discount,
+      total: Math.max(0, total - discount),
     }
-  }, [lines, pricingMode, noVat])
+  }, [lines, pricingMode, noVat, discountAmount])
 
   const updateLine = (id: number, field: keyof InvoiceLine, value: string) => {
     setLines((current) =>
@@ -576,6 +580,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       clientPaymentTermDays: clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays,
       clientNotes,
       invoiceDescription,
+      discountDescription,
       paymentInstructions,
       hasDueDate,
       issueDate,
@@ -585,6 +590,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       vatExemptionReason,
       subtotal: totals.subtotal,
       vatTotal: totals.vatTotal,
+      discountAmount: totals.discountAmount,
       total: totals.total,
       status: 'concept',
       lines: lines.map((line) => ({ ...line, vatRate: noVat ? 0 : line.vatRate })),
@@ -731,6 +737,8 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         clientPaymentTermDays: clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays,
         clientNotes,
         invoiceDescription,
+        discountDescription,
+        discountAmount,
         paymentInstructions,
         hasDueDate,
         issueDate,
@@ -1121,6 +1129,28 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                 />
               </label>
               <label className="flex flex-col gap-1 sm:col-span-2">
+                <span className="text-sm font-medium text-slate-700">Korting beschrijving (optioneel)</span>
+                <input
+                  type="text"
+                  value={discountDescription}
+                  onChange={(event) => setDiscountDescription(event.target.value)}
+                  placeholder="Bijv. Seizoenskorting of loyaliteitskorting"
+                  className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                />
+              </label>
+              <label className="flex flex-col gap-1 sm:col-span-2">
+                <span className="text-sm font-medium text-slate-700">Korting bedrag</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={discountAmount}
+                  onChange={(event) => setDiscountAmount(Number(event.target.value) || 0)}
+                  placeholder="0.00"
+                  className="rounded-lg border border-slate-300 px-3 py-2 outline-none ring-cyan-600 transition focus:ring-2"
+                />
+              </label>
+              <label className="flex flex-col gap-1 sm:col-span-2">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium text-slate-700">Betaalinstructies op PDF (optioneel)</span>
                   <button
@@ -1472,6 +1502,17 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
                   <span className="text-slate-600">{t('invoiceGenerator:preview.vat')}</span>
                   <span>{formatCurrency(totals.vatTotal, currencyCode)}</span>
                 </div>
+                {totals.discountAmount > 0 ? (
+                  <div className="flex flex-col gap-1 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                    <div className="flex items-center justify-between">
+                      <span>Korting</span>
+                      <span>-{formatCurrency(totals.discountAmount, currencyCode)}</span>
+                    </div>
+                    {discountDescription ? (
+                      <p className="text-xs text-slate-500">{discountDescription}</p>
+                    ) : null}
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between border-t border-slate-200 pt-2 text-base font-extrabold">
                   <span>{t('invoiceGenerator:preview.total')}</span>
                   <span>{formatCurrency(totals.total, currencyCode)}</span>

@@ -34,6 +34,8 @@ export type StoredQuote = {
   clientPaymentTermDays: number
   clientNotes: string
   quoteDescription: string
+  discountDescription?: string
+  discountAmount?: number
   hasDueDate: boolean
   issueDate: string
   dueDate: string
@@ -84,6 +86,8 @@ type DbQuoteRow = {
   client_payment_term_days: number | null
   client_notes: string | null
   quote_description: string | null
+  discount_description: string | null
+  discount_amount: number | null
   has_due_date: boolean | null
   issue_date: string
   due_date: string
@@ -128,6 +132,8 @@ const toStoredQuote = (row: DbQuoteRow): StoredQuote => ({
   clientPaymentTermDays: row.client_payment_term_days ?? 14,
   clientNotes: row.client_notes ?? '',
   quoteDescription: row.quote_description ?? '',
+  discountDescription: row.discount_description ?? '',
+  discountAmount: row.discount_amount ?? 0,
   hasDueDate: row.has_due_date ?? true,
   issueDate: row.issue_date,
   dueDate: row.due_date,
@@ -236,6 +242,8 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
       client_payment_term_days: quote.clientPaymentTermDays,
       client_notes: quote.clientNotes,
       quote_description: quote.quoteDescription,
+      discount_description: quote.discountDescription ?? '',
+      discount_amount: quote.discountAmount ?? 0,
       has_due_date: quote.hasDueDate,
       issue_date: quote.issueDate,
       due_date: quote.dueDate,
@@ -258,13 +266,15 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
     insertData = initialInsert.data
     insertError = initialInsert.error
 
-    if (insertError && /seller_name|seller_email|seller_phone|seller_kvk|seller_iban|column/i.test(insertError.message)) {
+    if (insertError && /seller_name|seller_email|seller_phone|seller_kvk|seller_iban|discount_description|discount_amount|column/i.test(insertError.message)) {
       const legacyPayload = { ...payload }
       delete (legacyPayload as { seller_name?: string }).seller_name
       delete (legacyPayload as { seller_email?: string }).seller_email
       delete (legacyPayload as { seller_phone?: string }).seller_phone
       delete (legacyPayload as { seller_kvk?: string }).seller_kvk
       delete (legacyPayload as { seller_iban?: string }).seller_iban
+      delete (legacyPayload as { discount_description?: string }).discount_description
+      delete (legacyPayload as { discount_amount?: number }).discount_amount
 
       const legacyInsert = await supabase.from('app_quotes').insert(legacyPayload).select('*').single()
       insertData = legacyInsert.data
@@ -316,6 +326,8 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
       client_payment_term_days: update.clientPaymentTermDays,
       client_notes: update.clientNotes,
       quote_description: update.quoteDescription,
+      discount_description: update.discountDescription ?? '',
+      discount_amount: update.discountAmount ?? 0,
       has_due_date: update.hasDueDate,
       issue_date: update.issueDate,
       due_date: update.dueDate,
@@ -345,13 +357,15 @@ export const useQuoteStore = create<QuoteState>((set, get) => ({
     updateData = initialUpdate.data
     updateError = initialUpdate.error
 
-    if (updateError && /seller_name|seller_email|seller_phone|seller_kvk|seller_iban|column/i.test(updateError.message)) {
+    if (updateError && /seller_name|seller_email|seller_phone|seller_kvk|seller_iban|discount_description|discount_amount|column/i.test(updateError.message)) {
       const legacyPayload = { ...payload }
       delete (legacyPayload as { seller_name?: string }).seller_name
       delete (legacyPayload as { seller_email?: string }).seller_email
       delete (legacyPayload as { seller_phone?: string }).seller_phone
       delete (legacyPayload as { seller_kvk?: string }).seller_kvk
       delete (legacyPayload as { seller_iban?: string }).seller_iban
+      delete (legacyPayload as { discount_description?: string }).discount_description
+      delete (legacyPayload as { discount_amount?: number }).discount_amount
 
       const legacyUpdate = await supabase
         .from('app_quotes')

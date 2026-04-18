@@ -251,7 +251,21 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   y += 6
   doc.text('BTW', 160, y, { align: 'right' })
   doc.text(pdfCurrency(invoice.vatTotal, useEurFallback), right, y, { align: 'right' })
-  y += 7
+  y += 6
+
+  if (invoice.discountAmount && invoice.discountAmount > 0) {
+    doc.setFont(fontName, 'normal')
+    doc.text('Korting', 160, y, { align: 'right' })
+    doc.text(`-${pdfCurrency(invoice.discountAmount, useEurFallback)}`, right, y, { align: 'right' })
+    y += 6
+    if (invoice.discountDescription?.trim()) {
+      doc.setFontSize(8)
+      const wrappedDiscount = doc.splitTextToSize(invoice.discountDescription.trim(), 170)
+      doc.text(wrappedDiscount, 140, y, { align: 'right' })
+      y += wrappedDiscount.length * 4
+      doc.setFontSize(10)
+    }
+  }
 
   doc.setFont(fontName, 'bold')
   doc.text('Totaal te betalen', 160, y, { align: 'right' })

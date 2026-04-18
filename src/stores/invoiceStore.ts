@@ -36,6 +36,8 @@ export type StoredInvoice = {
   clientPaymentTermDays: number
   clientNotes: string
   invoiceDescription: string
+  discountDescription?: string
+  discountAmount?: number
   paymentInstructions?: string
   hasDueDate: boolean
   issueDate: string
@@ -86,6 +88,8 @@ type DbInvoiceRow = {
   client_payment_term_days: number | null
   client_notes: string | null
   invoice_description: string | null
+  discount_description: string | null
+  discount_amount: number | null
   payment_instructions: string | null
   has_due_date: boolean | null
   issue_date: string
@@ -125,6 +129,8 @@ const toStoredInvoice = (row: DbInvoiceRow): StoredInvoice => ({
   clientPaymentTermDays: row.client_payment_term_days ?? 14,
   clientNotes: row.client_notes ?? '',
   invoiceDescription: row.invoice_description ?? '',
+  discountDescription: row.discount_description ?? '',
+  discountAmount: row.discount_amount ?? 0,
   paymentInstructions: row.payment_instructions ?? '',
   hasDueDate: row.has_due_date ?? true,
   issueDate: row.issue_date,
@@ -248,6 +254,8 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       client_payment_term_days: invoice.clientPaymentTermDays,
       client_notes: invoice.clientNotes,
       invoice_description: invoice.invoiceDescription,
+      discount_description: invoice.discountDescription ?? '',
+      discount_amount: invoice.discountAmount ?? 0,
       payment_instructions: invoice.paymentInstructions ?? '',
       has_due_date: invoice.hasDueDate,
       issue_date: invoice.issueDate,
@@ -282,6 +290,8 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       delete (legacyPayload as { seller_name?: string }).seller_name
       delete (legacyPayload as { seller_email?: string }).seller_email
       delete (legacyPayload as { seller_iban?: string }).seller_iban
+      delete (legacyPayload as { discount_description?: string }).discount_description
+      delete (legacyPayload as { discount_amount?: number }).discount_amount
       delete (legacyPayload as { payment_instructions?: string }).payment_instructions
       const legacyInsert = await supabase
         .from('app_invoices')
@@ -347,6 +357,8 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
       client_payment_term_days: update.clientPaymentTermDays,
       client_notes: update.clientNotes,
       invoice_description: update.invoiceDescription,
+      discount_description: update.discountDescription ?? '',
+      discount_amount: update.discountAmount ?? 0,
       payment_instructions: update.paymentInstructions ?? '',
       has_due_date: update.hasDueDate,
       issue_date: update.issueDate,
@@ -375,11 +387,13 @@ export const useInvoiceStore = create<InvoiceState>((set, get) => ({
     updateData = initialUpdate.data
     updateError = initialUpdate.error
 
-    if (updateError && /seller_name|seller_email|seller_iban|payment_instructions|column/i.test(updateError.message)) {
+    if (updateError && /seller_name|seller_email|seller_iban|discount_description|discount_amount|payment_instructions|column/i.test(updateError.message)) {
       const legacyPayload = { ...payload }
       delete (legacyPayload as { seller_name?: string }).seller_name
       delete (legacyPayload as { seller_email?: string }).seller_email
       delete (legacyPayload as { seller_iban?: string }).seller_iban
+      delete (legacyPayload as { discount_description?: string }).discount_description
+      delete (legacyPayload as { discount_amount?: number }).discount_amount
       delete (legacyPayload as { payment_instructions?: string }).payment_instructions
 
       const legacyUpdate = await supabase
