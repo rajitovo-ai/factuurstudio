@@ -23,6 +23,7 @@ type Props = {
 }
 
 const EMPTY_CUSTOMERS: CustomerProfile[] = []
+const INVOICE_TO_QUOTE_DRAFT_KEY = 'factuurstudio.invoiceToQuoteDraft'
 
 const createDefaultDueDate = (): string => {
   const date = new Date()
@@ -78,6 +79,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
   const [quoteNumber, setQuoteNumber] = useState(() =>
     editQuote ? editQuote.quoteNumber : getNextQuoteNumber(quotes, userId),
   )
+  const hasRestoredInvoiceDraft = useRef(false)
   const [sellerName, setSellerName] = useState(editQuote?.sellerName ?? getDefaultSellerName(email))
   const [sellerEmail, setSellerEmail] = useState(editQuote?.sellerEmail ?? (email ?? ''))
   const [sellerPhone, setSellerPhone] = useState(editQuote?.sellerPhone ?? '')
@@ -187,6 +189,72 @@ export default function QuoteGenerator({ editQuote }: Props) {
 
     hasAppliedQueryCustomer.current = true
   }, [customers, editQuote, issueDate, searchParams])
+
+  useEffect(() => {
+    if (editQuote || hasRestoredInvoiceDraft.current) {
+      return
+    }
+
+    const fromInvoice = searchParams.get('fromInvoice')
+    if (!fromInvoice) {
+      hasRestoredInvoiceDraft.current = true
+      return
+    }
+
+    if (typeof window === 'undefined') {
+      hasRestoredInvoiceDraft.current = true
+      return
+    }
+
+    const rawDraft = window.localStorage.getItem(INVOICE_TO_QUOTE_DRAFT_KEY)
+    if (!rawDraft) {
+      hasRestoredInvoiceDraft.current = true
+      return
+    }
+
+    try {
+      const draft = JSON.parse(rawDraft)
+      setQuoteNumber(draft.quoteNumber || getNextQuoteNumber(quotes, userId))
+      setSellerName(draft.sellerName ?? getDefaultSellerName(email))
+      setSellerEmail(draft.sellerEmail ?? (email ?? ''))
+      setSellerPhone(draft.sellerPhone ?? '')
+      setSellerIban(draft.sellerIban ?? profile.iban)
+      setCompanyName(draft.companyName ?? profile.companyName)
+      setClientName(draft.clientName ?? '')
+      setClientEmail(draft.clientEmail ?? '')
+      setClientContactName(draft.clientContactName ?? '')
+      setClientPhone(draft.clientPhone ?? '')
+      setClientAddress(draft.clientAddress ?? '')
+      setClientPostalCode(draft.clientPostalCode ?? '')
+      setClientCity(draft.clientCity ?? 'NL')
+      setClientCountry(draft.clientCountry ?? 'NL')
+      setClientKvkNumber(draft.clientKvkNumber ?? '')
+      setClientBtwNumber(draft.clientBtwNumber ?? '')
+      setClientIban(draft.clientIban ?? '')
+      setClientPaymentTermDays(draft.clientPaymentTermDays ?? 14)
+      setClientNotes(draft.clientNotes ?? '')
+      setIssueDate(draft.issueDate ?? new Date().toISOString().slice(0, 10))
+      setDueDate(draft.dueDate ?? createDefaultDueDate())
+      setQuoteDescription(draft.quoteDescription ?? DEFAULT_QUOTE_DESCRIPTION)
+      setDiscountDescription(draft.discountDescription ?? '')
+      setDiscountAmount(draft.discountAmount ?? 0)
+      setCurrencyCode(draft.currencyCode ?? 'EUR')
+      if (Array.isArray(draft.lines) && draft.lines.length > 0) {
+        setLines(draft.lines.map((line: any) => ({
+          id: line.id,
+          description: line.description,
+          quantity: line.quantity,
+          unitPrice: line.unitPrice,
+          vatRate: line.vatRate,
+        })))
+      }
+    } catch {
+      // If the draft is corrupted, ignore it.
+    } finally {
+      window.localStorage.removeItem(INVOICE_TO_QUOTE_DRAFT_KEY)
+      hasRestoredInvoiceDraft.current = true
+    }
+  }, [editQuote, email, profile.companyName, profile.iban, quotes, searchParams, userId])
 
   const totals = useMemo(() => {
     return calculateTotalsWithDiscount(lines, 'excl', discountAmount)

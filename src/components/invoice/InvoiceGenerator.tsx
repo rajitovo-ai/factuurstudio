@@ -15,6 +15,7 @@ import { useInvoiceStore } from '../../stores/invoiceStore'
 import { defaultCompanyProfile, useProfileStore } from '../../stores/profileStore'
 
 const GUEST_DL_KEY = 'factuurstudio.guest.hasDownloaded'
+const INVOICE_TO_QUOTE_DRAFT_KEY = 'factuurstudio.invoiceToQuoteDraft'
 const hasUsedGuestDownload = (): boolean => {
   if (typeof window === 'undefined') return false
   return Boolean(localStorage.getItem(GUEST_DL_KEY))
@@ -238,11 +239,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
   }, [editInvoice, email, profile.iban, sellerEmail, sellerIban, sellerName])
 
   useEffect(() => {
-    if (editInvoice) {
-      return
-    }
-
-    setCompanyLogoDataUrl(profile.logoDataUrl ?? null)
+    setCompanyLogoDataUrl(editInvoice?.logoDataUrl ?? profile.logoDataUrl ?? null)
   }, [editInvoice, profile.logoDataUrl])
 
   useEffect(() => {
@@ -523,6 +520,43 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
     )
   }
 
+  const convertInvoiceToQuote = () => {
+    if (typeof window === 'undefined') return
+
+    const invoiceDraft = {
+      quoteNumber: invoiceNumber,
+      sellerName,
+      sellerEmail,
+      sellerPhone: '',
+      sellerIban,
+      companyName,
+      clientName,
+      clientEmail,
+      clientContactName,
+      clientPhone,
+      clientAddress,
+      clientPostalCode,
+      clientCity,
+      clientCountry,
+      clientKvkNumber,
+      clientBtwNumber,
+      clientIban,
+      clientPaymentTermDays: clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays,
+      clientNotes,
+      issueDate,
+      dueDate,
+      quoteDescription: invoiceDescription,
+      discountDescription,
+      discountAmount,
+      currencyCode,
+      logoDataUrl: companyLogoDataUrl,
+      lines,
+    }
+
+    window.localStorage.setItem(INVOICE_TO_QUOTE_DRAFT_KEY, JSON.stringify(invoiceDraft))
+    navigate('/offertes/nieuw?fromInvoice=1')
+  }
+
   const downloadCurrentInvoicePdf = async () => {
     const hasValidLine = lines.some((line) => line.description.trim() && line.quantity > 0)
     if (!clientName.trim()) {
@@ -545,7 +579,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
       userId: userId ?? 'preview',
       invoiceNumber,
       companyName,
-      logoDataUrl: companyLogoDataUrl,
+      logoDataUrl: companyLogoDataUrl ?? profile.logoDataUrl ?? null,
       clientName,
       clientEmail,
       clientContactName,
@@ -649,7 +683,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         sellerEmail,
         sellerIban,
         companyName,
-        logoDataUrl: companyLogoDataUrl,
+        logoDataUrl: companyLogoDataUrl ?? profile.logoDataUrl ?? null,
         clientName,
         clientEmail,
         clientContactName,
@@ -702,7 +736,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         sellerEmail,
         sellerIban,
         companyName,
-        logoDataUrl: companyLogoDataUrl,
+        logoDataUrl: companyLogoDataUrl ?? profile.logoDataUrl ?? null,
         clientName,
         clientEmail,
         clientContactName,
@@ -909,7 +943,7 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
               {!guestMode ? (
                 <button
                   type="button"
-                  onClick={() => navigate('/offertes/nieuw')}
+                  onClick={convertInvoiceToQuote}
                   className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                 >
                   {t('invoiceGenerator:buttons.toQuote')}
