@@ -80,6 +80,7 @@ export default function QuoteGenerator({ editQuote }: Props) {
     editQuote ? editQuote.quoteNumber : getNextQuoteNumber(quotes, userId),
   )
   const hasRestoredInvoiceDraft = useRef(false)
+  const hasInitializedSenderDefaults = useRef(false)
   const [sellerName, setSellerName] = useState(editQuote?.sellerName ?? getDefaultSellerName(email))
   const [sellerEmail, setSellerEmail] = useState(editQuote?.sellerEmail ?? (email ?? ''))
   const [sellerPhone, setSellerPhone] = useState(editQuote?.sellerPhone ?? '')
@@ -130,11 +131,12 @@ export default function QuoteGenerator({ editQuote }: Props) {
   }, [companyName, editQuote, profile.companyName])
 
   useEffect(() => {
-    if (!editQuote && !sellerName.trim()) {
+    if (!editQuote && !hasInitializedSenderDefaults.current && !sellerName.trim()) {
       const defaultName = getDefaultSellerName(email)
       if (defaultName) {
         setSellerName(defaultName)
       }
+      hasInitializedSenderDefaults.current = true
     }
   }, [editQuote, email, sellerName])
 
