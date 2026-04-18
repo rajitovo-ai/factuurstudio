@@ -557,6 +557,15 @@ export default function QuoteGenerator({ editQuote }: Props) {
               />
             </label>
             <label className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-slate-700">Contactpersoon (optioneel)</span>
+              <input
+                value={clientContactName}
+                onChange={(event) => setClientContactName(event.target.value)}
+                placeholder="Naam van de contactpersoon"
+                className="rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+            <label className="flex flex-col gap-1">
               <span className="text-sm font-medium text-slate-700">Klant e-mail</span>
               <input
                 type="email"
