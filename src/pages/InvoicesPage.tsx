@@ -93,10 +93,10 @@ export default function InvoicesPage() {
   const downloadPdfForInvoice = async (invoice: (typeof userInvoices)[number]) => {
     await downloadInvoicePdf(invoice, {
       sellerProfile: profile,
-      sellerName: invoice.sellerName !== undefined ? invoice.sellerName : getDefaultSellerName(email),
-      sellerEmail: invoice.sellerEmail !== undefined ? invoice.sellerEmail : email,
+      sellerName: invoice.sellerName?.trim() || getDefaultSellerName(email),
+      sellerEmail: invoice.sellerEmail?.trim() || email,
       sellerKvk: profile.kvkNumber,
-      sellerIban: invoice.sellerIban !== undefined ? invoice.sellerIban : profile.iban,
+      sellerIban: invoice.sellerIban?.trim() || profile.iban,
     })
   }
   

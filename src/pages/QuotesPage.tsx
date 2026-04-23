@@ -151,11 +151,11 @@ export default function QuotesPage() {
                             onClick={async () =>
                               await downloadQuotePdf(quote, {
                                 companyProfile: profile,
-                                sellerName: quote.sellerName !== undefined ? quote.sellerName : getDefaultSellerName(email),
-                                sellerEmail: quote.sellerEmail !== undefined ? quote.sellerEmail : email,
-                                sellerPhone: quote.sellerPhone !== undefined ? quote.sellerPhone : undefined,
-                                sellerKvk: quote.sellerKvk !== undefined ? quote.sellerKvk : profile.kvkNumber,
-                                sellerIban: quote.sellerIban !== undefined ? quote.sellerIban : undefined,
+                                sellerName: quote.sellerName?.trim() || getDefaultSellerName(email),
+                                sellerEmail: quote.sellerEmail?.trim() || email,
+                                sellerPhone: quote.sellerPhone?.trim() || undefined,
+                                sellerKvk: quote.sellerKvk?.trim() || profile.kvkNumber,
+                                sellerIban: quote.sellerIban?.trim() || profile.iban,
                               })
                             }
                             className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"

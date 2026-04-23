@@ -81,12 +81,8 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   const recipientLabel = isQuote ? 'Offerte voor' : 'Factuur voor'
   const sellerProfile = options.sellerProfile
   const sellerCompanyName = sellerProfile?.companyName?.trim() || invoice.companyName?.trim() || 'Bedrijfsnaam'
-  const sellerKvk = options.sellerKvk !== undefined
-    ? (options.sellerKvk ?? '').trim()
-    : (sellerProfile?.kvkNumber ?? '')
-  const sellerIban = options.sellerIban !== undefined
-    ? (options.sellerIban ?? '').trim()
-    : (sellerProfile?.iban ?? '')
+  const sellerKvk = (options.sellerKvk?.trim() || sellerProfile?.kvkNumber || '')
+  const sellerIban = (options.sellerIban?.trim() || sellerProfile?.iban || '')
   const fallbackQuoteDueDate = addDaysIso(invoice.issueDate, invoice.clientPaymentTermDays || 14)
   const effectiveDueDate = isQuote
     ? (invoice.hasDueDate ? invoice.dueDate : fallbackQuoteDueDate)
