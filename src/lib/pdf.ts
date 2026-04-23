@@ -187,6 +187,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
 
   if (invoice.invoiceDescription) {
     y += 8
+    if (y > 260) { doc.addPage(); y = 20 }
     doc.setFont(fontName, 'bold')
     doc.text('Beschrijving', left, y)
     y += 5
@@ -198,6 +199,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
 
   if (invoice.vatExemptionReason?.trim()) {
     y += 8
+    if (y > 260) { doc.addPage(); y = 20 }
     doc.setFont(fontName, 'bold')
     doc.text('BTW-vrijstelling', left, y)
     y += 5
@@ -282,6 +284,7 @@ export const downloadInvoicePdf = async (invoice: StoredInvoice, options: Downlo
   if (!isQuote) {
     const instructions = invoice.paymentInstructions?.trim()
     if (instructions) {
+      if (y > 260) { doc.addPage(); y = 20 }
       const wrappedInstructions = doc.splitTextToSize(instructions, 170)
       doc.text(wrappedInstructions, left, y)
       y += wrappedInstructions.length * 4

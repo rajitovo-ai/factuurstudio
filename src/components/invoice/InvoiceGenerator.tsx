@@ -698,6 +698,8 @@ export default function InvoiceGenerator({ editInvoice, guestMode = false }: Pro
         clientPaymentTermDays: clientPaymentTermNotApplicable ? 0 : clientPaymentTermDays,
         clientNotes,
         invoiceDescription,
+        discountDescription,
+        discountAmount: totals.discountAmount,
         paymentInstructions,
         hasDueDate,
         issueDate,
